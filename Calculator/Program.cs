@@ -12,10 +12,10 @@ namespace CalculatorNotepad
         {
             try
             {
-                // check if DLLs are in same folder as EXE, if not raise exception that will be more readable
-                foreach(var d in new string[] { "libgmp-10.dll", "libmpfr-6.dll" })
+                // check if DLLs are in correct folders relative to EXE, if not raise exception that will be more readable
+                foreach(var d in new string[] { Mpfr.Gmp.gmp_lib.libgmp10dll, Mpfr.Native.mpfr_lib.libmpfr6dll })
                 if (!File.Exists(d))
-                    throw new FileNotFoundException(d+" must be in the same folder as EXE !");
+                    throw new FileNotFoundException(d+" not found in correct folder under EXE folder !");
 
                 ApplicationConfiguration.Initialize();
                 Application.Run(new FormCalculator());

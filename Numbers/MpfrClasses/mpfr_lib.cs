@@ -380,6 +380,9 @@ namespace Mpfr.Native
     /// </remarks>
     public static class mpfr_lib
     {
+        // paths to DLL files, relative to EXE
+        public const string libmpfr6dll = @"Calculator\libmpfr-6.dll";
+
 
         // Safe handle to the loaded MPFR library.
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
@@ -399,10 +402,10 @@ namespace Mpfr.Native
             SafeNativeMethods.SetDllDirectory(libpath);
             */
             // check if DLL is in same folder as EXE, if not raise exception that will be more readable
-            if (!File.Exists("libmpfr-6.dll"))
+            if (!File.Exists(libmpfr6dll))
                 throw new FileNotFoundException("libmpfr-6.dll must be in the same folder as EXE ");
             // Load MPFR library and create safe handle to it.
-            IntPtr handle = SafeNativeMethods.LoadLibrary(@"libmpfr-6.dll");
+            IntPtr handle = SafeNativeMethods.LoadLibrary(libmpfr6dll);
             // Retrieve and cache MPFR dynamic memory allocation functions.
             return handle;
         }
@@ -23620,937 +23623,937 @@ namespace Mpfr.Native
 
             #endregion
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "__gmpfr_out_str")]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "__gmpfr_out_str")]
             public static extern uint /*size_t*/ __gmpfr_out_str_x86(IntPtr /*FILE **/ stream, int @base, uint /*size_t*/ n, IntPtr /*mpfr_srcptr*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "__gmpfr_out_str")]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "__gmpfr_out_str")]
             public static extern ulong /*size_t*/ __gmpfr_out_str_x64(IntPtr /*FILE **/ stream, int @base, ulong /*size_t*/ n, IntPtr /*mpfr_srcptr*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "__gmpfr_inp_str")]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "__gmpfr_inp_str")]
             public static extern uint /*size_t*/ __gmpfr_inp_str_x86(IntPtr /*mpfr_ptr*/ rop, IntPtr /*FILE **/ stream, int @base, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "__gmpfr_inp_str")]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "__gmpfr_inp_str")]
             public static extern ulong /*size_t*/ __gmpfr_inp_str_x64(IntPtr /*mpfr_ptr*/ rop, IntPtr /*FILE **/ stream, int @base, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int __gmpfr_fpif_export(IntPtr /*FILE **/ stream, IntPtr /*mpfr_srcptr*/ op);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int __gmpfr_fpif_import(IntPtr /*mpfr_ptr*/ op, IntPtr /*FILE **/ stream);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern long /*intmax_t*/ __gmpfr_mpfr_get_sj(IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern ulong /*uintmax_t*/ __gmpfr_mpfr_get_uj(IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int __gmpfr_set_sj(IntPtr /*mpfr_t*/ rop, long /*intmax_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int __gmpfr_set_uj(IntPtr /*mpfr_t*/ rop, ulong /*uintmax_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int __gmpfr_set_sj_2exp(IntPtr /*mpfr_t*/ rop, long /*intmax_t*/ op, long /*intmax_t*/ e, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int __gmpfr_set_uj_2exp(IntPtr /*mpfr_t*/ rop, ulong /*uintmax_t*/ op, ulong /*uintmax_t*/ e, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern /*const*/ IntPtr /*char **/ mpfr_get_version(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern /*const*/ IntPtr /*char **/ mpfr_get_patches(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_buildopt_tls_p(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_buildopt_float128_p(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_buildopt_decimal_p(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_buildopt_gmpinternals_p(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_buildopt_sharedcache_p(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern /*const*/ IntPtr /*char **/ mpfr_buildopt_tune_case(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int /*mpfr_exp_t*/ mpfr_get_emin(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_set_emin(int /*mpfr_exp_t*/ exp);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int /*mpfr_exp_t*/ mpfr_get_emin_min(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int /*mpfr_exp_t*/ mpfr_get_emin_max(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int /*mpfr_exp_t*/ mpfr_get_emax(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_set_emax(int /*mpfr_exp_t*/ exp);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int /*mpfr_exp_t*/ mpfr_get_emax_min(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int /*mpfr_exp_t*/ mpfr_get_emax_max(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_set_default_rounding_mode(int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int /*mpfr_rnd_t*/ mpfr_get_default_rounding_mode(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern /*const*/ IntPtr /*char **/ mpfr_print_rnd_mode(int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_clear_flags(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_clear_underflow(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_clear_overflow(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_clear_divby0(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_clear_nanflag(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_clear_inexflag(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_clear_erangeflag(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_set_underflow(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_set_overflow(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_set_divby0(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_set_nanflag(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_set_inexflag(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_set_erangeflag(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_underflow_p(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_overflow_p(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_divby0_p(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_nanflag_p(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_inexflag_p(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_erangeflag_p(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_flags_clear(/*mpfr_flags_t*/ uint mask);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_flags_set(/*mpfr_flags_t*/ uint mask);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern /*mpfr_flags_t*/ uint mpfr_flags_test(/*mpfr_flags_t*/ uint mask);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern /*mpfr_flags_t*/ uint mpfr_flags_save(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_flags_restore(/*mpfr_flags_t*/ uint flags, /*mpfr_flags_t*/ uint mask);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_check_range(IntPtr /*mpfr_t*/ x, int t, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_init2(IntPtr /*mpfr_t*/ x, uint /*mpfr_prec_t*/ prec);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_init(IntPtr /*mpfr_t*/ x);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_clear(IntPtr /*mpfr_t*/ x);
 
-            //[DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             //public static extern void mpfr_inits2(uint /*mpfr_prec_t*/ prec, IntPtr /*mpfr_t*/ x /*...*/);
 
-            //[DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             //public static extern void mpfr_inits(IntPtr /*mpfr_t*/ x, IntPtr args /*...*/);
 
-            //[DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             //public static extern void mpfr_clears(IntPtr /*mpfr_t*/ x, IntPtr args /*...*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_prec_round(IntPtr /*mpfr_t*/ x, uint /*mpfr_prec_t*/ prec, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_can_round(/*const*/ IntPtr /*mpfr_t*/ b, int /*mpfr_exp_t*/ err, int /*mpfr_rnd_t*/ rnd1, int /*mpfr_rnd_t*/ rnd2, uint /*mpfr_prec_t*/ prec);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern uint /*mpfr_prec_t*/ mpfr_min_prec(/*const*/ IntPtr /*mpfr_t*/ x);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int /*mpfr_exp_t*/ mpfr_get_exp(/*const*/ IntPtr /*mpfr_t*/ x);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_set_exp(IntPtr /*mpfr_t*/ x, int /*mpfr_exp_t*/ e);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern uint /*mpfr_prec_t*/ mpfr_get_prec(/*const*/ IntPtr /*mpfr_t*/ x);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_set_prec(IntPtr /*mpfr_t*/ x, uint /*mpfr_prec_t*/ prec);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_set_prec_raw(IntPtr /*mpfr_t*/ x, uint /*mpfr_prec_t*/ prec);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_set_default_prec(uint /*mpfr_prec_t*/ prec);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern uint /*mpfr_prec_t*/ mpfr_get_default_prec(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_set_d(IntPtr /*mpfr_t*/ rop, double op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_set_flt(IntPtr /*mpfr_t*/ rop, float op, int /*mpfr_rnd_t*/ rnd);
 
-            //[DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             //public static extern int mpfr_set_decimal64(IntPtr /*mpfr_t*/, _Decimal64, int /*mpfr_rnd_t*/);
 
-            //[DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             //public static extern int mpfr_set_ld(IntPtr /*mpfr_t*/, long double, int /*mpfr_rnd_t*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_set_z(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpz_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_set_z_2exp(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpz_t*/ op, int /*mpfr_exp_t*/ e, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_set_nan(IntPtr /*mpfr_t*/ x);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_set_inf(IntPtr /*mpfr_t*/ x, int sign);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_set_zero(IntPtr /*mpfr_t*/ x, int sign);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_set_f(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpf_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_get_f(IntPtr /*mpf_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_set_si(IntPtr /*mpfr_t*/ rop, int /*long*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_set_ui(IntPtr /*mpfr_t*/ rop, uint /*unsigned long*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_set_si_2exp(IntPtr /*mpfr_t*/ rop, int /*long*/ op, int /*mpfr_exp_t*/ e, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_set_ui_2exp(IntPtr /*mpfr_t*/ rop, uint /*unsigned long*/ op, int /*mpfr_exp_t*/ e, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_set_q(IntPtr /*mpfr_t*/ rop, IntPtr /*mpq_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_set_str(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*char **/ s, int @base, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_init_set_str(IntPtr /*mpfr_t*/ x, /*const*/ IntPtr /*char **/ s, int @base, int /*mpfr_rnd_t*/ rnd);
 
-            //[DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             //public static extern int mpfr_set4(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd, int s);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_abs(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_set(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_neg(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_signbit(/*const*/ IntPtr /*mpfr_t*/ op);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_setsign(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int s, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_copysign(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int /*mpfr_exp_t*/ mpfr_get_z_2exp(IntPtr /*mpz_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern float mpfr_get_flt(/*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern double mpfr_get_d(/*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            //[DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             //public static extern _Decimal64 mpfr_get_decimal64(/*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            //[DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             //public static extern long double mpfr_get_ld(/*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            //[DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             //public static extern double mpfr_get_d1(/*const*/ IntPtr /*mpfr_t*/ op);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern double mpfr_get_d_2exp(ref int /*long **/ exp, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            //[DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             //public static extern long double mpfr_get_ld_2exp(ptr<int> /*long **/ exp, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_frexp(ref int /*mpfr_exp_t **/ exp, IntPtr /*mpfr_t*/ y, /*const*/ IntPtr /*mpfr_t*/ x, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int /*long*/ mpfr_get_si(/*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern uint /*unsigned long*/ mpfr_get_ui(/*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "mpfr_get_str")]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "mpfr_get_str")]
             public static extern IntPtr /*char **/ mpfr_get_str_x86(IntPtr /*char **/ str, ref int /*mpfr_exp_t **/ expptr, int b, uint /*size_t*/ n, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "mpfr_get_str")]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "mpfr_get_str")]
             public static extern IntPtr /*char **/ mpfr_get_str_x64(IntPtr /*char **/ str, ref int /*mpfr_exp_t **/ expptr, int b, ulong /*size_t*/ n, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_get_z(IntPtr /*mpz_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_get_q(IntPtr /*mpq_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_free_str(IntPtr /*char **/ str);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_urandom(IntPtr /*mpfr_t*/ rop, IntPtr /*gmp_randstate_t*/ state, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_nrandom(IntPtr /*mpfr_t*/ rop, IntPtr /*gmp_randstate_t*/ state, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_grandom(IntPtr /*mpfr_t*/ rop1, IntPtr /*mpfr_t*/ rop2, IntPtr /*gmp_randstate_t*/ state, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_erandom(IntPtr /*mpfr_t*/ rop, IntPtr /*gmp_randstate_t*/ state, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_urandomb(IntPtr /*mpfr_t*/ rop, IntPtr /*gmp_randstate_t*/ state);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_nextabove(IntPtr /*mpfr_t*/ x);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_nextbelow(IntPtr /*mpfr_t*/ x);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_nexttoward(IntPtr /*mpfr_t*/ x, /*const*/ IntPtr /*mpfr_t*/ y);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "__gmpfr_vasprintf")]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "__gmpfr_vasprintf")]
             public static extern int mpfr_vasprintf(ref IntPtr /*char ***/ str, /*const*/ IntPtr /*char **/ template, IntPtr args /*...*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "__gmpfr_vfprintf")]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "__gmpfr_vfprintf")]
             public static extern int mpfr_vfprintf(IntPtr /*FILE */stream, /*const*/ IntPtr /*char **/ template, IntPtr args /*...*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "__gmpfr_vprintf")]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "__gmpfr_vprintf")]
             public static extern int mpfr_vprintf(/*const*/ IntPtr /*char **/ template, IntPtr args /*...*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "__gmpfr_vsnprintf")]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "__gmpfr_vsnprintf")]
             public static extern int mpfr_vsnprintf_x86(IntPtr /*char **/ buf, uint /*size_t*/ n, /*const*/ IntPtr /*char **/ template, IntPtr args /*...*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "__gmpfr_vsnprintf")]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "__gmpfr_vsnprintf")]
             public static extern int mpfr_vsnprintf_x64(IntPtr /*char **/ buf, ulong /*size_t*/ n, /*const*/ IntPtr /*char **/ template, IntPtr args /*...*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "__gmpfr_vsprintf")]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "__gmpfr_vsprintf")]
             public static extern int mpfr_vsprintf(IntPtr /*char **/ buf, /*const*/ IntPtr /*char **/ template, IntPtr args /*...*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_pow(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_pow_si(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, int /*long int*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_pow_ui(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, uint /*unsigned long int*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_ui_pow_ui(IntPtr /*mpfr_t*/ rop, uint /*unsigned long int*/ op1, uint /*unsigned long int*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_ui_pow(IntPtr /*mpfr_t*/ rop, uint /*unsigned long int*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_pow_z(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpz_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_sqrt(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_sqrt_ui(IntPtr /*mpfr_t*/ rop, uint /*unsigned long*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_rec_sqrt(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_add(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_sub(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_mul(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_div(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_add_ui(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, uint /*unsigned long*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_sub_ui(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, uint /*unsigned long*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_ui_sub(IntPtr /*mpfr_t*/ rop, uint /*unsigned long*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_mul_ui(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, uint /*unsigned long*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_div_ui(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, uint /*unsigned long*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_ui_div(IntPtr /*mpfr_t*/ rop, uint /*unsigned long*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_add_si(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, int /*long int*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_sub_si(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, int /*long int*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_si_sub(IntPtr /*mpfr_t*/ rop, int /*long int*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_mul_si(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, int /*long int*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_div_si(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, int /*long int*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_si_div(IntPtr /*mpfr_t*/ rop, int /*long int*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_add_d(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, double op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_sub_d(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, double op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_d_sub(IntPtr /*mpfr_t*/ rop, double op1, /*const*/ IntPtr /*mpfr_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_mul_d(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, double op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_div_d(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, double op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_d_div(IntPtr /*mpfr_t*/ rop, double op1, /*const*/ IntPtr /*mpfr_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_sqr(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_const_pi(IntPtr /*mpfr_t*/ rop, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_const_log2(IntPtr /*mpfr_t*/ rop, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_const_euler(IntPtr /*mpfr_t*/ rop, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_const_catalan(IntPtr /*mpfr_t*/ rop, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_agm(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_log(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_log_ui(IntPtr /*mpfr_t*/ rop, /*const*/ uint /*unsigned long*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_log2(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_log10(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_log1p(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_exp(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_exp2(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_exp10(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_expm1(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_eint(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_li2(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_cmp(/*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2);
 
-            //[DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             //public static extern int mpfr_cmp3(/*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, int s);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_cmp_d(/*const*/ IntPtr /*mpfr_t*/ op1, double op2);
 
-            //[DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             //public static extern int mpfr_cmp_ld(/*const*/ IntPtr /*mpfr_t*/, long double);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_cmpabs(/*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_cmp_ui(/*const*/ IntPtr /*mpfr_t*/ op1, uint /*unsigned long*/ op2);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_cmp_si(/*const*/ IntPtr /*mpfr_t*/ op1, int /*long*/ op2);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_cmp_ui_2exp(/*const*/ IntPtr /*mpfr_t*/ op1, uint /*unsigned long*/ op2, int /*mpfr_exp_t*/ e);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_cmp_si_2exp(/*const*/ IntPtr /*mpfr_t*/ op1, int /*long*/ op2, int /*mpfr_exp_t*/ e);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_reldiff(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_eq(/*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, uint /*unsigned long*/ op3);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_sgn(/*const*/ IntPtr /*mpfr_t*/ op);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_mul_2exp(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, uint /*unsigned long*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_div_2exp(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, uint /*unsigned long*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_mul_2ui(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, uint /*unsigned long*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_div_2ui(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, uint /*unsigned long*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_mul_2si(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, int /*long*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_div_2si(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, int /*long*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_rint(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_round(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_roundeven(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_trunc(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_ceil(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_floor(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_rint_round(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_rint_roundeven(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_rint_trunc(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_rint_ceil(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_rint_floor(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_frac(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_modf(IntPtr /*mpfr_t*/ iop, IntPtr /*mpfr_t*/ fop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_remquo(IntPtr /*mpfr_t*/ r, ref int /*long **/ q, /*const*/ IntPtr /*mpfr_t*/ x, /*const*/ IntPtr /*mpfr_t*/ y, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_remainder(IntPtr /*mpfr_t*/ r, /*const*/ IntPtr /*mpfr_t*/ x, /*const*/ IntPtr /*mpfr_t*/ y, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_fmod(IntPtr /*mpfr_t*/ r, /*const*/ IntPtr /*mpfr_t*/ x, /*const*/ IntPtr /*mpfr_t*/ y, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_fmodquo(IntPtr /*mpfr_t*/ r, ref int /*long **/ q, /*const*/ IntPtr /*mpfr_t*/ x, /*const*/ IntPtr /*mpfr_t*/ y, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_fits_ulong_p(/*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_fits_slong_p(/*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_fits_uint_p(/*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_fits_sint_p(/*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_fits_ushort_p(/*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_fits_sshort_p(/*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_fits_uintmax_p(/*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_fits_intmax_p(/*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            //[DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             //public static extern void mpfr_extract(IntPtr /*mpz_t*/ y, /*const*/ IntPtr /*mpfr_t*/ p, uint /*unsigned int*/ i);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_swap(IntPtr /*mpfr_t*/ x, IntPtr /*mpfr_t*/ y);
 
-            //[DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             //public static extern void mpfr_dump(/*const*/ IntPtr /*mpfr_t*/ x);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_nan_p(/*const*/ IntPtr /*mpfr_t*/ op);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_inf_p(/*const*/ IntPtr /*mpfr_t*/ op);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_number_p(/*const*/ IntPtr /*mpfr_t*/ op);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_integer_p(/*const*/ IntPtr /*mpfr_t*/ op);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_zero_p(/*const*/ IntPtr /*mpfr_t*/ op);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_regular_p(/*const*/ IntPtr /*mpfr_t*/ op);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_greater_p(/*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_greaterequal_p(/*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_less_p(/*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_lessequal_p(/*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_lessgreater_p(/*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_equal_p(/*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_unordered_p(/*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_atanh(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_acosh(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_asinh(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_cosh(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_sinh(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_tanh(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_sinh_cosh(IntPtr /*mpfr_t*/ sop, IntPtr /*mpfr_t*/ cop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_sech(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_csch(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_coth(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_acos(IntPtr /*mpfr_t*/ rop,/*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_asin(IntPtr /*mpfr_t*/ rop,/*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_atan(IntPtr /*mpfr_t*/ rop,/*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_sin(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_sin_cos(IntPtr /*mpfr_t*/ sop, IntPtr /*mpfr_t*/ cop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_cos(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_tan(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_atan2(IntPtr /*mpfr_t*/ rop,/*const*/ IntPtr /*mpfr_t*/ y,/*const*/ IntPtr /*mpfr_t*/ x, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_sec(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_csc(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_cot(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_hypot(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ x, /*const*/ IntPtr /*mpfr_t*/ y, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_erf(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_erfc(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_cbrt(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_rootn_ui(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, uint /*unsigned long*/ k, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_root(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, uint /*unsigned long*/ k, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_gamma(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_gamma_inc(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, /*const*/ IntPtr /*mpfr_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_beta(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_lngamma(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_lgamma(IntPtr /*mpfr_t*/ rop, ref int /*int **/ signp, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_digamma(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_zeta(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_zeta_ui(IntPtr /*mpfr_t*/ rop, uint /*unsigned long*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_fac_ui(IntPtr /*mpfr_t*/ rop, uint /*unsigned long int*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_j0(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_j1(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_jn(IntPtr /*mpfr_t*/ rop, int /*long*/ n, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_y0(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_y1(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_yn(IntPtr /*mpfr_t*/ rop, int /*long*/ n, /*const*/ IntPtr /*mpfr_t*/ op, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_ai(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ x, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_min(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_max(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_dim(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_mul_z(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpz_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_div_z(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpz_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_add_z(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpz_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_sub_z(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpz_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_z_sub(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpz_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_cmp_z(/*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpz_t*/ op2);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_mul_q(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, IntPtr /*mpq_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_div_q(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, IntPtr /*mpq_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_add_q(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, IntPtr /*mpq_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_sub_q(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, IntPtr /*mpq_t*/ op2, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_cmp_q(/*const*/ IntPtr /*mpfr_t*/ op1, IntPtr /*mpq_t*/ op2);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_cmp_f(/*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpf_t*/ op2);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_fma(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, /*const*/ IntPtr /*mpfr_t*/ op3, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_fms(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, /*const*/ IntPtr /*mpfr_t*/ op3, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_fmma(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, /*const*/ IntPtr /*mpfr_t*/ op3, /*const*/ IntPtr /*mpfr_t*/ op4, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_fmms(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t*/ op1, /*const*/ IntPtr /*mpfr_t*/ op2, /*const*/ IntPtr /*mpfr_t*/ op3, /*const*/ IntPtr /*mpfr_t*/ op4, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_sum(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*mpfr_t[]*/ tab, uint /*unsigned long*/ n, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_free_cache(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_free_cache2(uint /*mpfr_free_cache_t*/ way);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_free_pool(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_mp_memory_cleanup(/*void*/);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_subnormalize(IntPtr /*mpfr_t*/ x, int t, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_strtofr(IntPtr /*mpfr_t*/ rop, /*const*/ IntPtr /*char **/ nptr, ref IntPtr /*char ***/ endptr, int @base, int /*mpfr_rnd_t*/ rnd);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "mpfr_custom_get_size")]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "mpfr_custom_get_size")]
             public static extern uint /*size_t*/ mpfr_custom_get_size_x86(uint /*mpfr_prec_t*/ prec);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "mpfr_custom_get_size")]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "mpfr_custom_get_size")]
             public static extern ulong /*size_t*/ mpfr_custom_get_size_x64(uint /*mpfr_prec_t*/ prec);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_custom_init(IntPtr /*void **/ significand, uint /*mpfr_prec_t*/ prec);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern IntPtr /*void **/ mpfr_custom_get_significand(/*const*/ IntPtr /*mpfr_t*/ x);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int /*mpfr_exp_t*/ mpfr_custom_get_exp(/*const*/ IntPtr /*mpfr_t*/ x);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_custom_move(IntPtr /*mpfr_t*/ x, IntPtr /*void **/ new_position);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern void mpfr_custom_init_set(IntPtr /*mpfr_t*/ x, int kind, int /*mpfr_exp_t*/ exp, uint /*mpfr_prec_t*/ prec, IntPtr /*void **/ significand);
 
-            [DllImport(@"libmpfr-6.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(libmpfr6dll, CallingConvention = CallingConvention.Cdecl)]
             public static extern int mpfr_custom_get_kind(/*const*/ IntPtr /*mpfr_t*/ x);
 
         }

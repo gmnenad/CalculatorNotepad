@@ -12,7 +12,7 @@
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <EnablePreviewFeatures>true</EnablePreviewFeatures>
     <Platforms>AnyCPU;x64;x86</Platforms>
-    <ApplicationIcon>calc_icon.ico</ApplicationIcon>
+    <ApplicationIcon>Images\calc_icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,12 +29,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="MpfrClasses\mpfr.pdf" />
+    <None Remove="Numbers\MpfrClasses\mpfr.pdf" />
     <None Remove="Numbers\Number_speeds.xlsx" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="calc_icon.ico" />
+    <Content Include="Images\calc_icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -61,19 +61,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="libgmp-10.dll">
+    <None Update="Calculator\libgmp-10.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="libmpfr-6.dll">
+    <None Update="Calculator\libmpfr-6.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="MpfrClasses\libgmp-10.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="MpfrClasses\libmpfr-6.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="_TESTS.txt">
+    <None Update="Calculator\_TESTS.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
