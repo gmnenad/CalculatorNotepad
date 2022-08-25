@@ -343,6 +343,10 @@ namespace Numbers
         }
 
 
+        // CastToTypeOf only has meaning for base Number type, derived types return directly InputVariable in their own type
+        static public thisType CastToTypeOf(thisType InputVariable, thisType TargetTypeVariable) => InputVariable;
+
+
         /// <summary>
         /// create Quad from common BinaryFloatNumber structure, with rounding on precision reduction
         /// </summary>

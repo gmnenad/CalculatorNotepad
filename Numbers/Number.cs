@@ -460,6 +460,18 @@ namespace Numbers
         public static explicit operator uint(Number a) => (uint)(ulong)a;
 
 
+
+        public static Number CastToTypeOf(Number InputVariable, Number TargetTypeVariable)
+        {
+            switch (TargetTypeVariable.classType)
+            {
+                case NumberClass.Double: return InputVariable.AsDouble;
+                case NumberClass.Quad: return InputVariable.AsQuad;
+                case NumberClass.MPFR: return InputVariable.AsMPFR;
+            }
+            throw new NumberException("Invalid Number class ");
+
+        }
         public static Number FromBinary(BinaryFloatNumber bf)
         {
             switch (__defaultClassType)
@@ -2267,7 +2279,8 @@ namespace Numbers
             // normalize so that number is in form 0.xxxx*10^exp
             var e10 = T.Log(num, Base); // fractional log10
             long exp = (long)T.Floor(e10) + 1;  // will support exponents up to 'long', which covers Quad
-            var e10i = T.Pow(Base, exp); // 10^integer, should be exactly 1E(??+1)
+            var BaseT = T.CastToTypeOf(Base, num); // cast base to type of 'num', to allow large BaseT^exp
+            var e10i = T.Pow(BaseT, exp); // 10^integer, should be exactly 1E(??+1)
             T x = num / e10i;  // shift number so it is 0.12345 and positive
             // verify that number is really in 0.1234 format - in case of faulty Pow<->Log for very large exponents !!
             var x10 = T.Log(x, Base);

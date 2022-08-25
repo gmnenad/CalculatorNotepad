@@ -111,6 +111,8 @@ namespace Numbers
         public static explicit operator thisType(Quad q) => new thisType((double)q);
         public static explicit operator thisType(MPFR q) => new thisType((double)q);
 
+        // CastToTypeOf only has meaning for base Number type, derived types return directly InputVariable in their own type
+        static public thisType CastToTypeOf(thisType InputVariable, thisType TargetTypeVariable) => InputVariable;
 
         /// <summary>
         /// create double from common BinaryFloatNumber structure, with rounding on precision reduction

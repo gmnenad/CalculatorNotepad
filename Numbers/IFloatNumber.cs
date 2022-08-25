@@ -80,6 +80,7 @@ namespace Numbers
         static abstract explicit operator int(TSelf a);
         static abstract explicit operator uint(TSelf a);
 
+        static abstract TSelf CastToTypeOf(TSelf InputVariable, TSelf TargetTypeVariable);
         static abstract TSelf FromBinary(BinaryFloatNumber bf);
         static abstract BinaryFloatNumber ToBinary(TSelf a);
 
