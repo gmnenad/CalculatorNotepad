@@ -1,23 +1,113 @@
-// probability after T random draws of numbers (1..N) to get M distinct numbers 
-// http://www.greylabyrinth.com/discussion/viewtopic.php?t=15143&highlight=probability
+// What is probability after T random draws of numbers 1..N to get M distinct numbers?
 
-Psum(d,n)={
-    msum=0;
-    for( ac= counterCreateComb(d,n,1,1) , counterNotFinished(ac), ac= counterNext(ac) )
-        msum=msum+ vMul(counterValues(ac));
+
+//********************
+// 1) classic simulation : try 10k times and count how many times it draw exactly M distinct numbers
+pClassicSim(M,T,N)={
+    nSim=10000;
+    nSame=0; // count how many simulations returned exactly M distinct numbers
+    // try 10k trials, one trial consist of drawing T times numbers 1..N - here it will be 0..N-1
+    for(k=0,k<nSim,k=k+1){
+        t=vDim(N); // array used to mark all drawn values
+        for(i=0,i<T,i=i+1) // draw T times
+        {
+            r= rndNumber(N); // random number between 0..N-1
+            t[r]=1; // mark that this number was drawn
+        }
+        // count how many different numbers were drawn (those marked with '1')
+        nDiff=0;
+        for(i=0,i<N,i=i+1)
+            if (t[i]!=0)
+                nDiff=nDiff+1;
+        // if we draw exactly M different numbers, increase total counter
+        if (nDiff==M)
+            nSame=nSame+1;
+    }
+    // result is probability to draw exactly M distinct, which means nSame/nSim
+    return nSame/nSim;
 }
 
-p(M,T,N)= (N-1)!/(N-M)!/N^(T-1)*Psum(T-M,M)
+pClassicSim(4,5,6)  // rolling 5 dice will get 4 distinct numbers in around 46%
+pClassicSim(10,10,52)  // drawing all 10 different cards in around 40% cases 
 
 
-p( 9,10,52)   // p( 9,10,52) == 0.4156050335089
-p( 4, 6, 6)   // p( 4, 6, 6) == 0.50154320987654
 
-p( 1, 7, 6)   // poki, 7 dice, chance to get just 1 distinct = all same
-p( 2, 7, 6)   // poki, 7 dice, chance to get just 2 distinct
-p( 3, 7, 6)   // poki, 7 dice, chance to get just 3 distinct
-p( 4, 7, 6)   // poki, 7 dice, chance to get 4 distinct
-p( 5, 7, 6)   // poki, 7 dice, chance to get 5 distinct
-p( 6, 7, 6)   // poki, 7 dice, chance to get 6 distinct
+//********************
+// 2) c# classic simulation : 
+// pCSharpSim() code is in c# panel
+
+// rolling 5 dice will get 4 distinct numbers in 46.3% cases
+pCSharpSim(4,5,6) 
+
+// drawing all 10 different cards in around 39.7% cases
+pCSharpSim(10,10,52)
 
 
+
+//********************
+// 3) simulation using integrated notepad functions 
+pNotepadSim(M,T,N)= pSim(()=>vLen(vUnion(rndVector(T,N)))==M, 10000)
+
+// rolling 5 dice will get 4 distinct numbers in ~46% cases
+pNotepadSim(4,5,6) 
+
+// drawing all 10 different cards in around ~40% cases
+pNotepadSim(10,10,52)
+
+
+
+//******************** 
+// 4) math solution
+pMath(M,T,N)={
+    mSum=0;
+    for( ac= counterCreateComb(T-M,M,1,1) , counterNotFinished(ac), ac= counterNext(ac) )
+        mSum=mSum+ vMul(counterValues(ac));
+    return (N-1)!/(N-M)!/N^(T-1)*mSum;
+}
+
+// rolling 5 dice will get 4 distinct numbers in 46.3% cases
+pMath(4,5,6) 
+
+// drawing all 10 different cards in 39.7% cases
+pMath(10,10,52)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//#C#
+// 2) c# classic simulation : try 1000 times and count how many times it draw exactly M distinct numbers
+double pCSharpSim(int M,int T,int N){
+    int nSim=100000;
+    int nSame=0; // count how many simulations returned exactly M distinct numbers
+    // try 10k trials, one trial consist of drawing T times numbers 1..N - here it will be 0..N-1
+    for(int k=0;k<nSim;k=k+1){
+        var t= new int[N]; // array used to mark all drawn values
+        for(int i=0;i<T;i=i+1) // draw T times
+        {
+            var r= nm.rnd.Next(N); // random number between 0..N-1
+            t[r]=1; // mark that this number was drawn
+        }
+        // count how many different numbers were drawn (those marked with '1')
+        var nDiff=0;
+        for(int i=0;i<N;i=i+1)
+            if (t[i]!=0)
+                nDiff=nDiff+1;
+        // if we draw exactly M different numbers, increase total counter
+        if (nDiff==M)
+            nSame=nSame+1;
+    }
+    // result is probability to draw exactly M distinct, which means nSame/nSim
+    return nSame/(double)nSim;
+}
