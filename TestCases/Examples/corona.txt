@@ -1,0 +1,39 @@
+
+num_cases_thailand_outside_china_in_2020=6
+days_in_2020=45
+thai_population= 70000000
+num_my_days_in_thailand=7
+
+num_cases_while_my_stay= num_my_days_in_thailand/days_in_2020*num_cases_thailand_outside_china_in_2020
+p_person_got_in_thai=num_cases_while_my_stay/thai_population
+p_I_got_in_thai = p_person_got_in_thai /2   // ~majority got in bangkok, or use public transportations etc. I was on Phuket
+
+incubation_average=3
+dv=dist_normal(incubation_average,3.6)  // 3 days average, 3.6 stddev , so <1% for over 14 days
+p_inf_day=vec(10/18,1/18,1/18,1/18,1/18,1/18,3/18) // ~most probable to get infected on first day, bit less on last, smallest between
+p_got_but_no_symptom=vSum(vFor((i)=> (1-cdf(dv,13-i))*p_inf_day[i], vLen(p_inf_day)))
+
+
+p_have= p_I_got_in_thai * p_got_but_no_symptom
+
+chance_have=1/p_have  // ~ 1 in 500 millions !
+
+R0=2.2 // how many people on average single infected people further infect
+avg_people_contacted_daily= 10 // family,work, busses, restaurants... ~ 30 ppl in 3 days 
+p_transmit_to_someone= R0/(avg_people_contacted_daily*incubation_average)
+
+chance_have_and_transmit= chance_have / p_transmit_to_someone  // ~ 1 in 60 billions !!
+p_die_from_corona=1%  // 0.2% outside china, 2% in china
+chance_you_die_from_it= chance_have_and_transmit / p_die_from_corona // ~ 1 in 6 trillions !!!
+
+
+// comparison:  pedestrian deaths in serbia
+n_dead_pedestrians_yearly=156
+pop_country=7000000
+chance_to_die_this_year= pop_country / n_dead_pedestrians_yearly
+ctdapT = chance_to_die_this_year * 365 // chance_die_as_pedestrian_Today ~ 1 in 16 million  
+
+more_ctdapT_than_I_have_it= chance_have / ctdapT // ~ 270 times(!) more likely to die as pedestrian TODAY than chance I have it
+more_ctdapT_than_get_infected_from_me= chance_have_and_transmit / ctdapT // ~ 3,700 times(!!) than to get infected from my c19
+more_ctdapT_than_die_from_my_crv= chance_you_die_from_it / ctdapT // ~ 370,000 times(!!!) more chance than to die from my c19
+

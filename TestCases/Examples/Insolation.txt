@@ -1,0 +1,40 @@
+
+// insolation at (a,b) earth coord ( assuming sun is toward a=0,b=0), and earth season angle is s (s=0 for winter, s=pi/2 for summer)
+insol(a,b,s)={
+    // convert unit spherical coordinates (a,b) to cartesian (x,y,z)
+    // (a=+east/-west angle=latitude, b=+north/-south angle =longitude) 
+    // into X=toward east, Y=toward north sun, Z=toward sun
+    x=cos(b)*sin(a);
+    y=sin(b);
+    z=cos(b)*cos(a);
+    // rotate cartesian vector v=[x,y,z] by angle 't' around x axis toward plane/sun
+    // https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
+    t= -cos(s)*23.43676'deg'; // earth tilt is 23deg. In winter north is away from sun (-max when x=0), in summer it is toward sun  
+    x2=x;
+    y2=y*cos(t)-z*sin(t);
+    z2=y*sin(t)+z*cos(t);
+    // if point is behind earth (from sun), return zero insolation
+    if ( z2 <= 0 ) return 0;
+    // otherwise return cosinus of angle between point and z-axis (which is toward sun)
+    // which is same as Z coordinate
+    return z2; 
+}
+
+// average insolation over one day , at given longitude(b=0 is equator) and season angle (s=0 is winter)
+dayInsol(b,s)= integral((a)=> insol(a,b,s),-pi,+pi,100)/2/pi;
+
+// average insolation over entire year , at given longitude(b=0 is equator) 
+yearInsol(b)= integral((s)=> dayInsol(b,s),0,2*pi,100)/2/pi;
+
+// at this longitude it will have on average only 22% of max solar/m2
+// assuming sun is shining entire year (no clouds). 
+// reduction is due to night, daily lower angle in evening/morning, and yearly/seasonal angle
+yearInsol(44.8'deg') 
+
+
+
+
+
+
+
+    

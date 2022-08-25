@@ -1,0 +1,26 @@
+// Birthday problem:  how many people we need to be more probable for at least two of them to have same birthday?
+// Solution: 
+//   a) find p(x,N) = probability for 'x' people NOT to have same birthday based on number of days 'N'
+//   b) find number of people 'x' such that p(x,N)= 50% ... sol(N)= find_root( p(x,N)-0.5 ) ... we need ceiling(sol(N)) people
+
+// 1)  p(x,N)= N!/(N-x)!/N^x    ... this formula has problem with N! being too large for double's 10^308 (but works if N is MPFR or QUAD number, eg 365m)
+sol1(N)= find_root((x)=> N!/(N-x)!/N^x -0.5)
+sol1(365)
+sol1(365q)
+// 2)  p(x,N)= x!*choose(N,x)/N^x  ... this formula can fit into double, but 'double' choose is integer for large N so 'find_root' returns floor(solution) and need +1
+sol2(N)= floor(find_root((x)=> x!*choose(N,x)/N^x -0.5)+1)  
+sol2(365)
+sol2(365m)
+
+// solution that automatically use large number format QUAD ( since N+0q casts N into QUAD format that supports up to 10^19digits, or N <= 1e9 )
+p(x,N)= if(x<=0,0, N!/(N-x)!/N^x )  // for x<=0 return 0, since formula N!/(N-x)!/N^x would be invalid
+sol(N)= ceiling(find_root((x)=> p(x,N+0q) -0.5)) // convert N to quad and return ceiling of solution, since if '22.76' people is needed it means 23
+sol(365)
+sol(1`000`000`000)
+
+
+
+
+
+
+

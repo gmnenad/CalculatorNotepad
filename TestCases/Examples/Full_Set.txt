@@ -1,0 +1,159 @@
+// Full set :           http://www.greylabyrinth.com/discussion/viewtopic.php?t=16434
+// If every time you do an event you get randomly one piece out of 8 pieces set, with chances of 5%, 5%, 5%, 10%, 15%, 15%, 20% and 25% respectively for each different piece, 
+// how many times you need to do those events on average before you get full set of all 8 different pieces ? 
+// Note that it is same chance on each event regardless if you already got specific set item, so you may get some items multiple times before you complete set. 
+
+//test weights tW and number of persons tNP
+tW=vec(5%, 5%, 5%, 10%, 15%, 15%, 20%, 25%) ; tNP=1  // expected 38.2759988549462
+//tW = vec(20%,30%, 50%) ; tNP=2                       // expected 11.9804959305151
+
+// same as above resCalcM , but single line without descriptions
+resCalc(vp,vm, nP)=  call( (pR)=> if (pR>0, 1/pR+ vSum(vFunc( (i)=> if (vm[i]<nP, resCalc(vp, vm+vDim(vLen(vm),(j)=>j≡i),nP) * vp[i]/pR  ,0) , vDim(vLen(vp),(i)=>i))),0),vSum(vFunc((p,m)=>p*(m<nP), vp,vm))) 
+fullCalc( vp, nP)= resCalc(vp,vDim(vLen(vp)),nP)  // call recursive calc with initial 'found' vector v set to all zeros
+
+// Full set simulation , expected ~38.276 for original, ~11.98 for short set
+//fullSim(N,w, nP)= pSim( ()=> while( fs=vDim(vLen(w)), vSum(vFunc( (x)=> if (x≥nP,1,0) ,fs))<vLen(w),  fs= fs + vDim(vLen(w), (i)=>i≡rndNumberWeighted(w)) ), N)
+fullSim(N,w, nP)= pSim( ()=> while( k=0;fs=vDim(vLen(w)), vSum(vFunc( (x)=> if (x≥nP,1,0) ,fs))<vLen(w),  fs= fs + vDim(vLen(w), (i)=>i≡rndNumberWeighted(w));k=k+1 ), N)
+
+// compare calculation and simulation results
+rCalc=fullCalc( tW,tNP)
+rSim=fullSim(1000, tW, tNP )
+
+// Full set recursive calculation ( resCalcM is multiline descriptive version): 
+//      vp=weight vector, vm=number of collected items of each type, nP=how many copies of each item we need
+calc(vp,vm, nP)={
+    res=0;
+    N= vLen(vp);
+    pR = vSum(vFunc((p,m)=>p*(m<nP), vp,vm)); // pR= ∑ of probabilities of all remaining items (those we do not have nP copies already )
+    if (pR>0) { 
+        res=1/pR; // if we still need items, we need 1/pR expected attempts to get one needed 
+        // plus needed times for remaining items, assuming possibility that each still needed item was one found in above 1/pR
+        // since each vector elements is xpected atppts if it was 'i'*prob it was 'i', we just ∑ those for average expected attempts
+        for(i=0, i<N, i=i+1){
+            // assuming item found above is 'i', expected attempts to find remaining ones
+            // recursive call as if we got this 'i' item (with ++vm[i]) times probability that it really was i-th item
+            if (vm[i]<nP) 
+                res=res+ calc(vp, vm+vDim(N,(j)=>j≡i), nP) * vp[i]/pR;  // = prob(item)/prob(all remaining items)
+         }
+    }
+    res
+}
+fCalc( vp, nP)= calc(vp,vDim(vLen(vp)),nP)  // call recursive calc with initial 'found' vector v set to all zeros
+fCalc( tW,tNP)
+
+// make N weights where x% of them will be M times smaller than others
+mw(N,x,M)={
+    v=vDim(N);
+    nx= round(x*N);
+    ny=N-nx;
+    // nx*p/M+ny*p=1 ... p(nx/M+ny)=1 .. p=1/(nx/M+ny)
+    p=1/(nx/M+ny);
+    k=0;
+    if (ny>0){ v[k]=p; k=1; }
+    for(xi=0, xi<nx, xi=xi+1)   v[xi+k]=p/M;
+    for(yi=nx, yi<N-1, yi=yi+1)   v[yi+k]=p;
+    return v;
+}
+// compare chances to get when uneven
+//fCalc( mw(2,90%,10) ,1) 
+//x10: 0%=29, 10%=95, 30-40%=134, 50%=125, 80%=76, 90%=53, 100%=29
+//x100: 0%=29, 10%=901, 30-40%=1290, 50%=1150, 80%=565, 90%=308, 100%=29
+ 
+// vp= probability for individual item of that type, vm=number of items needed for that type
+c2(vp,vm)={
+    res=0;
+    N= vLen(vp);
+    pR = vSum(vFunc((p,m)=>p*m, vp,vm)); // pR= ∑ of probabilities of all remaining items
+    if (pR>0) { 
+        res=1/pR; // if we still need items, we need 1/pR expected attempts to get one needed 
+        // plus needed times for remaining items, assuming possibility that each still needed item was one found in above 1/pR
+        // since each vector elements is xpected atppts if it was 'i'*prob it was 'i', we just ∑ those for average expected attempts
+        for(i=0, i<N, i=i+1){
+            // assuming item found above is 'i', expected attempts to find remaining ones
+            // recursive call as if we got this 'i' item (with ++vm[i]) times probability that it really was i-th item
+            if (vm[i]>0) 
+            res=res+ c2(vp, vm-vDim(N,(j)=>j≡i)) * vp[i]*vm[i]/pR;  // = prob(item)/prob(all remaining items)
+         }
+    }
+    return res;
+}
+// wp= weighted probability of each item, vm=number of needed items for one person
+fc2(wp, vm)={
+    N= vLen(wp);
+    pR = vSum(vFunc((p,m)=>p*m, wp,vm)); // pR= ∑ of probabilities of all items
+    vp= wp/pR; // normalize probabilities
+    return c2(vp, vm);
+}
+
+tV1=vec(5%, 5%, 5%, 10%, 10%, 15%, 15%, 15%, 20%)
+//fCalc(tV1,2)
+tV2=vec(5%, 10%, 15%, 20%)
+tM2= vec(3,2,3,1) 
+//fc2(tV2,tM2,2)
+
+500*(harmonic(500)-harmonic(100)) // tries to get 500 card album ( all same p), skipping last 100
+cEx(1/500,500,0)
+tV2=vec(1, 1/3, 1/10) // 500 card album, but 40 is 3x more rare, and 10 are 10x more rare
+tM2= vec(450,40,1) 
+//fc2(tV2,tM2) // 13702.3 for (450,40,10),(1,1/3,1/10)
+cExNorm(tV2, tM2,0) 
+
+pn2=cNormalize(tV2,tM2)
+cEx(pn2[1],tM2[1])
+
+
+tV3=vec(1, 1/2, 1/3) 
+tM3= vec(450,40,2) 
+cExNorm(tV3, tM3,0) 
+
+pn3=cNormalize(tV3,tM3)
+cEx(pn3[0],tM3[0])
+
+
+
+
+
+
+
+
+
+//#C#
+// Returns expected number of tries to get N=sum(vm) items, with G=vm.Length different groups
+// vp[g]: probability for each individual item from group 'g' to drop ( 0<= g < G )
+// vm[g]: number of items in group 'g' 
+// skip:  number of items to skip at end 
+double cEx(double[] vp, int[] vm, int skip=0){
+    if (nmCache.Try(vm)) return nmCache.Result; // return from cache if already there, to avoid repeated calculations
+    double res=0, pR=0;
+    int G=vp.Length, N=0; // G= num.groups with diff. probability, and N= num. of remaining items
+    for (int i=0; i<G; i++) { pR+= vp[i]*vm[i]; N+=vm[i];} // pR= probability for any of remaining needed items to drop
+    var vc=(int[])vm.Clone(); // clone of number of items, to be able to change +/-1
+    if ((pR>0)&&(N>skip)){
+        res=1/pR; // how many tries we need to wait for needed item to drop
+        for( int g=0; g<G; g++)  // we need to evaluate possibility that item dropped from any group
+            if(vm[g]>0){ // but only if that group still has needed items
+                double pThisGroup= vp[g]*vm[g]/pR; // probability that needed item that just dropped is from this group
+                vc[g]--; // reduce needed items for this group 'g'
+                res+= cEx( vp, vc,skip)* pThisGroup; // tries needed for one less item from this group, times probab. for this group
+                vc[g]++; // reset items numbers
+            }
+    }
+    nmCache.Add(vc, res); // add to cache. Allows O(N,G)= product(vm[i]+1) ~ (N/G)^G
+    return res;
+}
+
+// normalize probabilities of item drops wp-> vp, so that sum(vp*vm)==1
+double[] cNormalize(double[] wp, int[] vm){
+    int G=wp.Length;
+    double pR=0;
+    for (int i=0; i<G; i++) pR+= wp[i]*vm[i];
+    if (pR<=0) return wp;
+    var vp=new double[G];
+    for (int i=0; i<G; i++) vp[i]= wp[i]/pR;
+    return vp;
+}
+// return expected number, but first normalize input
+double cExNorm(double[] wp, int[] vm, int skip=0){
+    var vp= cNormalize(wp,vm);
+    return cEx(vp,vm,skip);
+}

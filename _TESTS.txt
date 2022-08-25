@@ -1,0 +1,164 @@
+// *******  EXAMPLES  
+123/4     //  30.75
+~30.75+ 2*~ + last  // 123
+if (2/3<1, 5.5!+3*sin(π/2)-e^2 , 44)    //  283.4962217161...
+∫( (x)=> sin(x) ,0, 45'deg') // 0.2928932186628...
+22'lb/in^2>kg/cm^2'  // 1.54675307520615...
+AU= 149.6e6'km' // 149600000000
+1'ly'/AU  // 63240.176955754...
+uf(x)= if (x > 1, x* uf(x-1) ,1)  
+t(L, Va, Vc)= L/Vc* (e^(Vc/Va)-1)  
+t(0.1,0.1,1)  // 2202.5465794806...
+t(0.1'mi',0.1'mph',10'mi/h')/1'year'  // 3.068626874219...E+37 ; test unit conversion of parameters
+∏( (x)=> x+∑((i)=>i/x, 1,x) ,2,3) // 17.5
+// *******  Eddington:
+P1(a,b,N)= 1-choose(N-a,b)/choose(N,b)
+P1(3,2,10) // 0.533333333333...
+pKn(a,b,N,i)= if(i<0,0, choose(N-a,b-i)*choose(a,i)+pKn(a,b,N,i-1) )
+p(a,b,N,K)=1-pKn(a,b,N,K-1)/choose(N,b)
+p(2,3,10,1) // 0.53333333333333...
+sim1(a,b,N,K, nSim)= ∑((i)=> vLen(rndChoose(a,N) ∩ rndChoose(b,N))≡K,1,nSim)/nSim 
+sim1(3,3,10,2, 2000) // ~0.18 ; simulation use randoms, so ~ means within 20%
+// *******  Fibonacci
+f(x)= if(x≤1,x,f(x-1)+f(x-2))  
+b(x)= round( ((1+√5)/2)^x/√5 )
+∑((x)=> 1/f(x),1,120)  // 3.359885666243...  ;  test cache ( ensure it is not disabled in options )
+∑((x)=> 1/b(x),1,120)  // 3.359885666243...
+// *******  M&Ms
+pm(m,c)= if( m≡1 & c≡1, 1, if (m≡1, 0, pm(m-1,c)*c/6+pm(m-1,c-1)*(7-c)/6 )) 
+pm(10,3)  // 0.01851613702179...
+sim2(m,c,N, nSim)= pSim( ()=>vLen(vUnion(rndVector(m,N)))≡c ,nSim)
+sim2(6,4,6, 1000) // ~0.50
+// *******  Mutability , will optimize to constants ONLY if functions can not be redefined and is not in block
+c7(x)=1
+t7(x)= 6+c7(x) 
+graph(t7) // t7[1]C= 7 ;  without constant conversion t7() would be function, not constant
+t7(99)  // 7  
+// ******* Vectors
+vv= vec(1,1,2,3,4,4,5,6,6)  // v(1,1,2,3,4,4,5,6,6)
+vx=vec(1,vec(2,9),4,rndChoose(3,5)) 
+vv ∩ ( vec(3,4) U vx[c7(3)][1] ) // v(3,4)
+// Complex functions
+fullSim(N,w, nP)= pSim( ()=> while( c=0; fs=vDim(vLen(w)), vSum(vFunc( (x)=> if (x≥nP,1,0) ,fs))<vLen(w),  fs= fs + vDim(vLen(w), (i)=>i≡rndNumberWeighted(w));c=c+1, c ), N)
+vSim=fullSim(100, vec(20%,30%,50%), 1 ) //~6.65
+{N=52;pSum=0; while(ex=0;pK=0;k=1, k<N, {pK=pK+1/(N-k);pKS=pK*(1-pSum);pSum=pSum+pKS;ex=ex+pKS*k;k=k+1},ex)  }  // 8.3416403967015...
+Psum(d,n)={ msum=0; for(ac= counterCreatePerm(d,n,1,1),counterNotFinished(ac),ac=counterNext(ac)) msum=msum+ vMul(counterValues(ac));}
+pDistM(M,T,N)= (N-1)!/(N-M)!/N^(T-1)*Psum(T-M,M)
+pDistM(9,10,52) // 0.415605033508...
+{ pInr=0; askInr(x)= {pInr= pInr + x } askInr(3); pInr; }  // 3 ; test inner func stack
+// c# functions
+fibD(400) // 1.76023680645...E+83
+simUse(200,20,120) // ~41.5
+
+//#C#
+// fibonacci standard recursive
+int fibA(int n) => n<=1 ? n : fibA(n-1)+fibA(n-2);
+
+
+
+// fibonacci with named cache and compact float version 
+double fibD(int n){
+    if (nmCache.Try("fibD",n)) return nmCache.Result;
+    return nmCache.Add("fibD",n, n<=1? n: fibD(n-1)+fibD(n-2) ) ;
+}
+
+
+// fibonacci non-recursive
+double fibE(int n){
+  if (n<=1) return n;
+  double[] two=new double[2]{0,1};
+  for (int i=2; i<n; i++) two[i%2]=two.Sum();
+  return two.Sum();
+}
+
+// longer function, to test compile
+double simOne(double initDmg, double duration, double castTime, 
+              double proc, double dDmgPerTrigger, int maxStacks, int maxCasts, 
+              double useCD, double procCD, bool refresh, double spread, double fightDuration)
+{
+    double tmFightEnd= fightDuration+ (nm.rnd.NextDouble()*2-1)*spread; 
+    if (tmFightEnd<1) tmFightEnd=1;
+    double GCD=1.5, tm=0, tmNextProcCDready=0, tmNext=0, tmNextDown=tmFightEnd;
+    double tmNextUse= useCD>0? 0: 2* tmFightEnd; 
+    double tmNextSpell = castTime>0? 0 : 2 * tmFightEnd; 
+    int nStacks=0, nCasts=0;
+    bool inEffect=false;
+    double tmSumDmg=0, dmg=0;
+    do{
+        // update current stacks
+        tmSumDmg+= (tmNext-tm)*dmg;
+        tm=tmNext;
+        // process this event
+        if (tm==tmNextUse){ 
+            dmg=initDmg;
+            inEffect=true;
+            nCasts= maxCasts;
+            nStacks=0;
+            tmNextDown = tm + duration;
+            tmNextUse+= useCD;
+            if (castTime>0)
+                tmNextSpell= tm+ GCD+castTime; 
+        }else
+        if (tm==tmNextSpell){ 
+            bool isProc=  (nm.rnd.NextDouble()<proc) && (tm>=tmNextProcCDready);
+            if (isProc) { 
+                tmNextProcCDready=tm+procCD;
+                if (!inEffect){
+                    dmg=initDmg-dDmgPerTrigger; 
+                    inEffect=true;
+                    nCasts= maxCasts;
+                    nStacks=0;
+                    tmNextDown = tm + duration;
+                }
+            }
+            if (inEffect){
+                if ( isProc || (proc==0)){
+                    nStacks++;
+                    if ((maxStacks>0)&&(nStacks>maxStacks)) nStacks=maxStacks;
+                    if (nStacks<0) nStacks=0;
+                    dmg= initDmg + nStacks*dDmgPerTrigger;
+                    if (refresh) tmNextDown = tm + duration;
+                }
+                if (maxCasts>0){ 
+                    nCasts--;
+                    if (nCasts==0)  tmNextDown= tmNext; 
+                }
+            }
+            tmNextSpell += castTime;
+        }else
+        if (tm==tmNextDown){ 
+            inEffect=false;
+            dmg=0;
+            tmNextDown = tmFightEnd;
+        }
+        tmNext= Math.Min(tmNextSpell,Math.Min(tmNextUse,tmNextDown));
+    }while(tmNext<tmFightEnd);
+    tmSumDmg+= (tmFightEnd-tm)*dmg;
+    return tmSumDmg/tmFightEnd;
+}
+
+
+
+// inner functions
+double simUse( double initDmg, double duration, double CD, double[] fightDurations=null )
+{
+    double sim_avg( double castTime, double proc, 
+                    double dDmgPerTrigger, int maxStacks, int maxCasts, 
+                    double useCD, double procCD, bool refresh, double spread, double[] fightDurations,int nSim=1000 )
+    {
+        double simEntire(double oneDuration )
+        {
+            double avg=0;
+            for(int i=0; i<nSim; i++)
+                avg+= simOne( initDmg, duration, castTime, proc, dDmgPerTrigger, maxStacks, maxCasts, useCD, procCD, refresh, spread, oneDuration);
+            return avg/nSim;
+        }         
+        double avg=0;
+        foreach(var fd in fightDurations)
+            avg+= simEntire(fd);
+        return avg/fightDurations.Length;
+    }    
+    double[] DefDurations=new double[] { 142, 164, 173, 102, 122, 205, 121, 125, 199, 327, 515, 100, 152, 347, 311 };//NAX
+
+    return sim_avg( 0,0,0,0,0, CD,0,  false, 0.20, fightDurations??DefDurations);
+} 

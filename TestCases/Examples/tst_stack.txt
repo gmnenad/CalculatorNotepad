@@ -1,0 +1,46 @@
+
+// OVERFLOW TESTS
+calc(k, nP)={
+    res=1;
+    if (k<=nP)  
+        for(i=1, i<=nP, i=i+1)
+                res=res+ calc(k+i, nP);
+    res
+}
+//tcalc(0,3)
+
+//calc(0,2000)
+// calc(0,800) stack depth results:
+// depth 248 (4064 by/st , tot 2425 by / st) - initial
+// depth 297 (3390 by/st , tot 2248 by / st) - after evalParam
+// depth 338 (2980 by/st , tot 2098 by / st) - after evalLambdas
+// depth 348 (2894 by/st , tot 2062 by / st) - after TestReturn
+// depth 360 (2797 by/st , tot 2020 by / st) - after doLoop
+// depth 336 (3008 by/st , tot 2113 by / st) - after doLoop partial (regression!)
+// depth 375 (2685 by/st , tot 1969 by / st) - after doLoop & prepLoop
+// depth 436 (2310 by/st , tot 1780 by / st) - after initial delegate split
+// depth 502 (2004 by/st , tot 1605 by / st) - after While/For delegates
+// depth 529 (1902 by/st , tot 1543 by / st) - after For delegate without doLoop
+// depth 1082 (924 by/st) - after full delegates !  x4.5 compared to initial
+
+
+f(n)= if(n<=1, 1, n*f(n-1))
+
+f(10000)
+// depth 805 (1249 by/st) 
+// depth 855 (1176 by/st) - after initial delegate split
+// depth 854 (1176 by/st) - after While/For delegates ( no change, it does not use loops)
+// depth 2280 (440 by/st) - after full delegates 
+
+
+
+
+
+//#C#
+int tcalc(int k,int  nP){
+    int res=1;
+    if (k<=nP)  
+        for(int i=1; i<=nP; i=i+1)
+        res = res+ tcalc(k+i, nP);
+    return res;
+}

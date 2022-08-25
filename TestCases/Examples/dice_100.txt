@@ -1,0 +1,82 @@
+// Two people are taking turns throwing a hundred sided die. 
+// The game continues until someone throws a number larger than the number thrown by the opponent 
+// on the previous turn. What is the probability that the person who throws first wins the game?
+
+// https://www.puzzleprime.com/forums/topic/throwing-a-hundred-sided-dice/
+
+
+N=100
+
+// Simulate
+pOne(N,10000000)
+
+// Calculate
+newP(p,N)= vDim(N,(k)=> sum((i)=>p[i],k,N-1)/N );   // change probabilities that 'k' is last digit  
+pwin(N)={
+    p=vDim(N,1/N); //p[i]=prob that digit 'i' is last digit (also smallest digit)
+    pw1=0; // chance for first player to win
+    for(i=0, i<25, i=i+1){ // calc up to 1000 rolls
+        p=newP(p,N); // after 2nd player move
+        pw1=pw1+ sum((i)=>p[i]*(N-i-1)/N,0,N-2); // chance 1st to win on this roll ( get higher than last)
+        p=newP(p,N); // after 1st player move
+    }    
+    return pw1;
+}
+pwin(N)
+// Calculate C#
+pwinCS(N)
+
+
+
+//#C#
+// return 1 if first player won
+int doOne(int N){
+    int p=1;
+    int d= nm.rnd.Next(N);
+    int old;
+    do{
+        p=1-p;
+        old=d;
+        d=nm.rnd.Next(N);
+    }while(d<=old);
+    return p;
+}
+// SIMULATE result
+double pOne(int N, int nSim){
+    int sum=0;
+    for(int i=0; i<nSim; i++)
+        sum+= doOne(N);
+    return sum/(double)nSim;
+}
+
+
+// CALCULATE result
+double pwinCS(int N){
+    // p[k]=prob that digit 'k' is last digit (also smallest digit)
+    var p= new double[N];
+    // set p[k] to values after second player (before 3rd roll)
+    for (int i=0; i<N; i++) p[i]=(N-i)/(double)N/(double)N; 
+    double pw1=0; // chance for first player to win
+    // calc up to 25 rolls is enough even for N=2 (up to 8 enough for high N)
+    for(int r=0; r<25; r=r+1){ 
+        // chance 1st to win on this roll 
+        double sm=0;
+        for (int k=0; k<N-1; k++)
+            sm+= p[k]*(N-k-1);  // chance 'k' is last, times 
+        pw1+=sm/N;              // (N-k-1)/N= prob to get higher than 'k'
+        // change p[k]=prob that previous digit was >= k (sum p[k..N-1]
+        // times prob that we rolled 'k' (1/N)
+        p[N-1]/=N; for (int k=N-2; k>=0; k--) p[k]=p[k+1]+p[k]/N;
+        // change twice p[k] (after 1st and after 2nd player)
+        p[N-1]/=N; for (int k=N-2; k>=0; k--) p[k]=p[k+1]+p[k]/N;
+    }    
+    return pw1;
+}
+
+
+
+
+
+
+
+

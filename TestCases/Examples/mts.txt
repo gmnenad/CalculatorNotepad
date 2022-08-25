@@ -1,0 +1,20 @@
+Mob=1099 // omorika 1, 3GB
+Net50=1799  // 50mbs/8mbs
+Duo50=2349  // 50mbs i fiksna
+
+Old50=Duo50+Mob  // moja pretplata: fiksni, mobilni, int50
+
+New50= Net50+Mob  // bez fiksnog
+New50-Old50  //usteda bez fiksnog
+
+Net250=3799  // 250mbs/30mbs
+New250=Net250+Mob
+New250-Old50   // doplata za 250
+[eur]=1/118.5
+round(New250[eur])   // MTS 250/30 plus mobile Omorika1 3GB
+
+
+
+
+
+

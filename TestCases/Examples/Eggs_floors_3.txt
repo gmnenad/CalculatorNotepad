@@ -1,0 +1,78 @@
+// return optimal cost to test #steps with up to #devices, given prices of device and trial
+mtBruteD(steps,cD,cT, devices)={
+    if (steps<=0) return 0;
+    if (devices==1) return steps*cT+cD;
+    bestCost= 1/0;
+    for(s=1, s<=steps, s=s+1){
+        costIfBreaks= cD + mtBruteD(s-1, cD, cT,devices-1);
+        costIfNOTbreak= mtBruteD(steps-s, cD, cT,devices);
+        bestCostAtS= cT + max ( costIfBreaks , costIfNOTbreak);
+        if (bestCostAtS<bestCost) bestCost= bestCostAtS;
+    }
+    return bestCost;
+}
+
+
+// return vec(optimal cost, max devices)  to test #steps with up to #devices, given prices of device and trial
+cnt=0 
+minCostBrute(steps,cD,cT)={
+    //cnt=cnt+1; // probably prevent caching if outside variable is used !!! need c# version 
+    if (steps<=0) return 0;
+    bestCost= 1/0;
+    for(s=1, s<=steps, s=s+1){
+        costIfBreaks= cD + minCostBrute(s-1, cD, cT);
+        costIfNOTbreak= minCostBrute(steps-s, cD, cT);
+        bestCostAtS= cT + max ( costIfBreaks , costIfNOTbreak);
+        if (bestCostAtS<bestCost) bestCost= bestCostAtS;
+    }
+    return bestCost;
+}
+
+// how many steps could be tested within given budget
+maxSteps(budget, cD, cT)={
+    res=0;
+    for(b=budget, b>=cT+cD, b=b-cT) res=res+ 1+ maxSteps(b-cD-cT, cD,cT);
+    return res;
+}
+// smallest cost needed to test given number of steps, with cD/cT as device/trial costs 
+minCost(steps, cD, cT)={for(b=1,true,b=b+1) if (maxSteps(b,cD,cT)>=steps) return b;}
+
+// optimized mt ( need 'end' prediction or it wont be faster)
+minCostB(steps, cD, cT)= binarySearch((b)=>maxSteps(b,cD,cT)>=steps,1,30,1)
+
+
+minCost(1000,3,1)
+minCost(1000,30,1)
+minCostBrute(10,3,1)
+
+
+
+
+priceSteps(cD,cT,N)={
+    res=vDim(N);
+    lastCost=0;
+    s=1;
+    for(p=0, p<N, p=p+1){
+        cst= minCost(s,cD,cT);
+        res[p]=s; //vec(s,cst);
+        while ( minCost(s,cD,cT)==cst) s=s+1;
+    }
+    return res;
+}
+
+approxSteps(cD,cT,N)={
+    res=vDim(N);
+    for(p=0, p<=cD, p=p+1) res[p]=p+1;
+    for(p=cD+1, p<N, p=p+1) res[p]=res[p-1]+res[p-1-cD];
+    return res;
+}
+approxSol(steps, cD, N)={
+    a=approxSteps(cD,1,N);
+    for(i=0, i<N, i=i+1)
+       if (a[i]>steps) return i+cD;
+}
+
+csD=2 ; csT=1
+priceSteps(csD,csT,20)
+approxSteps(csD,csT,10)
+approxSol(1000,csD, 72)

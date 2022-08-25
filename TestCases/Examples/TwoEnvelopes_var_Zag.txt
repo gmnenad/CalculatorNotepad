@@ -1,0 +1,67 @@
+// Modified two envelopes: roll dice until you get 6 (that is smaller value, larger is double), then toss coin to decide which to offer
+// a) best strategy to win (win= select larger value each time)
+// b) best strategy to get largest expected value 
+// http://www.greylabyrinth.com/discussion/viewtopic.php?t=16415&highlight=expected
+
+
+// return 1 if you want to switch based on value 'n' in your envelope
+willSwitch(n)={ 
+    if (mod(n,2)==1) return 1; // if we get odd number, it must be smaller value, so we do want to switch
+    //return 0;    // a) version, do not switch at all (maximize prob to win)
+    return (n<=6); // b) version, switch if 6$ or bellow (maximize earnings)
+}
+
+// return vec( expected earning , probability to win) , based on all possible offered numbers
+pTwoEX(nmax)={
+    pwin=0; // probability to win 
+    exEarn=0; // expected value to earn
+    for(i=1, i<=nmax, i=i+1){
+        p=(5/6)^(i-1)*1/6*50%;   // probability we needed i rolls to get 6, times probability of head/tail
+        
+        ask(mult)={ // func to offer i (mult==1) or 2*i (mult==2)
+            if (willSwitch(i*mult)==2-mult){ // win= switch(1) when smaller(mult==1), stay(0) when larger(mult==2)
+                pwin= pwin+p;
+                exEarn=exEarn+p*(2*i);
+            }else
+                exEarn=exEarn+p*i;
+        }
+        ask(1); // in 50% of cases you get this smaller value 'i' (notDouble)- and you win only if you DO switch
+        ask(2); // in other 50% of cases you get larger value '2*i' (double) - and you win only if you do NOT switch
+    }
+    return vec(exEarn, pwin)
+}
+
+pTwoEX(1000) // a) vec(10.5123966942149, 0.77272727272727) ,  b) vec(10.6492922703466, 0.71323867533358) 
+
+// ***********************************************************************
+//    find boundary, and solve expected value for D-sided dice
+
+// boundary, at (even) n>=fg do NOT switch any more
+fg(D)={ g=ceiling(2*log(1/2,1-1/D));  return if(isEven(g),g,g+1); }
+
+// shoud he switch if 'n' was in envelope? ( given decision boundary G)
+switch(n,G)={
+    if ( isOdd(n) | (n<G) ) return true;
+    return false;
+}
+
+ex(D)={
+    res=0;
+    G= fg(D); // boundary: if (n<G) then switch, otherwise stay
+    for(n=1, n<100, n=n+1){
+        p=(1-1/D)^(n-1)/D;
+        en=50%*if(switch(n,G),2*n,n)+50%*if(switch(2*n,G),n,2*n);
+        res=res+p*en;
+    }
+    return res;
+}
+
+d=6
+fg(d) // boundary for switch, returned by formula
+// test Zag's version to decide boundary - it works, only need N iterations, and fail at d>720 due to calc
+tst1(n,D)= n*(1-1/D)^(n-1)/D - n/2*(1-1/D)^(n/2-1)/D
+tst(D)= { for(n=2,n<1000,n=n+2) if (tst1(n,D)<0) return n; }
+tst(d) // should be same as fg(d)
+
+ex(d)  // expected value with 'd' sided dice
+

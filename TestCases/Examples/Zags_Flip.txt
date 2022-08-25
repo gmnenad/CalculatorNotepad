@@ -1,0 +1,61 @@
+exdiff(N,p)={
+    N2=N/2;
+    dv= dist_binomial(N2,p);
+    ex=0;
+    for(i=0, i<=N2, i=i+1)
+        for(j=0, j<=N2, j=j+1){
+            pij= pmf(i,dv)*pmf(j,dv);
+            ex=ex+pij*abs(i-j);
+        }
+    return ex;
+}
+
+N=200
+p=0.1
+
+exdiff(N,p)
+
+
+exsim(N, p, 100000)
+
+exsim2(N, p, 100000)
+
+//#C#
+// use N divisible by 2
+double exsim(int N, double p, int nSim){
+    double ex=0;
+    int N2=N/2;
+    for(int i=0; i<nSim; i++){
+        int n1=0, n2=0;
+        for(int u=0; u<N2; u++) if (nm.rnd.NextDouble()<=p) n1++;
+        for(int u=0; u<N2; u++) if (nm.rnd.NextDouble()<=p) n2++;
+        ex+= Math.Abs(n1-n2);
+    }
+    return ex/nSim;
+}
+
+// use N divisible by 4
+double exsim2(int N, double ph, int nSim){
+    double ex=0;
+    int N8=N/8;
+    for(int i=0; i<nSim; i++){
+        int n1=0, n2=0, a, b;
+        for (int u=0; u<N8; u++){
+            //1. into the corresponding new groups (i.e. left hand to the left, right hand to the right). 
+            a= nm.rnd.NextDouble()<=ph?1:0; b= nm.rnd.NextDouble()<=ph?1:0;
+            n1+=a; n2+=b;
+            //2. flip them, put them into the corresponding groups 
+            a= nm.rnd.NextDouble()<=ph?1:0; b= nm.rnd.NextDouble()<=ph?1:0;
+            n1+=1-a; n2+=1-b;
+            //3. put them in opposite groups (left hand to the right group and vice-versa). 
+            a= nm.rnd.NextDouble()<=ph?1:0; b= nm.rnd.NextDouble()<=ph?1:0;
+            n1+=b; n2+=a;
+            //4. flip them, put them in opposite groups. 
+            a= nm.rnd.NextDouble()<=ph?1:0; b= nm.rnd.NextDouble()<=ph?1:0;
+            n1+=1-b; n2+=1-a;
+        }
+        // update difference
+        ex+= Math.Abs(n1-n2);
+    }
+    return ex/nSim;
+}

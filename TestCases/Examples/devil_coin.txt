@@ -1,0 +1,71 @@
+pc(N)={
+    r=estC(N);
+    return 100*r[0]/r[1];
+}
+
+pc(2)
+pc(3)
+pc(4)
+pc(5)
+pc(6)
+pc(7)
+pc(8)
+pc(9)
+pc(10)
+pc(11)
+pc(12)
+pc(13)
+pc(14)
+pc(15)
+pc(16)
+pc(17)
+pc(18)
+
+
+estC(5)
+
+//#C#
+// calculate using formula. Return (max, THHT ) "in days". For "on day" add +1 to both
+double[] estC(int N)
+{
+    double maxD = Math.Pow(2, N)-1;
+    double s5 = Math.Sqrt(5);
+    double delta = ( (3+s5)*Math.Pow((1+s5)/2, N-2) + (3-s5)*Math.Pow((1-s5)/2, N-2) ) / 2 - 2;
+    return new double[] { maxD - delta, maxD };
+}
+
+// find actual, using array
+int[] solC(int N)
+{
+    int n2 = 1 << N; // 2^N combinations for N coins (H=0, T=1)
+    int n1 = 1 << (N - 1), mask = n1 - 1; // without leftmost coin
+    int target = n1 | 1; // 100...0001 , or THHH...HHHT
+    var baN = new int[n2];
+    var baN1 = new int[n1]; // rightmost coins, without leftmost
+    int err = 0;
+    // final win = all heads ( all 0 )
+    int step = 0, stepX = -1;
+    int val = 0; // initial value 0000
+    baN1[0] = 2;
+    // now continue until possible
+    while (val >= 0)
+    {
+        step++;
+        baN[val] = step;
+        int LowVal = val & mask; // just rightmost coins/digits, without leftmost
+        int BLval = LowVal << 1; // shift left and add H ( zero ) at rightmost 
+        int SLval = BLval | 1; // or add T ( one ) as rightmost instead
+                               // can some new 'player' situation ( with rightmost T/1) produce val ?
+        bool okSL = baN[SLval]==0;
+        // can some new 'devil' situation ( with rightmost H/1 ) always produce val or some previous win ?
+        bool okBL = baN1[LowVal]==1;
+        baN1[LowVal]++;
+        // select new val
+        val = -1;
+        if (okSL) val = SLval;
+        if (okBL) val = BLval;
+        if (okSL && okBL) err++; // if both possible, error
+        if (val == target) stepX = step;
+    }
+    return new int[] { stepX, step-1 };
+}

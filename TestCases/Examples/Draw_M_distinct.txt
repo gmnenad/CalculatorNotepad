@@ -1,0 +1,23 @@
+// probability after T random draws of numbers (1..N) to get M distinct numbers 
+// http://www.greylabyrinth.com/discussion/viewtopic.php?t=15143&highlight=probability
+
+Psum(d,n)={
+    msum=0;
+    for( ac= counterCreateComb(d,n,1,1) , counterNotFinished(ac), ac= counterNext(ac) )
+        msum=msum+ vMul(counterValues(ac));
+}
+
+p(M,T,N)= (N-1)!/(N-M)!/N^(T-1)*Psum(T-M,M)
+
+
+p( 9,10,52)   // p( 9,10,52) == 0.4156050335089
+p( 4, 6, 6)   // p( 4, 6, 6) == 0.50154320987654
+
+p( 1, 7, 6)   // poki, 7 dice, chance to get just 1 distinct = all same
+p( 2, 7, 6)   // poki, 7 dice, chance to get just 2 distinct
+p( 3, 7, 6)   // poki, 7 dice, chance to get just 3 distinct
+p( 4, 7, 6)   // poki, 7 dice, chance to get 4 distinct
+p( 5, 7, 6)   // poki, 7 dice, chance to get 5 distinct
+p( 6, 7, 6)   // poki, 7 dice, chance to get 6 distinct
+
+

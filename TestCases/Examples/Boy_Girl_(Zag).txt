@@ -1,0 +1,29 @@
+// return 1 if MM, otherwise 0
+// family ( how we preselect family): 0 = try any family ; 1= try only with at least 1 boy
+// cond ( additional condition): 0= none ; 1=told one is boy ; 2= see one child who happens to be boy
+// ifFail ( what to do if cond fail): 0= nothing(impossible to fail) ; 1= reselect family ; 2= not defined, so question is "two same", not "two boys"
+try1(family, cond, ifFail)={
+    // pick family
+    children=vDim(2);
+    addCond=true;
+    do{
+        do { children= vDim(2,(i)=>rnd<0.5); } while ((family==1)&(vSum(children)<1)); // select any or 1+bpy family
+        addCond=true;
+        if ((cond==1)&(vSum(children)<1)) addCond=false; else // if "told one is boy" and none is boy, fail condition
+        if ((cond==2)&(children[rndNumber(2)]==0)) addCond=false; // if see one boy, and one random child is not boy, fail
+    } while ((ifFail==1)& not addCond);
+    res= 0;
+    if ((ifFail==2)& not addCond) // if condition not defined, we can only ask if "two same"
+        res= (vSum(children)==0)|(vSum(children)==2); 
+    else // otherwise question is "two boys"
+        res= vSum(children)==2;
+    return res;
+}
+
+simMM(N,family, cond, ifFail)={
+    ok=0;
+    for(i=1, i<=N, i=i+1) if (try1(family, cond, ifFail)) ok=ok+1;
+    return ok/N;
+}
+
+simMM(10000,0,1,2)

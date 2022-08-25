@@ -1,0 +1,14 @@
+
+
+z(k)={
+    f(n)={
+      if (n<=1) return 1;
+      n*f(n-1)
+    }
+
+    k+f(k)
+}
+
+z(3) // expected 9 = 3+6 = 3+3!
+
+f(3) // expected 6, but f should NOT be visible here

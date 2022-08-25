@@ -1,0 +1,154 @@
+// 100 prisoners and bulb:
+// Every day warden randomly select prisoner and lead to room with bulb.
+// At any time any prisoner can state "we all visited room". If true, all free, if false ...
+// a) strategy to ensure all have visited, and expected days ?
+// b) strategy to maximize life outside prison? 
+LD=40*365
+
+
+// for a)  
+// - select one leader. 
+// - each prisoner will turn light on if it was off, but only ONCE 
+// - if leader see light on, he turns it off and increment count. When it reach 99, he announce
+
+exOut(N)=  sum((r)=> N/(1-(1-r/N)^N),1,N)
+exOut(100) // 27.2 years approx .. or even more approx, in N^2 days (10000 days here)
+simClass(100,10000) // 28.5 years actual just to get out
+exL0(N,LD)= LD-exOut(N) 
+exL0(100,LD)/365 // just 12y left to live (!)
+
+
+// for b)
+// - determine LD days remained for prisoners to live on average 
+// - eg LD= avgLife expectancy - avg prisoner age = 76 - 36 yr = 40yr= 14600 days
+// - just wait D days so that pFree(D)*(LD-D) is maximal
+// - more they wait, better pFree, but less days remain, so there is optimal maximum
+
+// *** can be solved using exact formula or simulation, and brute force search until best D found
+exL1(N,D,LD, nSim)= simND(N,D,nSim)*(LD-D)
+bestD1b(N,LD)={
+    d=4*N;
+    bestRes=0;
+    bestD=d;
+    worseCnt=0;
+    do{
+        d=d+1;
+        res= exL1(N,d,LD, 1000);
+        if (res>bestRes){
+            bestRes=res;
+            bestD=d;
+            worseCnt=0;
+        }else
+            worseCnt=worseCnt+1;
+    }while(worseCnt<30);
+    return vec(bestD, bestRes);
+}
+bestD1(N,LD)={
+    m=find_max( (d)=>exL1(N,d,LD,30000),4*N,20*N );
+    return m;
+}
+//bestD1(100,LD)  // should be 950 
+// exL1(100,950,LD,100000) //13552, or ~ 37y
+
+
+// *** can be mathematically solved using approximate formula
+se(N,D)=if(N<=1,1, N^D-sum((i)=>round(choose(N,i))*se(i,D),1,N-1))
+pn(N,D)=se(N,D)/N^D  // correct formula for prob to select all N after D days
+pna(N,D)= (1-((N-1)/N)^D)^N // approx formula, under 1% diff at D>4*N ( 0.007% diff at 2yrs)
+
+cmp2(N,D)= pna(N,D)/simND(N,D,1000000)*100-100 // compare ( in % )  approx and real value
+//cmp2(100,2*365) // 0.007% diff at 2y
+
+
+exL2(N,D,LD)=pna(N,D)*(LD-D)  // expected time left to live outside prison
+// to mathematically solve, we need to find d exL/dD ==0
+// ex= (LD-D)*(1-((N-1)/N)^D)^N = (a-x)*(1-b^x)^c = a(1-b^x)^c- x(1-b^x)^c
+// where: a=LD, x=D, b=(N-1)/N , c=N
+// d ex/dx = -ac*b^x*ln(b)*(1-b^x)^(c-1) + (1-b^x)^(c-1)*[c*x*b^x*ln(b)+b^x-1] ==0
+// D*c*ln(b)*b^D+b^D-1=a*c*b^D*ln(b)
+// further substitution: x=b^D , z=LD*N*ln((N-1)/N)
+
+// "solve" x + N*ln(x) = - LD*N*ln(1-1/N)  ... use wolfram
+// D= - ln(x)/ln(1-1/N)
+
+// for N=100, and Y= LD in years:
+// "solve" x+ 100*ln(x)= Y*366.84  , then  D= 99.5* ln(x) . Examples:
+// Y=20y : D=873= 2y5m
+// Y=30y : D=917= 2y6m
+// Y=40y : D=950= 2y7m   <<<*** average per life statistics
+// Y=50y : D=971= 2y8m
+// Y=60y : D=990= 2y8.5m
+
+exL2(100,950,LD) // 13553 days, or ~37y
+
+
+// **********
+// revised, each prisoner will flip switch once, regardless in which state it is 
+// stop after D days, unless light is ON ( meaning odd number of prisoners flipped )
+// Y=30y : D=916 (-1D) = 2y6m
+// Y=40y : D=947 (-3D) = 2y7m   <<<*** average per life statistics
+// Y=50y : D=970 (-1D) = 2y8m
+
+ex2(N,D,LD)=(1-((N-1)/N)^D)^(N-1)*(LD-D-N*((N-1)/N)^D)
+ex2(100,947,LD) // 13554 days, or ~37yr
+
+
+
+
+
+
+
+
+
+
+
+
+
+//#C#
+// probability to select all N after D days
+double simND(int N,int D, int nSim){
+    int nALL=0;
+    for (int i=0; i<nSim; i++){
+        var  ppl=new bool[N];
+        int rem=N;
+        for (int d=0; (d<D)&&(rem>0); d++){
+            int r= nm.rnd.Next(N);
+            if (!ppl[r]){
+                ppl[r]=true;
+                rem--;
+            }
+        }
+        if (rem==0) nALL++;
+    }
+    return nALL/(double)nSim;
+}
+
+// expected days to finish classic solution
+double simClass(int N, int nSim){
+    int smDays=0;
+    for(int t=0; t<nSim; t++){
+        var pris=new bool[N];
+        bool done=false;
+        bool bulb = false;
+        int rem=N-1;
+        int d=0;
+        do{
+            d++;
+            int p=nm.rnd.Next(N);
+            if (p==0){
+                if (bulb){
+                    rem--;
+                    bulb=false;
+                    if (rem==0) done=true;
+                }
+            }else{
+                if ((!bulb)&&(!pris[p])){
+                    pris[p]=true;
+                    bulb=true;
+                }
+            }
+        }while(!done);
+        smDays+=d;
+    }
+    return smDays/(double)nSim;
+}

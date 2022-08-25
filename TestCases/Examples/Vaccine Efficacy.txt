@@ -1,0 +1,38 @@
+// Astrazeneca US trial
+// https://arstechnica.com/science/2021/03/after-dramatic-rebuke-astrazeneca-lowers-vaccine-efficacy-estimate-a-little/
+// based on 2:1 ratio :
+//- number of infected in placebo group ~ 128 out of 11150 people
+//- number of infected in vaccine group ~ 62 out of 22299 people
+//= total infected 190 (128+62) out of total tested 33449 ( 11150+22299 in 2:1 ratio )
+vacEff(62,22299,128,11150) // both real and observed vs infection are 76%
+vacEff(0,62,8,128) // real vs severe is 78%, not 100% !!
+
+// Pfizer updated 3rd phase
+// https://www.pfizer.com/news/press-release/press-release-detail/pfizer-and-biontech-confirm-high-efficacy-and-no-serious
+vacEff(0,400,9,400) // SAfrica eff, including both strains
+vacEff(0,400,6,400) // SAfrica eff, just SA strain
+
+//#C#
+// calculate EXTECTED and OBSERVED vaccine efficacy, given:
+// - vacCases: number of affected people (infected, or severe case etc) who received vaccine
+// - vacPop : total number of people of interest who received vaccine
+// - placCases: number of affected people who did NOT receive vaccine (placebo group )
+// - placPop : total number of people of interest who did NOT receive vaccine
+double[] vacEff(double vacCases, double vacPop, double placCases, double placPop){
+    // standard OBSERVED Efficacy is inverse of RelativeRisk
+    //   https://en.wikipedia.org/wiki/Vaccine_efficacy
+    //   Eff= 1-RR
+    //   RR = vaccinatedRate / unvaccinatedRate
+    double vacRate= vacCases/vacPop;
+    double placRate= placCases/placPop;
+    double obsEff= 1-vacRate/placRate;
+    // EXPECTED efficacy 
+    //   what new/future user of vaccine can expect, given input data
+    //   different from observerd, especially for small number of cases
+    //    uses https://en.wikipedia.org/wiki/Binomial_distribution#Estimation_of_parameters
+    var pVac= (vacCases+1)/(vacPop+2);
+    var pPlac= (placCases+1)/(placPop+2);
+    double expEff= 1- pVac/pPlac;
+    // result as [ expectedEfficacy, observedEfficacy]
+    return new double[]{expEff, obsEff};
+}

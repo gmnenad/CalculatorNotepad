@@ -1,0 +1,139 @@
+// generate N items, each cost C0..C1 (weights) rounded (in multiples of ) R, and have value V0..V1 (worth)
+// for V vendors which need D0..D1 items for discount and give discount value DV0..DV1
+// result:  v(
+//    v(  v(nItems, itemsDiscount, valueDiscount), v(nItems, itemsDiscount, valueDiscount),...) // for each vendor
+//    v(  v(vendor, cost, value), v(  v(vendor, cost, value),... ) // for each item
+// )
+
+genSetF(N,c0,c1,R,v0,v1,  V, d0,d1, dv0,dv1)={
+    items=vDim(N);
+    vendors=vDim(V);
+    nRem=N;
+    // data for vendors
+    for(i=V, i>0, i=i-1){
+        ni=floor(nRem/i); // number of items belonging to this vendor
+        if ((i>1)&(rnd<0.5)) ni=ni-1; // randomly reduce by 1 to make it uneven
+        nid=rndNumber(d1-d0+1)+d0; // number of items needed for discount
+        if (nid>ni) nid=ni;
+        vd= rndNumber(dv1-dv0+1)+dv0; // cost value of discount
+        if (R>1) vd= floor(vd/R)*R;
+        nRem=nRem-ni;
+        vendors[i-1]= vec( ni, nid, vd); //v(nItems, itemsDiscount, valueDiscount)
+    }
+    // data for items
+    vnd=0; 
+    vndItems=0; 
+    vndCosts=0;
+    for(i=0, i<N, i=i+1){
+        if (vndItems<=0){
+            vndItems=vendors[vnd][0];
+            vndCosts= vDim(vndItems);
+            vnd=vnd+1;
+        }
+        nc=rndNumber(c1-c0+1)+c0; // item cost
+        if (R>1) nc= floor(nc/R)*R;
+        nv= rndNumber(v1-v0+1)+v0; // item value
+        if (R>1) nv= floor(nv/R)*R;
+        // update for this item
+        items[i]= vec(vnd, nc, nv); //v(vendor, cost, value)
+        vndItems=vndItems-1;
+        vndCosts[vndItems]= nc;
+        // check if cost of D lowest cost items is still above discount, update vendors if not
+        if (vndItems<=0){  
+            vs=vSort(vndCosts);
+            nid= vendors[vnd-1][1]-1;
+            sm=vSum( vs[0..nid]);
+            if (R>1) sm= floor(sm/R)*R;
+            if (vendors[vnd-1][2]>sm){ 
+                vndInfo=vendors[vnd-1];
+                vndInfo[2]=sm;
+            }
+        }
+    }
+    // make composite vector of vectors
+    res=vec( vendors, items);
+    return res;
+}
+
+// generate N items for V vendors, cost up to C rounded to R
+// result:  v(
+//    v(  v(nItems, itemsDiscount, valueDiscount), v(nItems, itemsDiscount, valueDiscount),...) // for each vendor
+//    v(  v(vendor, cost, value), v(  v(vendor, cost, value),... ) // for each item
+// )
+genSet(N,V,C,R)={
+    // map to full genSetF(N,c0,c1,R,v0,v1,  V, d0,d1, dv0,dv1)
+    c0=floor(C/5); c1=C;
+    v0=1; v1=C;
+    D= floor(N/V);
+    d0=D-1; d1=D+1;
+    dv0=c0; dv1=3*c1;
+    res= genSetF(N,c0,c1,R,v0,v1,  V, d0,d1, dv0,dv1);
+    return res;
+}
+
+g=genSet(10,3,50,5)
+unpack(g)
+
+
+//Brute(100,g) 
+
+
+
+
+
+//#C#
+List<List<int>> vendors, items;
+// parse item setup to c# variables vendors and items
+List<int> unpack( mcValue v){
+    var vl= v.getVector();
+    vendors = new List<List<int>>();
+    var mcVendors= vl[0].getVector();
+    for(int i=0; i<mcVendors.Count; i++){
+        var vi=mcVendors[i].getListInt();
+        vendors.Add(vi);
+    }
+    items = new List<List<int>>();
+    var mcItems= vl[1].getVector();
+    for(int i=0; i<mcItems.Count; i++){
+        var vi=mcItems[i].getListInt();
+        items.Add(vi);
+    }
+    return new List<int>{vendors.Count, items.Count};
+}
+
+// brute solution
+List<int> Brute(int budget, mcValue probVec){
+    unpack(probVec);
+    int N= items.Count;
+    int V=vendors.Count;
+    int[] vItems=new int[V];
+    int bestVal=0;
+    int bestItems=0;
+    // try all 2^N combinations of included items
+    for(int i=0; i< (1<<N); i++){
+        int c=i;
+        int cVal=0;
+        int b= budget;
+        // set needed items for discount
+        for(int k=0; k<V; k++) vItems[k]=vendors[k][1]; 
+        // check each item if included, then add value and deduct price
+        for(int k=0; k<N; k++){
+            if ((c&1) !=0)
+            {
+                cVal+=items[k][2];
+                b-=items[k][1];
+                vItems[ items[k][0] ] --;
+            }
+            c>>=1;
+        }
+        // check if discount bonuses obtained
+        for(int k=0; k<V; k++)
+            if (vItems[k]<=0) b+= vendors[k][2];
+        // check if we are within budget and withbest result
+        if ((b>=0)&&(cVal>bestVal)){
+            bestVal=cVal;
+            bestItems=i;
+        }
+    }
+    return new List<int>{ bestVal, bestItems };
+}

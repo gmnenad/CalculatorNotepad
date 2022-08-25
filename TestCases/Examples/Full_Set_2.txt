@@ -1,0 +1,130 @@
+
+
+N=2 ; p=0.1 ; nSets=2
+me(N,p,E)=ln(1-(1-E)^(1/N))/ln(1-p) // estimate number of iteration to achieve precision E
+me(N,p,1e-16/p) // estimate iterations till max precision, usually ~30/lowest(p)
+
+//calc(N,p)= sum((k)=> 1-(1-(1-p)^k)^N  , 0,800)
+calc(N,p)={
+   sm=0;
+   so=0;
+   k=0;
+   do{
+        so=sm;
+        sm=sm+ 1-(1-(1-p)^k)^N ;
+        k=k+1;
+   } while( sm!=so);
+   return vec(sm, k);
+}
+calc(N,p)
+cSim(N, p, nSets, 10000)  
+
+
+vp=vDim(N,p); 
+cEx(vp)
+cEx2(vp,nSets)
+cEx3(vec(0.003,0.001,0.0003),vec(450,40,10), 2)
+choose(5,0)
+
+
+//#C#
+// simulate needed attempts for N items, each with same probability p
+double cSim(int N, double p, int nSets, int nTries){
+    double sm=0;
+    for (int t=0; t<nTries; t++){
+        int sN=N;
+        int[] ng=new int[N];
+        do{
+            sm++;
+            for(int i=0; i<N; i++)
+                if (nm.rnd.NextDouble() <p){ 
+                    ng[i]++;
+                    if (ng[i]==nSets) sN--;
+                }
+        } while (sN>0);
+    }
+    return sm/nTries; 
+}
+
+// expected attempts for G groups of items, with S sets
+double[] cEx3( double[] vp, double[] nItems, int nSets){
+    int G= vp.Length;
+    double[][] mp= new double[G][];
+    for(int g=0; g<G; g++)
+    {
+        // probabilities to have s=0..nSets-1 of these items after nSets-1 steps
+        // same as prob not to have all set items after nSets-1
+        mp[g]=new double[nSets];
+        for(int s=0; s<nSets; s++) 
+            mp[g][s]=nm.choose(nSets-1,s)*Math.Pow(vp[g],s)*Math.Pow(1-vp[g],nSets-1-s);
+    }
+    double[] chs=new double[nSets];
+    double so, sm=nSets;
+    int k=nSets-1;
+    do{
+        k++; // current step
+        for(int s=0; s<nSets; s++) chs[s]=1/(1-s/(double)k); // choose mult
+        so=sm; 
+        double d=1;
+        for (int g=0; g<G; g++){
+            for(int s=0; s<nSets; s++) 
+                mp[g][s]*=chs[s]*(1-vp[g]);
+            double cdf= mp[g].Sum(); // prob that gth item has <nSets after K steps
+            d*= Math.Pow(1-cdf,nItems[g]); // probability that all items are done
+        }
+        sm=sm+(1-d) ; // inc steps by prob all NOT done
+    } while( sm!=so);
+    return new double[]{sm,k};
+}
+// expected attempts for N items, with S sets
+double[] cEx2( double[] vp, int nSets){
+    int G= vp.Length;
+    double[][] mp= new double[G][];
+    for(int g=0; g<G; g++)
+    {
+        // probabilities to have s=0..nSets-1 of these items after nSets-1 steps
+        // same as prob not to have all set items after nSets-1
+        mp[g]=new double[nSets];
+        for(int s=0; s<nSets; s++) 
+            mp[g][s]=nm.choose(nSets-1,s)*Math.Pow(vp[g],s)*Math.Pow(1-vp[g],nSets-1-s);
+    }
+    double[] chs=new double[nSets];
+    double so, sm=nSets;
+    int k=nSets-1;
+    do{
+        k++; // current step
+        for(int s=0; s<nSets; s++) chs[s]=1/(1-s/(double)k); // choose mult
+        so=sm; 
+        double d=1;
+        for (int g=0; g<G; g++){
+            for(int s=0; s<nSets; s++) 
+                mp[g][s]*=chs[s]*(1-vp[g]);
+            double cdf= mp[g].Sum(); // prob that gth item has <nSets after K steps
+            d*= 1-cdf; // probability that all items are done
+        }
+        sm=sm+(1-d) ; // inc steps by prob all NOT done
+    } while( sm!=so);
+    return new double[]{sm,k};
+}
+
+// expected attempts for N items, each with different probability
+// input: vp[N] - probability for each item
+// output: vec( expectedTries, numIterations )
+double[] cEx( double[] vp){
+    int n= vp.Length;
+    double[] mp= new double[n];
+    for(int i=0; i<n; i++) mp[i]=1;
+    double so, sm=0;
+    int k=0;
+    do{
+        k++;
+        so=sm; // steps needed
+        double d=1;
+        for (int i=0; i<n; i++){
+            d*= 1-mp[i]; // probability that all are done
+            mp[i]*=(1-vp[i]); // prob this item not done next turn
+        }
+        sm=sm+(1-d) ; // inc steps by prob all NOT done
+    } while( sm!=so);
+    return new double[]{sm,k};
+}

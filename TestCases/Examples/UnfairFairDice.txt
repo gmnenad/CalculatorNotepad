@@ -1,0 +1,61 @@
+// average tosses with fair D-sided dice, to get random value up to N 
+//   T= number of possible combinations left from before (initial T=1)
+//   vT = vec[N] : true if that remainder was already met
+// return (fix, mult, Tidx): fix= number of fixed steps, mult=mutliplicator, Tidx= T value that first repeated
+
+avf(N,D,T,vT)={
+  if (T<1) return vec(0,0,0) ;// if no tail left last time, we have no remaining combos to continue
+  for(k=0, T*D^k<N, k=k+1); // how many tosses till we have more than N combos
+  nCombo=T*D^k; // total number of combinations are new tosses time number of previous tails
+  newT= mod( nCombo, N);// new tail, if nCombo is not divisible by N
+  pExt= newT/nCombo; // probability to have extension
+  if (newT==0) return vec(k,0,0); // if exactly divisible, no extensions
+  if (newT!=T){ 
+      if (vT[newT]) // if this remainder was met already, return without further recursions
+            return vec(k, pExt, newT);
+      newVT= vCopy(vT);   
+      newVT[newT]=true; // otherwise add this remainder ( check change of input var, if new var is needed?)
+      ex= avf(N,D,newT, newVT); // and call recursive 
+      // change my (k,pExt) basedd on return
+      k=k+pExt*ex[0];
+      pExt=pExt*ex[1];
+      newT= ex[2];
+  }
+  if (newT==T) { // if either this or returned Tidx are same as input T, calculate result
+    k=k/(1-pExt);
+    pExt=0;
+  }
+  return vec(k, pExt);
+}
+
+// average tosses needed with fair D dice to get one out of N different random values
+tosses(N,D)={
+   res=avf(N,D,1,vDim(N));
+   return res[0];
+}
+
+// with old "abort if not divisible" algorithm
+oldTosses(N,D)={
+   k= ceiling(ln(N,D));
+   nCombos=D^k;
+   pDrop= mod(nCombos,N)/nCombos;
+   oldT= k/(1-pDrop); // old average tosses needed
+   return oldT;
+}
+
+
+// return vector newTosses, oldTosses, impr%)
+t3(N,D)={
+   oldT= oldTosses(N,D); // old average tosses needed
+   newT= tosses(N,D); // new tosses with optimized alg
+   res= oldT/newT-1;
+   return vec( round(newT,2), round(oldT,2), round(res*100,0)); 
+}
+
+t3(6,2)
+t3(5,2)
+t3(3,4)
+t3(6,3)
+t3(4,2)
+
+

@@ -1,0 +1,122 @@
+// chance for aminoacid to mutate
+pb=1e-9 // chance for basepair to mutate during one replication
+pa=1-(1-pb)*(1-pb)*(1-pb/2)  // chance for aminoacid to mutate to other aminoacid (there are ~32 of them, 4*4*2, thord basepair often result in same aminoacid )
+Nc=32^50 // combinations for all possible 150bp (50aa) proteins
+kN=Nc*harmonic(Nc) // needed number of mutations to create ALL possible 50aa proteins
+kp=kN/(pa*50)  // needed number of replications to get all possible 50aa proteins
+totB=5e30 // total number of bacterias in the world
+repT=0.5 // bacterias replicate every 0.5 hours
+genesBac=2700  // average number of genes in bacteria
+totRepH= genesBac*totB/repT  // total number of genes undergoing replication in all world bacterias (per hour)
+kp/totRepH/24/365/13e9  // number of universe lifes to randomly produce all possible proteins just due to mutation
+
+
+
+// test if harmonic can be used for above
+tN=3
+tC=26
+tp=1e-2
+tNC=tC^tN
+nH= tNC*harmonic(tNC) // needed number of changes/mutations to create all (lower bound)
+gH= nH/tp/tN // needed number of generations to create all (since not every replication result in mutation)
+
+
+nS=simCS(tN,tC,1)  // needed number of changes/mutations to create all (actual simulations)
+gS=nS/tp/tN           // needed number of generations to create all ( based on sim)
+(nS/nH-1)*100  // % how many times more mutations needed in sim than in harmonic formula
+
+// 2^2: h=8, s=13 , 53% diff
+// 2^5: (C=2, N=5): h=130, s=300, 132% diff
+// 2^7:  h=695, s=1637, 135% diff
+// 2^8:  h=1567, s=3690, 135% diff
+// 2^9:  h=3490, s=8095, 132% diff
+// 32^2: h=7689, s=8090 , 5% diff
+
+// simulation based on each position being able to mutate with chance p in same replication
+// basically same results as previous simulation of one-ny-one mutations (and same diff to harmonic)
+//ns2= simCSgen(tN,tC,tp,300)
+
+
+
+
+
+
+
+
+//#C#
+// simulate expected mutations to get all possible C^N combos
+int simCS1(int N, int C){
+    int nAll=(int)Math.Pow(C,N);
+    var allC=new int[nAll];
+    var Narr= new int[N];
+    int nTry=0;
+    while (allC.Sum()<nAll){
+        nTry++;
+        // randomly select which position will change, out of N
+        int pv= nm.rnd.Next(N);
+        // randomly select what value will position get, out of C
+        int nv= nm.rnd.Next(C);
+        // set new value
+        Narr[pv]=nv;
+        // convert gene value to single number (s)
+        int s=0;
+        int d=1;
+        for(int i=0; i<N; i++){
+            s+=Narr[i]*d;
+            d*=C;
+        }
+        // mark that combo (s) as 'found'
+        allC[s]=1;
+    }
+    // return number of tries (changes) needed to get all combos
+    return nTry;
+}
+// simulate above multiple times and return average expected tries
+double simCS(int N, int C, int nSim){
+    double ex=0;
+    for(int i=0; i<nSim; i++)
+        ex+= simCS1(N,C);
+    return ex/nSim;
+}
+
+// simulate needed generations directly, not mutations (slower)
+int[] simCS2(int N, int C, double p){
+    int nAll=(int)Math.Pow(C,N);
+    var allC=new int[nAll];
+    var Narr= new int[N];
+    int nMut=0;
+    int nGen=0;
+    while (allC.Sum()<nAll){
+        nGen++;
+        for(int i=0; i<N; i++)
+        if (nm.rnd.NextDouble()<=p){
+            nMut++;
+            // randomly select what value will position get, out of C
+            int nv= nm.rnd.Next(C);
+            // set new value
+            Narr[i]=nv;
+        }
+        // convert gene value to single number (s)
+        int s=0;
+        int d=1;
+        for(int i=0; i<N; i++){
+            s+=Narr[i]*d;
+            d*=C;
+        }
+        // mark that combo (s) as 'found'
+        allC[s]=1;
+    }
+    // return number of tries (changes) needed to get all combos
+    return new int[]{nGen,nMut};
+}
+// simulate above multiple times and return average expected tries
+int[] simCSgen(int N, int C, double p, int nSim){
+    int exGen=0, exMut=0;
+    for(int i=0; i<nSim; i++){
+        var r= simCS2(N,C,p);
+        exGen+= r[0];
+        exMut+= r[1];
+    }
+    return new int[]{exMut/nSim,exGen/nSim};
+}
+

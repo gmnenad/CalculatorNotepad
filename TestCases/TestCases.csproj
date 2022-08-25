@@ -1,0 +1,81 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <EnablePreviewFeatures>true</EnablePreviewFeatures>
+    <Platforms>AnyCPU;x64;x86</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\globals.cs" Link="globals.cs" />
+    <Compile Include="..\mcSystem.cs" Link="mcSystem.cs" />
+    <Compile Include="..\MpfrClasses\allocate_function.cs" Link="MpfrClasses\allocate_function.cs" />
+    <Compile Include="..\MpfrClasses\char_ptr.cs" Link="MpfrClasses\char_ptr.cs" />
+    <Compile Include="..\MpfrClasses\FILE.cs" Link="MpfrClasses\FILE.cs" />
+    <Compile Include="..\MpfrClasses\free_function.cs" Link="MpfrClasses\free_function.cs" />
+    <Compile Include="..\MpfrClasses\GlobalSuppressions.cs" Link="MpfrClasses\GlobalSuppressions.cs" />
+    <Compile Include="..\MpfrClasses\GlobalSuppressions_gmp.cs" Link="MpfrClasses\GlobalSuppressions_gmp.cs" />
+    <Compile Include="..\MpfrClasses\gmp_lib.cs" Link="MpfrClasses\gmp_lib.cs" />
+    <Compile Include="..\MpfrClasses\gmp_randstate_t.cs" Link="MpfrClasses\gmp_randstate_t.cs" />
+    <Compile Include="..\MpfrClasses\intmax_t.cs" Link="MpfrClasses\intmax_t.cs" />
+    <Compile Include="..\MpfrClasses\mpfr_exp_t.cs" Link="MpfrClasses\mpfr_exp_t.cs" />
+    <Compile Include="..\MpfrClasses\mpfr_flags_t.cs" Link="MpfrClasses\mpfr_flags_t.cs" />
+    <Compile Include="..\MpfrClasses\mpfr_free_cache_t.cs" Link="MpfrClasses\mpfr_free_cache_t.cs" />
+    <Compile Include="..\MpfrClasses\mpfr_kind_t.cs" Link="MpfrClasses\mpfr_kind_t.cs" />
+    <Compile Include="..\MpfrClasses\mpfr_lib.cs" Link="MpfrClasses\mpfr_lib.cs" />
+    <Compile Include="..\MpfrClasses\mpfr_prec_t.cs" Link="MpfrClasses\mpfr_prec_t.cs" />
+    <Compile Include="..\MpfrClasses\mpfr_rnd_t.cs" Link="MpfrClasses\mpfr_rnd_t.cs" />
+    <Compile Include="..\MpfrClasses\mpfr_sign_t.cs" Link="MpfrClasses\mpfr_sign_t.cs" />
+    <Compile Include="..\MpfrClasses\mpfr_t.cs" Link="MpfrClasses\mpfr_t.cs" />
+    <Compile Include="..\MpfrClasses\mpf_t.cs" Link="MpfrClasses\mpf_t.cs" />
+    <Compile Include="..\MpfrClasses\mpq_t.cs" Link="MpfrClasses\mpq_t.cs" />
+    <Compile Include="..\MpfrClasses\mpz_t.cs" Link="MpfrClasses\mpz_t.cs" />
+    <Compile Include="..\MpfrClasses\mp_base.cs" Link="MpfrClasses\mp_base.cs" />
+    <Compile Include="..\MpfrClasses\mp_bitcnt_t.cs" Link="MpfrClasses\mp_bitcnt_t.cs" />
+    <Compile Include="..\MpfrClasses\mp_exp_t.cs" Link="MpfrClasses\mp_exp_t.cs" />
+    <Compile Include="..\MpfrClasses\mp_limb_t.cs" Link="MpfrClasses\mp_limb_t.cs" />
+    <Compile Include="..\MpfrClasses\mp_ptr.cs" Link="MpfrClasses\mp_ptr.cs" />
+    <Compile Include="..\MpfrClasses\mp_size_t.cs" Link="MpfrClasses\mp_size_t.cs" />
+    <Compile Include="..\MpfrClasses\ptr.cs" Link="MpfrClasses\ptr.cs" />
+    <Compile Include="..\MpfrClasses\reallocate_function.cs" Link="MpfrClasses\reallocate_function.cs" />
+    <Compile Include="..\MpfrClasses\size_t.cs" Link="MpfrClasses\size_t.cs" />
+    <Compile Include="..\MpfrClasses\uintmax_t.cs" Link="MpfrClasses\uintmax_t.cs" />
+    <Compile Include="..\MpfrClasses\va_list.cs" Link="MpfrClasses\va_list.cs" />
+    <Compile Include="..\MpfrClasses\va_list_gmp.cs" Link="MpfrClasses\va_list_gmp.cs" />
+    <Compile Include="..\MpfrClasses\void_ptr.cs" Link="MpfrClasses\void_ptr.cs" />
+    <Compile Include="..\nmExtensions.cs" Link="nmExtensions.cs" />
+    <Compile Include="..\nmMath.cs" Link="nmMath.cs" />
+    <Compile Include="..\Numbers\Double.cs" Link="Numbers\Double.cs" />
+    <Compile Include="..\Numbers\IFloatNumber.cs" Link="Numbers\IFloatNumber.cs" />
+    <Compile Include="..\Numbers\MPFR.cs" Link="Numbers\MPFR.cs" />
+    <Compile Include="..\Numbers\Number.cs" Link="Numbers\Number.cs" />
+    <Compile Include="..\Numbers\OtherClasses.cs" Link="Numbers\OtherClasses.cs" />
+    <Compile Include="..\Numbers\Quad.cs" Link="Numbers\Quad.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="MpfrClasses\" />
+    <Folder Include="Numbers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\libgmp-10.dll" Link="libgmp-10.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\libmpfr-6.dll" Link="libmpfr-6.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="&quot;C:\Program Files\Microsoft Visual Studio\2022\Preview\VC\Tools\MSVC\14.33.31517\bin\Hostx64\x64\EDITBIN.EXE&quot; /stack:4000000 &quot;$(TargetDir)$(TargetName).exe&quot;" />
+  </Target>
+
+
+</Project>

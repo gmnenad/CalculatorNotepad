@@ -1,0 +1,99 @@
+// expected number of rolls to get N using dice listed in vd
+eD(vd,N)={
+    m= vMul(vd);
+    if (m<N) return -1;
+    p=N/m;
+    return vLen(vd)/p;
+}
+
+// return vector of K dices that closest fit N
+kD(K,N)={
+    res=vDim(K);
+    dx= vec(6,20) ; //vec(6,8,10,12,20);
+    dL= vLen(dx);
+    bestDiff=-1;
+    for(ac=counterCreate(vDim(K,dL-1)), counterNotFinished(ac), ac=counterNext(ac)){
+        v= counterValues(ac);
+        m=1;
+        for(i=0, i<K, i=i+1) m=m*dx[v[i]];
+        if (m>=N){
+            diff= m-N;
+            if ((diff<bestDiff)|(bestDiff<0)){
+                bestDiff=diff;
+                for(i=0, i<K, i=i+1) res[i]=dx[v[i]];
+            }
+        }
+    }
+    return vec( eD(res,N), res);
+}
+
+// find number where K+1 dice is better than K
+mxK(K,maxN)={
+   for(n=1, n<=maxN, n=n+1){
+        r0= kD(K,n);
+        r1= kD(K+1,n);
+        if (r1[0]<r0[0]) return vec(n,r0,r1);
+   }
+   return -1;
+}
+
+
+N=383
+eD(vec(20,20),N)
+eD(vec(6,8,8),N)
+
+
+
+kD(2,N)
+kD(3,N)
+mxK(3,10000)
+
+eD(vec(6,6,6),1)
+ceD(vec(6,6,6),1)
+
+
+//#C#
+// expected number of rolls to get N using dice listed in vd
+double ceD(int[] vd, int N){
+    int m= 1;
+    for (int i=0; i< vd.Length; i++) m*=vd[i];
+    if (m<N) return -1;
+    return vd.Length*m/(double)N;
+}
+
+
+// return vector of dices from ds set, that closest fit N
+List<int[]> kD(int N, int[] ds){
+    var res= new List<int[]>();
+    int L= ds.Length;
+    var c= new int[L]; // counter how many times each dice appears
+    double M=1; // multiplier so far
+    int p=-1; // current position
+    int dp=+1; // +1=next dice, 0= stay at this dice
+    do{
+        // next combo:
+        do{
+            if(dp>0){ // if just moved to this smaller dice
+                p++;
+                int x= (int)Math.Ceiling(Math.Log(N/M)/Math.Log(ds[p])); // min dice at 'p' needed to be >=N
+                M*= Math.Pow(ds[p],x);
+                c[p]=x;
+                dp=0;
+            }else if (dp==0){ // if need to reduce count of same dice
+                if ((p<L-1)&&(c[p]>0)){ 
+                    M/=c[p];
+                    c[p]--;
+                    dp=+1;
+                }else{ // backtrack if last dice or already zero here
+                    p--;
+                    dp=0;
+                    if (p<0){ // finished all search
+                        return res;
+                    }
+                }
+            }
+        }while(dp!=0);
+        // check if this is best result
+        res.Add((int[])c.Clone());
+    }while(true);
+}

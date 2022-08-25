@@ -1,0 +1,29 @@
+test(3,3)
+
+ntest(d,n)={
+    msum=0;
+    for( ac= counterCreateComb(d,n,1,1) , counterNotFinished(ac), ac= counterNext(ac) )
+        msum=msum+ vMul(counterValues(ac));
+}
+
+ntest(3,3)
+
+cv=counterCreate(vec(3,3))
+cv=counterNext(cv)
+d= counterValues(cv)
+d[0] // most significant digit
+d[1] // least significant digit 
+
+
+//#C#
+int test(int d, int n){
+    var ac= new ArrayCounter(d,n,true,1);
+    int sum=0;
+    do{
+        int mul=1;
+        for(int i=0; i<d; i++)
+            mul*=ac.Num[i];
+        sum+=mul;
+    } while (ac.Next());
+    return sum;
+} 

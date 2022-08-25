@@ -1,0 +1,220 @@
+// chance for all N to happen in one generation with T repl, if chance for one to happen is p
+tN=6
+tT=20
+tp=1/tN
+
+// A) they are independent
+ph1=1-(1-tp)^tT  // chance for each one to happen in one generation
+pall1=ph1^tN  // chance of all of them to happen in one generation
+1/pall1  // expected number of generations untill all of them happen (!? not correct, previous change will pass to next gen)
+
+
+// expected number of tries before all are filled, assume p=1/N
+exS(N)={
+  ex=0;
+  oldPN=0;
+  p=1/N;
+  for (t=1, t<100, t=t+1){
+    ph=1-(1-p)^t;  // chance for each one to happen in 't' generations
+    pN= ph^N; // chance all of them to happen at or before 't' generations
+    // pex= chance of all N of them to happen exactly at 't'-th generation
+    // it is equal pN- chance all to happen at or before previous step, pN(t-1)=oldPN
+    // pex is NOT pex=(1-psum)*pN ; psum+=pex ! 
+    // REASON: pN=pAllFilledAt(t) is NOT independent from (1-psum)=pNotAllFilledAt(t-1): if (1-psum)==0,then pn must be 1
+    // but it is ok if:  pex= pN-psum; psum+=pex : same as pex=pN(t)-pN(t-1)
+    pex=pN- oldPN;  
+    ex=ex+t*pex;
+    oldPN= pN;
+  }
+  ex;
+}
+
+//simulate, assume p=1/N
+sim1(N)={
+   v=vDim(N);
+   p=1/N;
+   for(i=0, vSum(v)<N, i=i+1)
+        for(k=0, k<N, k=k+1) if (v[k]==0)  v[k]=rnd<=p;
+   i;
+}
+simS(N, nSim)= pSim(()=>sim1(N),nSim)
+
+exS(tN)
+exCS(tN)
+simS(tN, 50)
+simCS(tN,1000)  
+
+// B) use collector coupon approach
+ex2=tN*harmonic(tN) // expected tries to get each of 6 
+ex2/tT  // expected number of generations to get all 6
+
+NZ=2
+pZ=1/2 // exact method gets error when p<1/260 for N=6, 1/220 for N=10, 1/160 for N=50
+ng=exCS2(NZ,pZ)    // expected number of GENERATIONS using exact
+ng*pZ*NZ        // expected number of MUTATIONS using exact
+
+ngh=NZ*harmonic(NZ)  // expected number of MUTATIONS using harmonics
+ngh/(pZ*NZ)          // expected number of GENERATION using harmonics
+
+simCS(NZ,100000,pZ)  // simulated (nGen, nMut)
+
+nzt=1000000000000000
+pzt=1e-30
+1-(1-pzt)
+pow1m(pzt,nzt)
+(1-pzt)^nzt
+
+log(nzt,10)
+63*log(2,10)
+
+//#C#
+// sum 1/N+1/(N-1)+...1/1 , or if 'part' then sum up to certain percentage of N
+double h(int N, double part=1){
+    int nMin=(int)Math.Round(N*(1-part)+1);
+    double res=0;
+    for (int i=nMin; i<=N; i++)
+        res+=1/(double)i;
+    return res;
+}
+
+// expected tries(generations) to get all
+double[] simCS(int N, int nSim, double p=0){
+    if (p<=0) p=1.0/N;
+    int exSum=0;
+    int mutSum=0;
+    for(int s=0; s<nSim; s++){ 
+        var v= new int[N];
+        int mut=0;
+        int nTry=0;
+        while (v.Sum()<N){
+            nTry++;
+            for(int k=0; k<N; k++)
+            if (nm.rnd.NextDouble()<=p){ 
+                v[k]= 1;
+                mut++;
+            }
+        }
+        mutSum+=mut;
+        exSum+=nTry;
+    }
+    double exG=exSum/(double)nSim;
+    double exM=mutSum/(double)nSim;
+    return new double[]{exG, exM};
+}
+
+// v= chance to get all 1st time after 'i' tries
+double[] simCS1(int N, int nSim){
+    int maxVR=20;
+    var vr=new double[maxVR+1];
+    double p=1.0/N;
+    int exSum=0;
+    for(int s=0; s<nSim; s++){ 
+        var v= new int[N];
+        int nTry=0;
+        while (v.Sum()<N){
+            nTry++;
+            for(int k=0; k<N; k++) 
+                v[k]= nm.rnd.NextDouble()<=p?1:v[k];
+        }
+        if (nTry<maxVR)
+            vr[nTry]++;
+        else
+            vr[maxVR]++;
+        exSum+=nTry;
+    }
+    double vrSum=vr.Sum();
+    for(int i=0; i<=maxVR; i++) vr[i]= Math.Round(vr[i]*100.0/nSim,2);
+    return vr;
+}
+
+// v= chance to get all after 'i' tries
+double[] simCS2(int N, int nSim){
+    int maxVR=20;
+    var vr=new double[maxVR+1];
+    double p=1/N;
+    for(int s=0; s<nSim; s++){ 
+        var v= new int[N];
+        for(int nTry=1; nTry<=maxVR; nTry++){
+            for(int k=0; k<N; k++) 
+                v[k]= nm.rnd.NextDouble()<=p?1:v[k];
+            if (v.Sum()==N) 
+                vr[nTry]++;
+        }
+    }
+    for(int i=0; i<=maxVR; i++) 
+        vr[i]= Math.Round(vr[i]*100.0/nSim,2);
+    return vr;
+}
+
+// expected number of tries before all are filled, assume p=1/N
+double exCS(int N){
+  double prv=0;
+  double ex=0;
+  double p=1/(double)N;
+  for (int t=1; t<1000; t++){
+      double ph=1-Math.Pow(1-p,t);  
+      double pn=Math.Pow(ph,N);
+      double pall=pn-prv;
+      ex+=t*pall;
+      prv=pn;
+  }
+  return ex;
+}
+
+// calculate (1-p)^N using Taylor series for small p
+double pow1m(double p, double n){
+    long N=(long)n;
+    // if decimal or negative powers, or p is not really small
+    // use standard Math.Pow
+    if ((1-p!=1.0)||(n<=0)||(n!=Math.Truncate(n)))
+    {
+        return Math.Pow(1-p,n);
+    }
+    else
+    // for too large power N, since p<1e-16, return zero 
+    // standard (1-p)^N would have returned 1, which is error
+    if ((N<=0)||(N>long.MaxValue/10))
+    {
+        return 0;
+    }
+    else
+    // otherwise use Taylor series to calculate 
+    //(1-p)^N= 1 -Nx +N(N-1)x^2/2 -N(N-1)(N-2)x^3/6 +N(N-1)(N-2)(N-3)x^4/24...
+    {
+        double res=1,oldRes;
+        int sign=+1;
+        long i=1;
+        double f=1;
+        do{
+            sign*=-1;
+            f*=N*p/i; 
+            oldRes=res;
+            res+=f*sign;
+            N--;
+            i++;
+        }while((N>0)&&(res!=oldRes));
+        return res;
+    }
+}
+
+// calculate (1-p)^N using regular power
+double T1mpNR(double p, double N){
+    return Math.Pow(1-p,N);
+}
+
+
+// expected number of generations before all are filled, assume p=1/N
+double exCS2(int N, double p){
+  double prv=0;
+  double ex=0;
+  double p1=1-p;
+  double p1m=1;
+  for (int t=1; (t<100000)&&(prv<1); t++){
+      p1m*=p1;
+      double pn=  Math.Pow(1-p1m,N); //pow1m(p1m,N);//
+      double pall=pn-prv;
+      ex+=t*pall;
+      prv=pn;
+  }
+  return ex;
+}

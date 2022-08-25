@@ -1,0 +1,70 @@
+C=5
+M=4
+N=20
+
+1/C^M
+1/C^(M-1)
+
+choose(4,1)
+14*choose(C,2)/C^M
+
+simX(1,M,C)  // 1/C^(M-1) verified for inf N
+simX(2,M,C)  // 14*choose(C,2)/C^M verified for X=2
+simXN(2,M,C,3)
+
+
+
+
+//#C#
+// number of different colors in M randomly drawn items out of C colors, each with Nc[0..C-1] items at start ( C= Nc.Length)
+int Xcolors(int M, int[] Nc, int C, int N){
+    if (N<M) return 0;// if we can not draw all M items, return '0 different colors'
+    // draw M items
+    var drawn= new int[M];
+    for(int m=0; m<M; m++){
+        int k= nm.rnd.Next(N); // select one out of remaining
+        int c=0; // determine which color it is
+        while(Nc[c]<=k){
+            k-=Nc[c];
+            c++;
+        }
+        // remove that item from bag
+        drawn[m]=c;
+        Nc[c]--;
+        N--;
+    }
+    // count number of different colors, and restore original Nc
+    int X=0;
+    for(int m=0; m<M; m++){
+        bool newCol=true;
+        int c= drawn[m];
+        for(int i=0; i<m; i++)
+            if (drawn[i]==c)
+                newCol=false;
+        if (newCol)
+            X++;
+        Nc[c]++;
+    }
+    return X;
+}
+
+// find probability by simulation for Xcolors, for any number of starting items per colors NC
+double simXNC(int X, int M, int[] Nc, int nSim=1000000){
+    int C= Nc.Length; // number of possible colors
+    int N= Nc.Sum();  // total number of items across all colors
+    double wasX=0;
+    for(int i=0; i<nSim; i++)
+        if (Xcolors(M,Nc,C,N)==X)
+            wasX++;
+    return wasX/nSim;
+}
+// find probability by simulation for Xcolors, for same number of items N for each of C colors
+double simXN(int X, int M, int C, int N, int nSim=1000000){
+    var Nc= new int[C];
+    for(int i=0; i<C; i++) Nc[i]=N;
+    return simXNC(X,M,Nc,nSim);
+}
+// find probability by simulation for Xcolors, for infinite number of starting items for each of C colors
+double simX(int X, int M, int C, int nSim=1000000){
+    return simXN(X,M,C, int.MaxValue/C, nSim);
+}

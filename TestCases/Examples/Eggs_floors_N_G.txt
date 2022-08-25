@@ -1,0 +1,129 @@
+// mN(x,g)= return max # of floors 'N' covered by 'g' eggs with optimal approach using max X measurements:
+// - first egg is dropped at floor one above max floors covered by 'g-1' eggs in 'X-1' measurements, ie mN(x-1,g-1)+1
+//      so if it break, g-1 eggs will need max X-1 measurements for lower floors, totaling max X
+// - if no break, for next floor add mN(x-2,g-1) ie max N coverable by 'g-1' eggs in 'x-2' (since we used 2 measurements )
+//      so if it break, g-1 eggs will need max X-2 measurements for lower floors, totaling max X
+// - each next drop of first egg is at smaller distance, ensuring total max measurements stay X
+// - if first egg breaks, floors to drop 2nd egg use same logic for 'g-2' eggs and remaining 'X-#'
+// - even last floor must be checked, to verify if it breaks on it or floor above
+mN(x,g)={
+    if (x<=0) return 0;
+    if (g==0) return 0;
+    if (g==1) return x;
+    r=0;
+    for(i=1, i<=x, i=i+1){
+        t=mN(x-i,g-1);
+        r=r+t+1; // we measure one floor ABOVE what 'g-1' can do
+    }
+    return r;
+}
+// version that return which floors first egg should be dropped from, until it breaks
+// - for max 'x' measurements, using 'g' eggs
+// - last floor is max N coverable by this (x,g) , ie same as mN(x,g)
+mNv(x,g)={
+    if (g==0) return 0;
+    mx= min(x,50); // only show first 50
+    rv=vDim(mx);
+    r=0;
+    for(i=1, i<=mx, i=i+1){
+        t=mN(x-i,g-1);
+        r=r+t+1; // we measure one floor ABOVE what 'g-1' can do
+        rv[i-1]=r;
+    }
+    return rv;
+}
+
+
+// exact formula for needed measurements 'x' for N floors with infinite eggs ( practically binary search )
+eXn(N)=ceiling(log(N,2))
+// approximate formula for max number of eggs usable/needed ( ie adding more eggs than this does not improve result )
+aGn(N)= round(4+log(N,4))
+// approximate estimate formula for needed measurements 'x' for N floors with 'g' eggs
+// - if we have more than max needed eggs, return binary search result, otherwise return approximation
+aXng(N,g)=if(g>aGn(N), eXn(N), floor((g!*N)^(1/g)+g/3) )
+
+// minimal number of measurements 'x' needed for 'N' floors with 'g' eggs
+// use approximate for initial x, then inc/dec to find exact, need ~2 calls of mN()
+ex(N,g)={
+    if (g<1) return -1; // invalid, would need infinite measurements
+    if (g==1) return N; // to skip loop below
+    x=aXng(N,g); // approximate value
+    r=mN(x,g); // check how many floors this approx 'x' can really cover
+    if (r<N){
+        // if approx does not satisfy, increase by one until it does
+        do{
+            x=x+1;
+            r=mN(x,g);
+        }while(r<N);
+    }else{
+        // if approx satisfy, lower it to find first that does NOT satisfy
+        do{
+            x=x-1;
+            r=mN(x,g);
+        }while(r>=N);
+        x=x+1; // return last that satisfied
+    }
+    return x;
+}
+// minimal number of measurements 'x' needed for 'N' floors with 'g' eggs
+// use binary search - slower than using approximation, need ~ log2(N) calls of mN()
+ex2(N,g)={
+    L= 0; // possible x is between L and R.  L=always impossible, so 0 at start
+    // R=always possible , find first that satisfy by doubling
+    R=1; 
+    while(mN(R,g)<N){
+        L=R;
+        R=R*2;
+    }
+    do{
+        M= floor((L+R)/2); 
+        nM= mN(M,g);
+        if (nM>=N) R=M; else L=M;
+    }while(R-L>1.5); // We must find exact spot where L is not enough, but R is enough : R=L+1
+    return R;
+}
+
+
+
+
+N=100
+g=3
+
+x=ex(N,g) // optimal max measurements 'x' needed for 'N' floors with 'g' eggs
+ex2(N,g)  // same, using binary search instead of initial approximaiton
+aXng(N,g) // estimate for 'x' based on approximate formula
+
+
+mN(x,g)   // max floors N coverable by 'x'
+mNv(x,g)  // floors to drop 1st egg, until it breaks
+
+
+// test approximation for each g=1..G
+tstG(N,g)={
+    r=vDim(g);
+    for(i=1, i<=g, i=i+1){
+        e1=ex(N,i);
+        e2=aXng(N,i);
+        r[i-1]=e2-e1;
+    }
+    return r;
+}
+// test approximation for each N=10^1..10^n
+tstN(N,g)={
+    L=ceiling(log(N,10));
+    r=vDim(L);
+    for(i=1, i<=L, i=i+1){
+        e1=ex(10^i,g);
+        e2=aXng(10^i,g);
+        r[i-1]=e2-e1;
+    }
+    return r;
+}
+
+tstG(N,g)
+tstN(N,g)
+
+
+
+
+

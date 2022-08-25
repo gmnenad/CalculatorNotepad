@@ -1,0 +1,85 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyVersion>2.8.$([System.DateTime]::Now.ToString(MMdd)).$([System.DateTime]::Now.ToString(HHff))</AssemblyVersion>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <EnablePreviewFeatures>true</EnablePreviewFeatures>
+    <Platforms>AnyCPU;x64;x86</Platforms>
+    <ApplicationIcon>calc_icon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="FastColoredTextBox\**" />
+    <Compile Remove="TestCases\**" />
+    <EmbeddedResource Remove="FastColoredTextBox\**" />
+    <EmbeddedResource Remove="TestCases\**" />
+    <None Remove="FastColoredTextBox\**" />
+    <None Remove="TestCases\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Numbers\nmDoubleExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="MpfrClasses\mpfr.pdf" />
+    <None Remove="Numbers\Number_speeds.xlsx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="calc_icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="FastColoredTextBox\FastColoredTextBox.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="libgmp-10.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="libmpfr-6.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="MpfrClasses\libgmp-10.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="MpfrClasses\libmpfr-6.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="_TESTS.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="&quot;C:\Program Files\Microsoft Visual Studio\2022\Preview\VC\Tools\MSVC\14.33.31517\bin\Hostx64\x64\EDITBIN.EXE&quot; /stack:4000000 &quot;$(TargetDir)$(TargetName).exe&quot;" />
+  </Target>
+
+</Project>

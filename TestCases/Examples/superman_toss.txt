@@ -1,0 +1,106 @@
+// return acceleration needed (in 'gs'), speed needed (in km/h), and Vv&Vh [m/s] (vert/horiz speed components in m/s)
+// to throw something sv[m] vertically and sh[m] horizontally, with d[m] arm movement
+// *NO AIR RESISTANCE*
+av(sh,sv,d)={
+    g=9.81;
+    // v= final speed on hand release, needed to achieve sh&sv throw distance
+    vv= sqrt(sv*2*g);
+    vh=sh*g/vv;   
+    v=sqrt(vh^2+vv^2); 
+    // acceleration needed to achieve 'v' within arm reach 'd' distance
+    a=v^2/2/d;
+    // return both needed acceleration and speed
+    return vec(round(a/g,1),round(v*3.6,1),round(vv,1),round(vh,1));
+}
+av(50,60,1.5)
+
+// impact speed of over 60km/h is considered lethal. (75% lethal on car impact, >50% lethal on children fall over 15m)
+
+
+// acceleration over 60G is lethal. Tensile strenght of human arm is 6MN/m2*arm area ~ 50kN, so from F=ma -> max a=50kN/80kg= 60G. Diana impact at 70G
+// this means max initial speed is 151 km/h if arm reach is 1.5m
+v0m=sqrt(2*1.5*60*9.81)*3.6
+
+
+v2(v)= vFunc((a)=> round(a,1),v)
+
+
+// toss object at initial speed 'v0' [km/h] and initial angle 'a0'[rad], and find at what position it is furthest away within acceptable impact speed vm[km/h]
+// return:  0=diagonal distance[m], 1=impact speed[km/h], 2=impact X [m], 3=impact Y-height [m], 4=top height[m]
+toss(v0,a0,vm)={
+    x=0;
+    y=0;
+    vx=v0/3.6*cos(a0);
+    vy=v0/3.6*sin(a0);
+    // loop until object fall on ground
+    dt=1e-3;
+    g=9.81; // earth gravity acceleration
+    vt=56; // terminal velocity [m/s]
+    hm=0;
+    res=vec(0,0,0,0,0);
+    do{
+        v=sqrt(vx^2+vy^2);
+        aa=g*(v/vt)^2; // air ressistance 'deceleration', always positive value
+        // vertical change
+        ay=-g-vy/v*aa;  // vertical acceleration, gravity allways pull down while air 'pull' opposite
+        vy=vy+ay*dt;
+        y=y+vy*dt;
+        if (y>hm) hm=y;
+        // horizontal change
+        ax=-vx/v*aa; 
+        vx=vx+ax*dt;
+        x=x+vx*dt;
+        // check if best
+        r=sqrt(x^2+y^2); // diagonal distance [m]
+        v=sqrt(vx^2+vy^2)*3.6; // impact speed [km/h]
+        if ((v<=vm)&(r>res[0]))
+            res=vec(r,v,x,y,hm);
+     } while(y>0);
+     return res;
+}
+
+
+// find best angle to safely toss and achieve max distance
+//   - max acceleration gm [G] ~ 60G, max impact speed vm [km/h] ~ 60 km/h
+// return 0=diagonal distance[m], 1= initial angle [deg], 2= target angle [deg], 3=initial speed[km/h] , 4=impact speed[km/h], 5=no air max distance[m]
+findToss(vm, gm, d)={
+    v0=sqrt(2*d*gm*9.81)*3.6; // max initial velocity in [km/h], to be under 60G
+    a= find_max( (x)=> toss(v0,x,vm)[0] , 0, pi/2, pi/100);
+    r2=toss(v0,a,vm);
+    Tangle= atan2(r2[3],r2[2])*180/pi;
+    rFormulaNoAir=(v0^2+vm^2)/(2*9.81*3.6^2); // rb=d*Gm+Vm^2/2g = (v0^2+vm^2)/2g
+    res=vec(r2[0], a*180/pi, Tangle, v0, r2[1], rFormulaNoAir);
+    return res;
+}
+
+
+// with air ressistance, simulated result: 40m, 58deg toss, 28deg slope
+// vm= 50km/h , with 50% death chance, from https://aaafoundation.org/impact-speed-pedestrians-risk-severe-injury-death/
+// gm=20 G, 'human tolerance' for 0.1s acceleration is 10-30G according to: https://en.wikipedia.org/wiki/G-force#Human_tolerance
+//"around 40m" : aa3fb5137cf819eab673d3ce90aaff295a06413d72feebe758554d311cef85b7  SHA 256 on https://emn178.github.io/online-tools/sha256.html
+v2(findToss(50,20,1.6))
+
+// value for 25% death chance (37 km/h and ~10G), result:  21m, 64deg toss, 28deg slope
+//v2(findToss(1.6,10,37))
+
+// without air ressistance, direct solution on wolfram: 36m, 48deg toss, 29deg slope
+// https://www.wolframalpha.com/input/?i=find+max+%28%282.54842*%28x-sqrt%28x%5E2-0.5555555%29%29%29%5E2*%28625-245.25*%282.54842*%28x-sqrt%28x%5E2-0.5555555%29%29%29*x%2B24*%282.54842*%28x-sqrt%28x%5E2-0.5555555%29%29%29%5E2%29+%29+for+0%3Cx%3C1
+sqrt(1315)    // = max distance [m]
+z=0.74536
+a=asin(z)
+a/pi*180 // = initial angle [deg]
+t=2.54842*(z-sqrt(z^2-0.5555555))
+atan2( 25*sin(a)*t-9.81/2*t^2, 25*cos(a)*t)/pi*180 // slope angle [deg]
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,117 @@
+tN=4
+tk=7
+
+
+// SIMULATE chance that all N buckets are filled after k marbles
+
+sm1(N,k)={ // return 1 if all filled after k
+    v=vDim(N);
+    for(i=0, i<k, i=i+1)
+        v[rndNumber(N)]=1;
+    return vMul(v);
+}
+sm(N,k, nSim)= pSim(()=>sm1(N,k), nSim) 
+
+sm(tN,tk, 1000)
+sim(tN,tk,20000)
+
+
+// CALCULATE chance
+incOne(p)={
+  N=vLen(p);
+  res=vDim(N);
+  for(i=N-1, i>0, i=i-1)
+    res[i]=p[i]*(i+1)/N+p[i-1]*(N-i)/N;
+  res[0]=p[0]*1/N;
+  return res;
+}
+calc3(N,k)={
+    p=vDim(N);
+    p[0]=1; // after first draw
+    for(i=1, i<k, i=i+1)
+        p=incOne(p);
+    return p[N-1];
+}
+
+drops(N,p)={
+  Nd=N*p;
+  sn=0;
+  for(i=1, i<=Nd, i=i+1)
+    sn=sn+1/i;
+  return N*sn;
+}
+
+drops(100,50%)
+dropsCS(100,50%)
+dropsCS2(100,50%)
+
+calcCS(tN,tk)
+calc3(tN,tk)
+
+
+
+// FORMULA !!? 
+stirling2(n,k)=1/k!*sum((i)=>(-1)^i*choose(k,i)*(k-i)^n,0,k)
+form1(N,k)= stirling2(k,N)*N!/N^k
+form2(N,k)= sum((i)=>(-1)^i*choose(N,i)*(1-i/N)^k,0,N-1)
+
+
+form1(tN,tk)
+form2(tN,tk)
+
+choose(6,3)
+
+//#C#
+double sim(int N, int k, int nSim){
+    double nok=0;
+    for(int i=0; i<nSim; i++){
+        var v=new int[N];
+        for(int t=0; t<k; t++)
+            v[nm.rnd.Next(N)]=1;
+        bool ok=true;
+        for(int u=0; (u<N)&&ok; u++)
+            if(v[u]==0) ok=false;
+        if (ok) nok++;
+    }
+    return nok/nSim;
+}
+
+// get p[N] and change after one more draw
+void incOneCS(ref double[] p){
+    int N= p.Length;
+    for(int i=N-1; i>0; i--)
+        p[i]=p[i]*(i+1)/N+p[i-1]*(N-i)/N;
+    p[0]=p[0]*1/N;
+}
+
+// number of drops needed to have x chance to fill all
+int dropsCS(int N, double x){
+    var p=new double[N];
+    p[0]=1; // after first draw
+    int nDrop=1;
+    while(p[N-1]<x){
+    for(int i=N-1; i>0; i--)
+        p[i]=p[i]*(i+1)/N+p[i-1]*(N-i)/N;
+        p[0]=p[0]*1/N;
+        nDrop++;
+    }
+    return nDrop;
+}
+
+// number of drops needed to have x chance to fill all
+double dropsCS2(int N, double x){
+    var Nd= N*x;
+    double sum=0;
+    for(int i=1; i<=Nd; i++)
+        sum+=1/(double)i;
+    return N*sum;
+}
+// chance to fill all N after k drops
+double calcCS(int N, int k){
+    var p=new double[N];
+    p[0]=1; // after first draw
+    for(int i=1; i<k; i=i+1)
+        incOneCS(ref p);
+    return p[N-1];
+}
+

@@ -1,0 +1,111 @@
+// Draw K times random value 1$-N$, and keep only largest value. Each draw costs X$.
+// a) if N=100$, X=2$, and all K draws must be paid up front, what is optimal K? [K=7]
+// b) if you can pay one by one, what is optimal strategy? 
+
+// expected best value after K draws
+ef(N,K)=sum((i)=> i*(i^K-(i-1)^K),1,N)/N^K
+
+// optimal K, if one draw costs X
+fk(N,X)={
+   oldEx=0;
+   K=0;
+   dif=0;
+   do{
+     K=K+1;
+     newEx= ef(N,K);
+     dif= newEx-oldEx;
+     oldEx=newEx;
+   } while(dif>X);
+   return K;
+}
+
+// expected best value, nDraws and gain, given N&X
+// if nDraws must be paid upfront
+resEF(N,X)={
+    K=fk(N,X);
+    expected=ef(N,K);
+    gain=expected-K*X;
+    return vec(expected,K, gain);
+}
+
+x=5 
+resEF(100,x)
+resEF1(100,x)
+resEF2(100,x)
+
+resEFM(N,X)= (2*N+1-sqrt(8*N*X+1))/2
+resEFM(100,x)
+// why is gain always equal M ??
+//#C#
+double simEF(int N, int K, int nSim=1000000){
+    double smBest=0;
+    for(int i=0; i<nSim; i++){
+        int best1=0;
+        for(int k=0; k<K; k++){
+           var v=nm.rnd.Next(N)+1;
+           if (v>best1) best1=v; 
+        }
+        smBest+= best1;
+    }
+    return smBest/nSim;
+}
+
+// expected best value and number of draws
+// if stop after no better in B draws
+double[] simEFB(int N, int B, int nSim=1000000){
+    double smBest=0;
+    double smDraws=0;
+    for(int i=0; i<nSim; i++){
+        int best1=0, K=0, nWorse=0;
+        while(nWorse<B){
+            K++;
+            var v=nm.rnd.Next(N)+1;
+            if (v>best1){
+                best1=v; 
+                nWorse=0;
+            }else
+                nWorse++;
+        }
+        smBest+= best1;
+        smDraws += K;
+    }
+    return new double[]{smBest/nSim, smDraws/nSim};
+}
+
+// expected best value and number of draws
+// if stop based on best so far
+double[] resEF1(int N, int X, int nSim=1000000){
+    double smBest=0;
+    double smDraws=0;
+    for(int i=0; i<nSim; i++){
+        int K=0, M=0;
+        while( 2*N*X < (N-M)*(N-M+1) ){
+            K++;
+            var v=nm.rnd.Next(N)+1;
+            if (v>M) M=v;
+        }
+        smBest+= M;
+        smDraws += K;
+    }
+    smBest/=nSim;
+    smDraws/=nSim;
+    return new double[]{smBest, smDraws, smBest-smDraws*X};
+}
+double[] resEF2(int N, int X, int nSim=1000000){
+    double smBest=0;
+    double smDraws=0;
+    double M=(2*N+1- Math.Sqrt(8*N*X+1))/2;
+    for(int i=0; i<nSim; i++){
+        int K=0;
+        double v=0;
+        do{
+            K++;
+            v=nm.rnd.Next(N)+1;
+        } while(v<M);
+        smBest+= v;
+        smDraws += K;
+    }
+    smBest/=nSim;
+    smDraws/=nSim;
+    return new double[]{smBest, smDraws, smBest-smDraws*X};
+}

@@ -1,0 +1,314 @@
+// Draw K times random value 1$-N$, and keep only largest value. Each draw costs C$.
+// a) if N=100$, C=2$, and all K draws must be paid up front, what is optimal K? [K=7]
+// b) if you can pay one by one, what is optimal strategy? 
+
+// expected best value after K draws
+ef(N,K)=sum((i)=> i*((i/N)^K-((i-1)/N)^K),1,N)  // i*(i^K-(i-1)^K),1,N)/N^K
+ef2(N,K)={ // direct formula, based on German tank formula
+    a=1/2; if(K>2*N) a=N/K; else if (K<6) a=1/sqrt(K);
+    return (N+a)*K/(K+1);
+}
+
+
+// optimal K, if one draw costs C
+fk(N,C)={
+   oldEx=0;
+   K=0;
+   dif=0;
+   do{
+     K=K+1;
+     newEx= ef(N,K);
+     dif= newEx-oldEx;
+     oldEx=newEx;
+   } while(dif>C);
+   return K-1;
+}
+
+// expected best value, nDraws and gain, given N&C
+// if nDraws must be paid upfront
+resEF(N,C)={
+    K=fk(N,C);
+    expected=ef(N,K);
+    gain=expected-K*C;
+    return vec(expected,K, gain);
+}
+
+// if individual draws, based on M: draw until best >= M
+// - if current best is M, probability for better is p=(N-M)/N, and expected new draws is X2=1/p
+// - expected new better is between M and N, so M2=(N+M)/2
+// - additional gain = M2-M- X2*C= (N+M)/2-M- N/(N-M)*C and must be >=0
+// - that simplify to M <= N- sqrt(2NC)
+// = so strategy is : draw until you get >= M from above !
+// - probability to get >=M is (N-M)/N , so X= N/(N-M)= sqrt(N/2C)
+// - thus M can be expressed using X: M = N-N/X
+// - expected best value is between minumum M and N, so Mex=(N+M)/2 = N-N/2X
+// - expected gain G=Mex-X*C, and it simplify to G=M !
+resEFM(N,C)={
+    M=N-sqrt(2*N*C); // minimal M to stop
+    X=N/(N-M); // expected number of attempts to stop
+    Mex=(N+M)/2; // expected best value Mex is between min M and max M
+    G=M; // gain is same as minimal M
+    return vec( round(G,3), round(Mex,3), round(X,3), round(M,3));    
+}
+
+// same as resEFM, but with +1 due to integer Ms: : vec( Mex, X, G, M )
+resEFMi(N,C)={
+    M= floor(N-sqrt(2*N*C+1/4)+1/2) ; // minimal M to stop ( when draw >=M )    
+    X=N/(N-M); // expected number of attempts to stop
+    Mex=(N+M+1)/2; // expected best value Mex is between min M and max M
+    G= Mex-X*C; // G=M+1
+    return vec( round(G,3), round(Mex,3), round(X,3), round(M,3));
+}
+
+// if individual draws, based on optimal K: draw K times
+// - if current best is M after K draws, estimated MVUE max N= M*(K+1)/K-1
+// - from that, expected best after K draws is: M=(N+1)*K/(K+1)
+// - gain G=M-K*C, and dG/dK= (N+1)/(K+1)^2-C
+// - maximal gain is for dG/dK=0, or optimal K=sqrt((N+1)/C)-1
+resEFK(N,C)={
+    K=sqrt((N+1)/C)-1; // optimal K number of draws
+    M=(N+1)*K/(K+1); // expected best value Mex is between min M and max M
+    G=M-K*C; // gain 
+    return vec( round(G,3), round(M,3), round(K,3), round(K));    
+}
+n=100   
+c=5
+
+//resEFM(n,c)   // M: optimal with double math
+resEFMi(n,c)  // M: optimal with INT math
+resEFK(n,c)   // K: optimal result
+
+bM=simEFM(n,c) // gain=900 for N=1000, g=68.9 for N=100, g=9684 for N=10k, g=99k for N=100k
+bK=simEFK(n,c) // 13 opt for N=1000 (864), 4=opt for N=100 (60.5), 44(9558), 141(98594)
+bB=simEFB(n,c) // 7 opt for N=1000 (857), 2=opt for N=100 (58.6), 25 (9535), 84(98517)     
+ 
+rM=simRM(n,c) // these simulate without using known N     
+rK=simRK(n,c) 
+rB=simRB(n,c)
+
+// (res&eff for c=5) n<=35: M>K>B; n<=50: B>K>M; n<=290: B=>K>M; n<=100k: K=>B>M
+vec( rM[0]/bM[0]*100, rM[0]/bM[0]*100) // 100=69.0%, 1k=84.3%, 10k=88.4%, 100k=89.5%
+vec( rK[0]/bM[0]*100, rK[0]/bK[0]*100) // 100=76.3%, 1k=94.5%, 10k=98.6%, 100k=99.6%
+vec( rB[0]/bM[0]*100, rB[0]/bB[0]*100) // 100=78.2%, 1k=93.7%, 10k=98.3%, 100k=99.5%
+
+
+
+
+//#C#
+const int defNsim=1000000;
+
+// simEFK, simEFB, simEFM all simulate gain and nDraws with different conditions
+// all return average :  { Gain, bestValue, nDraws, condition }
+
+// stop after K draws
+// if K not supplied, optimal K is calculated
+double[] simEFK(int N, int C, int K=-1, int nSim=defNsim){
+    if (K<0) K=optK(N,C);
+    double smBest=0;
+    for(int i=0; i<nSim; i++){
+        int best1=0;
+        for(int k=0; k<K; k++){
+           var v=nm.rnd.Next(N)+1;
+           if (v>best1) best1=v; 
+        }
+        smBest+= best1;
+    }
+    smBest /= nSim;
+    return new double[]{Math.Round(smBest-K*C,3), Math.Round(smBest,3), K, K};
+}
+
+// stop after no better in B draws
+// if B not supplied, *guess* at optimal value is used 
+double[] simEFB(int N, int C, int B=-1, int nSim=defNsim){
+    if (B<0) B= (int)Math.Round(0.38*Math.Pow(3.5, Math.Log10(N))/Math.Sqrt(C));
+    double smBest=0;
+    double smDraws=0;
+    for(int i=0; i<nSim; i++){
+        int best1=0, K=0, nWorse=0;
+        while(nWorse<B){
+            K++;
+            var v=nm.rnd.Next(N)+1;
+            if (v>best1){
+                best1=v; 
+                nWorse=0;
+            }else
+                nWorse++;
+        }
+        smBest+= best1;
+        smDraws += K;
+    }
+    smBest /= nSim;
+    smDraws/=nSim;
+    return new double[]{Math.Round(smBest-smDraws*C,3), Math.Round(smBest,3), Math.Round(smDraws,3), B};
+}
+
+// stop based on best so far M
+// if M no tsupplied, optimal M is calculated
+double[] simEFM(int N, int C, double M=-1, int nSim=defNsim){
+    double smBest=0;
+    double smDraws=0;
+    if (M<0) M= Math.Floor(N-Math.Sqrt(2*N*C+1/4)+1/2); //N-Math.Sqrt(8*N*X+1)/2;//
+    for(int i=0; i<nSim; i++){
+        int K=0;
+        double v=0;
+        do{
+            K++;
+            v=nm.rnd.Next(N)+1;
+        } while(v<=M);
+        smBest+= v;
+        smDraws += K;
+    }
+    smBest/=nSim;
+    smDraws/=nSim;
+    double smGain= smBest-smDraws*C;
+    return new double[]{Math.Round(smGain,3), Math.Round(smBest,3), Math.Round(smDraws,3), Math.Round(M,3)};
+}
+
+
+// optimal K for 'draw fixed K', given N and cost C
+// init f-ion to approx K and fill array 
+// it approximate to : esK(N,C)= K=sqrt((N+1)/C)-1
+double[] initOptK(int N, int C, out int K, out int lastSign)
+{
+    K = (int)Math.Round( Math.Sqrt((N+1)/C)-1);
+    var d = new double[N];
+    double diff = 0;
+    for (int x = 0; x < N; x++)
+    {
+        d[x] = (N - x) * Math.Pow(x / (double) N, K);
+        diff += d[x];
+    }
+    lastSign = Math.Sign(diff - N * C);
+    return d;
+}
+int optKinner(int N, int C)
+{
+    double CN = C * N, Kmult = 1;
+    int sign, lastSign, K, lastK, res;
+    var d = initOptK(N, C, out lastK, out lastSign);
+    do
+    {
+        double diff = 0;
+        if (lastSign > 0)
+        {
+            K = lastK + 1;
+            if (K>N) return lastK;
+            Kmult /= N;
+            for (int x = 1; x < N; x++)
+            {
+                double t = d[x] * x;
+                diff += t;
+                d[x] = t;
+            }
+        }
+        else
+        {
+            K = lastK - 1;
+            if (K<1) return lastK;
+            Kmult *= N;
+            for (int x = 1; x < N; x++)
+            {
+                double t = d[x] / x;
+                diff += t;
+                d[x] = t;
+            }
+        }
+        diff *= Kmult;
+        sign = Math.Sign(diff - CN);
+        if (sign * lastSign >= 0)
+        {
+            lastK = K;
+            lastSign = sign;
+        }else
+            return sign < 0? K : lastK;
+    } while (true);
+}
+int optK(int N, int C)
+{
+    if (nmCache.Try("optK", N, C)) return nmCache.Result; 
+    return nmCache.Add("optK", N, C, optKinner(N,C) );
+}
+
+
+
+// N unknown
+double[] simRR(int NR, int C, int alg, int nSim=defNsim){
+    double smBest=0, smDraws=0, smGain=0, smCond=0;
+    for(int i=0; i<nSim; i++){
+        int N, K=0, nWorse=0;
+        bool doCont=false;
+        double vSum=0, best=0, n0=0,n1=0,n2=0,n3=0, cond=0;        
+        do{
+            K++;
+            var v=nm.rnd.Next(NR)+1;
+            vSum+=v;
+            if (v>best){
+                best=v; 
+                nWorse=0;
+            }else
+                nWorse++;            
+            // estimate N based on draws so far
+            //n0=vSum/K*2); // based on average
+            n1= best*(1+1.0/K)-1; // best, based on max so far, freq, -1
+            //n2= best*(1+Math.Log(2)/(K-1)); // bad, based on max so far, bayes median
+            //n3= (best-1)*(K-1)/(double)(K-2); // bad, based on max so far, bayes mean
+            N= (int)Math.Round(n1*(1+0.55/K)); // correcting N by increasing it
+            //if (N<K) N=K;
+            //if (N>NR) N=NR; // error in N est!
+            // check end condition depending on alg
+            switch(alg){
+              case 1: // M: stop after best >= M
+                cond= Math.Floor(N-Math.Sqrt(2*N*C+1/4)+1/2); 
+                doCont= best <= cond;
+                break;
+              case 2: // K: stop after K draws
+                cond= (int)Math.Round(Math.Sqrt((N+1/2)/C)-1); // actual formula is: Math.Sqrt((N+1/2)/C)-1
+                doCont= K <= cond+1;
+                break;
+              case 3: // B: stop after no better in B draws
+                cond= Math.Round(0.38*Math.Pow(3.5, Math.Log10(N))/Math.Sqrt(C)); 
+                doCont= nWorse < cond;
+                break;
+              case 4: // K new: stop after K draws, exact
+                cond= optK(N,C); // Math.Round(0.85*Math.Pow(3.27, Math.Log10(N))/Math.Sqrt(C)); 
+                doCont= K <= cond;
+                break;
+            }
+            if (K<3) doCont=true;
+        }while(doCont);
+        smBest+= best;
+        smDraws += K;
+        smGain += best-K*C;
+        smCond += cond;
+    }
+    smBest/=nSim;
+    smDraws/=nSim;
+    smGain/=nSim;
+    smCond /=nSim;
+    return new double[]{Math.Round(smGain,3), Math.Round(smBest,3), Math.Round(smDraws,3), Math.Round(smCond,3)};
+}
+
+// N unknown: stop after best >= M
+double[] simRM(int NR, int C, int nSim=defNsim){ return simRR(NR,C,1,nSim); }
+
+// N unknown: stop after K draws
+double[] simRK(int NR, int C, int nSim=defNsim){ return simRR(NR,C,2,nSim); }
+
+// N unknown: stop after no better in B draws
+double[] simRB(int NR, int C, int nSim=defNsim){ return simRR(NR,C,3,nSim); }
+
+
+
+// return { avgDiff, maxDiff, fracDiff>Err }
+double[] testK(int maxN, int C, double err=1.0){
+    double smDiff=0, maxDiff=0, nErr=0;
+    for (int n=1; n<=maxN; n++){
+        double k1= optKinner(n,C);
+        double k2= (int)Math.Round(Math.Sqrt((n+1)/C)-1); 
+        double diff= Math.Abs(k2-k1);
+        if (diff>err) nErr++;
+        if (diff>maxDiff) maxDiff=diff;
+        smDiff+=diff;
+    }
+    return new double[]{Math.Round(smDiff/maxN,3), Math.Round(maxDiff,3), Math.Round(nErr/maxN,3) }; 
+}

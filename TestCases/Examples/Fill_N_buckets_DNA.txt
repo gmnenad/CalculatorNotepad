@@ -1,0 +1,32 @@
+p=1e-9 // probability of mutation of one basepair per replication
+N=150 // number of basepairs in one protein
+nmut=8 // number of possible different mutations
+
+// single base mutation
+N1=N*nmut // number of possible states (each basepair x 8 mutations )
+p1=p/nmut // probability to get one specific state
+exN1B= 1/(N1*p1) // expected tries to get next (even if repeated)
+exN1= 1/N/p // expected tries to get next (even if repeated)
+exAll_1=exN1*N1*h(N1) // expected tries to get all possible states
+
+2/N/p 
+
+// double base mutation
+N2=choose(N,2)*nmut // number of possible states (each basepair x 8 mutations )
+p2=p*p/nmut // probability to get one specific state
+exN2B= 1/(N2*p2) // expected tries to get next (even if repeated)
+exN2= 2/N/p // expected tries to get next pair (even if repeated)
+exAll_2=exN2*N2*h(N2) // expected tries to get all possible states
+
+
+
+
+//#C#
+// sum 1/N+1/(N-1)+...1/1 , or if 'part' then sum up to certain percentage of N
+double h(int N, double part=1){
+    int nMin=(int)Math.Round(N*(1-part)+1);
+    double res=0;
+    for (int i=nMin; i<=N; i++)
+        res+=1/(double)i;
+    return res;
+}

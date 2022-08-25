@@ -1,0 +1,104 @@
+// ** Problem: 
+// What is expected number of attempts to get D in row, if chance to get one is p
+
+// specific test values used in both simulations and formulas below
+tD=3        // change to get this many in row
+tp=1/6      // if this is chance to get one in single draw
+
+
+// ** SIMULATION, correct: 62 for 5 heads in a row, 258 for 3 sixes
+simEX1(p,D)={
+    v=vDim(D);
+    c=0;
+    while(vSum(v)<D){
+        v[mod(c,D)]= rnd<=p;
+        c=c+1;
+    }
+    return c;
+}
+simEX(p,D, nSim)= pSim(()=>simEX1(p,D),nSim) 
+simEX(tp,tD,200)
+csimEX(tp,tD,10000) // 62 & 258
+
+
+// ** CALCULATION, still incorrect
+calcEX(p,D)={ 
+    pm=(2^(D-1)-1)/2^(D-1); // n=2^(D-1)=num. of 1/0, (n-1)/n= correction when not  all D
+    v=vDim(D,()=>p);  // probabilities to draw, if 'all D' was NOT drawn so far. Starts with all '1s' = p
+    ps=0;
+    ex=0;
+    for( i=D , i<1000 , i=i+1){ 
+        pD= (1-ps)*vMul(v) ; // probability to have all D first time at this i-th step
+        ex=ex+pD*i;  
+        ps=ps+pD;
+        v=v*pm;      // reduce all probabilities to draw '1' by factor pm
+        v[mod(i,D)]=p;  // add initial probability 'p' for next draw 
+    }
+    ex
+}
+calcEX(tp,tD)
+ccalcEX(tp,tD)
+
+// ** FORMULA, correct (62 for 5 heads in a row, 258 for 3 sixes)
+// x=p0(x+1)+p1*p0*(x+2)+p1^2*p0*(x+3)+...+p1^(N-1)*p0*(x+N) + p1^N*N
+// x*(1-p0*sum(p^(i-1),1,N))= p0*sum(i*p^(i-1),1,N) + p1^N*N
+// p1=p -> x = (1-p^N)/(1-p)/p^N
+formEX(p,D)=(p^-D -1)/(1-p)
+formEX(tp,tD)
+
+//#C#
+
+// probability to get D in row at least once after N attemps, given p
+double csPrv(double p, int D, int N){
+  // create initial vector
+  var v= new double[D];
+  v[0]=1;
+  // N times calculate new probability vector
+  for (int k=0; k<N; k++){
+    double sum= v.Sum();
+    for (int i=D-1; i>0; i--) v[i]=v[i-1]*p;
+    v[0]=sum*(1-p);
+  }
+  // get final result from prob vector
+  double res=1;
+  for (int i=0; i<D; i++) res-=v[i];
+  return res;
+}
+
+// ** SIMULATION 
+int csimEX1(double p,int D){
+    var v = new int[D];
+    int c = 0;
+    while(v.Sum()<D){
+        v[c%D]= nm.rnd.NextDouble()<=p ?1:0;
+        c=c+1;
+    }
+    return c;
+}
+double csimEX(double p,int D, int nSim){
+    if (nSim<=0) return 0;
+    double sum = 0;
+    for(int i=0; i<nSim; i++){
+        int nr=csimEX1(p,D);
+        sum+= nr;
+    }
+    return sum/(double)nSim;
+}
+
+// CALC
+double ccalcEX(double p, int D){
+    double ex=0, ps=0;
+    var v=new double[D];
+    for(int u=0; u<D; u++) v[u]=p;
+    for( int i=D ; i<10000 ; i=i+1){ 
+        double pm=v.Aggregate(1.0,(m1,m2)=>m1*m2);
+        double pD=(1-ps)*pm;
+        ex = ex+ pD*i;
+        ps=ps+pD;
+        for(int u=0; u<D; u++)
+            v[u]=(v[u]-pm)/(1-pm);
+        v[i%D]=p;
+    }
+    return ex;
+}
+

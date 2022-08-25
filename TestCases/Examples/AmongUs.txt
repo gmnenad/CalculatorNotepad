@@ -1,0 +1,95 @@
+// https://puzzling.stackexchange.com/questions/102592/10-dummies-play-a-game-of-among-us/111065#111065
+
+// probability that impostor will be eliminated next. Assume impostor knows
+pp(N,I,M)={
+    // needed votes
+    needed= (N-1)/2;
+    if (M) needed=needed+0.1;
+    needed= ceiling(needed);
+    voters= N-I; // impostors do not vote randomly, just crew
+    // if select impostor
+    iPs= I/N; // prob to select impostor
+    d=dist_binomial(voters,0.5);
+    iPe= 1- cdf(d, needed-1); // prob to eject impostor if selected
+    // if select crew
+    cPs= (N-I)/N; // prob to select crew
+    voters=voters-1; // one less crew to vote
+    d=dist_binomial(voters,0.5);
+    cPe= 1- cdf(d, needed-I-1); // prob to eject crew if selected
+    // combined prob to select&eject
+    pei= iPs*iPe;
+    pec= cPs*cPe;
+    // normalized prob to eject impostor
+    return pei/(pei+pec);
+}
+pwin(N,I,M)={ // probability that impostors will win
+    if (I>=N-I) return 1; // impostors win if same numbers
+    if (I==0) return 0; // crew win if no impostors
+    p= pp(N,I,M); // probability impostor is next eliminated
+    return p*pwin(N-1,I-1,M)+(1-p)*pwin(N-1,I,M);
+}
+
+// ALTERNATE sol
+pVote(nV, needed)={ // prob to get 'needed' votes out of nV
+    pE=0; 
+    for(i=needed, i<=nV, i=i+1) pE=pE+choose(nV,i)/2^nV;
+    return pE; // = 1- binomial_cdf(N=nV,p=50%,x=needed-1)
+}
+
+pNextImp(N,I)={ // prob impostor ejected next. 
+    needed= ceiling((N-1)/2); // assume half votes needed
+    pIe= I/N*pVote(N-I,needed); // prob to select&eject impostor
+    pCe= (N-I)/N*pVote(N-I-1,needed-I); // prob to select&eject crew
+    return pIe/(pIe+pCe); // prob to eject impostor GIVEN someone is ejected
+}
+
+pWinImp(N,I)={ // probability that impostors will win (should cache)
+    if (I>=N-I) return 1; // impostors win if same numbers
+    if (I==0) return 0; // crew win if no impostors
+    p= pNextImp(N,I); // probability impostor is next eliminated
+    return p*pWinImp(N-1,I-1)+(1-p)*pWinImp(N-1,I); // recursive
+}
+
+//pWinImp(10,3) -> 89%
+
+
+
+M=false
+N=10
+I=3
+pwiC(N,I,M)
+pwin(N,I,M)
+pWinImp(N,I)
+
+
+
+//#C#
+bool impostorsKnow(){ return true;}
+
+int simOne(int N, int I, bool Majority){
+    do{
+        if (I>=N-I) return 1;
+        if (I==0) return 0;
+        int needed= (int)Math.Ceiling((N-1)/2.0+(Majority?0.1:0));
+        bool isImpostor= nm.rnd.Next(N)<I;
+        int votes= 0;
+        int nv= N-1;
+        if (impostorsKnow()){
+            if (!isImpostor) votes+=I; // all impostors vote against crew
+            nv -= I-(isImpostor?1:0); // remove impostors from random votes
+        }
+        for(int u=0; u<nv; u++) // N-1 vote
+            votes+= nm.rnd.Next(2);
+        if (votes>=needed){ // if someone is ejected
+            if (isImpostor) I--;
+            N--; 
+        }
+    }while(true);
+}
+
+double pwiC(int N, int I, bool Majority, int nSim=1000000){
+    int nw=0;
+    for(int u=0; u<nSim; u++)
+        nw+= simOne(N,I,Majority);
+    return nw/(double)nSim;
+}

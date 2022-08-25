@@ -1,0 +1,87 @@
+// environmental temperatures [C]
+Tc=16      // cold tap water temperature (measured)
+Tw=40      // warm desired bath temp (measured 33 as low warm, 37 as high warm)
+Th_max=81  // hottest possible water in boiler (measured, 67C at lower settings)
+//  boiler stats
+Pb=   2      // boiler power [kW] : 2kW 
+Mb=  80      // boiler water mass [liters] : 80 liters
+bcp=100      // boiler control position [percentage] : 100=max, 0=min
+
+// determine top temperature in boiler Th (based on boiler control)
+Th= (Th_max-Tc)*bcp/100+Tc  // temperature of boiler water at start
+k=(Tw-Tc)/(Th-Tc)           // ratio of boiler hot water (Th) in tap water to achieve Tw
+
+// w0: amount of used warm (Tw) water after which temperature in boiler drops to that same Tw
+// in this period (w<w0), tap water and bathtub water is constant Tw, while boiler temp reduce from Th to Tw
+w0=(1/k-1)*Mb           // [liters] of tap water used after which tap can not issue warm water at Tw
+tb0(w)=Th-w/Mb*(Tw-Tc)  // boiler temperature after 'w' water used (w<=w0)
+tt0(w)=Tw               // tap temperature is constant Tw (tap is adjusted from middle toward full hot, as boiler water cools)
+ts0(w)=Tw               // and shower/bathtub temperature is also constant at desired warm Tw
+
+
+// w1: amount after all hot water is used, and boiler temp reaches cold Tc
+// in this period (w0< w <w1), tap water and boiler water reduces from Tw to Tc, while tub water slightly cools below Tw
+w1=w0+2*Mb                              // [liters] of tap water used after which tap can only issue cold water
+tb1(w)=(1-(w-w0)/2/Mb)*(Tw-Tc)+Tc       // boiler temperature is reduced from Tw to Tc in (w0..w1) period
+tt1(w)= tb1(w)                          // tap temperature is identical to boiler temp (tap is turned full to 'hot' side)
+ts1(w)=(w0*Tw+(w-w0)/2*(tb1(w)+Tw))/w   // shower/bathtub temperature reduces from Tw, but does not reach Tc
+
+// in period after w1 (w0< w <w1), tap and boiler water are constant at Tc, and shower/bathtub slowly reduces temperature toward Tc 
+tb2(w)= Tc
+tt2(w)= Tc
+ts2(w)= (w1*ts1(w1)+(w-w1)*Tc)/w
+
+
+// combined functions for entire 'w' range (0..inf)
+tb(w)={ // boiler water temperature after 'w' water was used
+   if (w<=w0) return tb0(w);
+   if (w<=w1) return tb1(w);
+   return tb2(w);
+}
+tt(w)={ // tap water temperature after 'w' water was used
+   if (w<=w0) return tt0(w);
+   if (w<=w1) return tt1(w);
+   return tt2(w);
+}
+ts(w)={ // shower/bathtub water temperature after 'w' water was used
+   if (w<=w0) return ts0(w);
+   if (w<=w1) return ts1(w);
+   return ts2(w);
+}
+// vector returning all 3 temperatures [boiler, tap, shower/tub ]
+T(w)={
+  vec( round(tb(w),2), round(tt(w),2), round(ts(w),2) )
+}
+
+
+// energy [kWh] needed to raise temperature by dT[C] for m[liters] of water
+Ewh(m,dT)= m*dT*4.184/60/60 
+
+// electrical energy [kWh] needed to reheat boiler after 'w' amount of warm water was used
+// it assume 90% efficiency of boiler heating
+Eb(w)= round(Ewh(Mb, Th-Tb(w))/0.90,3)
+
+// time [min] needed to reheat  boiler after 'w' amount of warm water was used
+tm(w)= round(Eb(w)/Pb*60,0)
+
+//*** EXAMPLE calculation (w=liters of warm water used):
+//*** assume hottest boiler is 81C ( measured, its way over allowed 60C! )
+//*** TL;DR:  7min tap is 1kWh, short bath is 2kWh, full bath is 3 kWh
+
+w=110  
+//w=150  // full bath is 150l at 35C : 4.4 kWh
+//w=110  // filled tub : 3.4 kWh
+//w=80   // short bath is 80l at 35C : 2.5 kWh
+//w=1*60/12  // 1min tap water (5l): hand wash ( tap uses 1l/12sec at 40C ): 0.16 kWh
+//w=5*60/12  // 5min tap water (25l) : shawing: 0.77 kWh
+//w=7*60/12  // 7min tap water (35l) :  1 kWh
+//w=10*60/12 // 10min tap water(50l) : long rinse : 1.55 kWh
+T(w)   // temperatures [C] of water in : boiler, tap, tub
+Eb(w)  // energy [kWh] needed to reheat boiler
+tm(w)  // time [min] needed to reheat boiler
+
+
+
+
+
+

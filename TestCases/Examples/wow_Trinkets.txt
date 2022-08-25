@@ -1,0 +1,278 @@
+// use <eff_avg> :  returns effective value for trinkets
+
+// return DMGS within active period (DMGS= damage*seconds, but integrated over period)
+dmgs_active(initDmg, duration, castTime, proc, dDmgPerTrigger, maxCasts)={
+    t=0;
+    c=0;
+    dmgS=0;
+    dmg=initDmg;
+    if (castTime<=0){
+        dmgS= initDmg*duration;
+    } else
+        while( (t<duration)&((c<maxCasts)|(maxCasts<=0))){
+            // time until next proc, and damageS in between
+            dt= min( castTime/proc, duration-t);
+            c=c+1;
+            dmgS = dmgS+dt*dmg;
+            dmg=dmg+dDmgPerTrigger;
+            t=t+dt;
+        }
+        return dmgS;
+}
+
+
+// return effective value averaged over entire fight
+eff_fight(initDmg, duration, castTime, proc, dDmgPerTrigger, maxCasts, CD, fightDuration)={
+    if (proc<=0) proc=1;
+    ta= if(proc>0,castTime/proc,0); // time until first proc
+    tPeriod= ta+CD; // time of a repeat cycle
+    nFullCycles= floor(fightDuration/tPeriod); // number of full cycles during fight
+    dmgS= nFullCycles*dmgs_active(initDmg, duration, castTime, proc, dDmgPerTrigger, maxCasts); // total damageS during those cycles
+    // calculate for remaining part (shorter than full cycle )
+    remainDuration= fightDuration-nFullCycles*tPeriod-ta; // reduced also by time to first activate
+    if (remainDuration>0){
+        activeDuration= min(remainDuration, duration);// if remains smaller than active duration
+        dmgS= dmgS + dmgs_active(initDmg, activeDuration, castTime, proc, dDmgPerTrigger, maxCasts); // add for remaining active
+    }
+    return dmgS/fightDuration;
+}
+
+// return effective value averaged over entire fight, but fight duration is variable +/- spread%
+eff_spread(initDmg, duration, castTime, proc, dDmgPerTrigger, maxCasts, CD, fightDuration, spread)={
+    n=0;
+    effSum=0;
+    dt= max(1, castTime);
+    fDur= fightDuration*(1-spread);
+    fDurMax=fightDuration*(1+spread);
+    while(fDur<=fDurMax){
+        effSum= effSum+ eff_fight(initDmg, duration, castTime, proc, dDmgPerTrigger, maxCasts, CD, fDur);
+        fDur=fDur+dt;
+        n=n+1;
+    }
+    return if(n>0,effSum/n,0);
+}
+
+// return effective value averaged over MULTIPE fights
+eff_avg(initDmg, duration, castTime, proc, dDmgPerTrigger, maxCasts, CD, spread, vecFightDurations)={
+    n= vLen(vecFightDurations);
+    effSum=0;
+    effSumTime=0;
+    timeSum=0;
+    for(i=0, i<n, i=i+1) {
+        eff=eff_spread(initDmg, duration, castTime, proc, dDmgPerTrigger, maxCasts, CD, vecFightDurations[i], spread);
+        effSum=effSum+ eff;
+        effSumTime=effSumTime+ vecFightDurations[i]*eff;
+        timeSum=timeSum+vecFightDurations[i];
+    }
+    return if(timeSum>0,round((effSumTime/timeSum+effSum/n)/2),0); // combined
+    //return if(n>0,effSum/n,0); // better for QE(1), ToA(2),ZC(4)
+    //return if(timeSum>0,effSumTime/timeSum,0); // better for RES?(4), TOEP(2), ISC(5)
+}
+
+
+fghtDur=207
+spread=0.2
+
+ftMC=vec(62,68,49,66,71,40,70,91,93,137)//MC
+ftBWL=vec(51,49,75,121,85,85,169,226) //BWL
+ftZG=vec(57,94,65,76,73,91,70,51,59,161)  //ZG
+ftAQ=vec(89,118,117,70,172,105,430,178,178) //AQ
+ftNAX=vec(142,164,173,102,122,205,121,125,199,327,515,100,152,347,311)//NAX
+ftSet1= vConcat(ftMC,ftBWL,ftZG,ftAQ,ftNAX)
+
+eff_avg(204,20,2.6,1,-17,0,  120,spread,ftNAX) // ZC old37 ( assume only SBs used during ZC )
+eff_avg(175,15,0,1,0,0,  90,spread,ftNAX) // TOEP old34
+eff_avg(0,20,2.6,1,40,6,  60,spread,ftNAX) // ToA old42 ( assume 0.1 delay, only SBs used, and 7th(?!) also bonus=39, 6th=29 )
+eff_avg(130,20,0,1,0,0,  120,spread,ftNAX) +40 // RES
+eff_avg(320,6,2,0.1,0,0,  45,spread,ftNAX) +37 // QE 
+eff_avg(155,20,0,1,0,0,  120,spread,ftNAX)+43 // ISC 
+
+// ZC
+eff_avg(204,20,2.6,1,-17,0,  120,spread,ftNAX) 
+sim_avg(204,20,2.6,0,-17,0,0, 120,0, 0, spread,ftNAX):0
+// ISC
+eff_avg(155,20,0,1,0,0,  120,spread,ftNAX)
+sim_avg(155,20,0,0,0,0,0,120,0,0,spread,ftNAX):0
+sim_onUse(155,20,120):0
+
+// Different 'on spell' procs have different average castTime between those spells
+// Below are times assuming lvl 70 demo build/rotation:
+// - spellcasts ( all spells, including LTs: meta skyfire ) ~ 2.2s
+// - harmful spells ( all spells except LTs: QE trinket ) ~ 2.8s
+// - spell than land ( harmful spells minus resists: Spellstrike 2 set, elder robe ) ~ 3s
+// - shadow spells ( dots,SB : Voidheart 2 set ) ~ 3.2s
+// - fire spells ( immo : Voidheart 2 set ) ~ 18s
+
+
+// QE harmful spells 10% to +320haste for 6s/45sCD
+eff_avg(320,6,2,0.1,0,0,  45,spread,ftNAX)  // QE 
+sim_avg(320,6,2,0.1,0,0,0, 0,45,1,spread,ftNAX):0
+sim_onProc(320,6,2,0.1,45):0
+// 5% proc, 135 dmg, 15 sec duration
+sim_onProc(135,15,3,0.05,0):1 // 3s casts for shadow
+sim_onProc(135,15,18,0.05,0):1 // 19s casts for fire
+sim_onProc(135,15,13,0.05,0):1 // 13s casts for shadow on FireBuild
+sim_onProc(135,15,3,0.05,0):1 // 3s casts for fire on FireBuild
+// 5% proc, 92 dmg, 10 sec duration, on all spells
+sim_onProc(92,10,2.7,0.05,0):1 // 2.7s casts 
+
+// meta Spell Focus Trigger: spellcasts have 15% chance for +320 haste/6sec on 35s CD
+sim_onProc(320,6,2.2,0.15,35):0
+// chest Robe of the Elder Scribes: on harmful spell land 20% to +130dmg/10s on 50s CD
+sim_onProc(130,10,3,0.20,50):0
+// Darkmoon Card: Crusade = harmful spells +8dmg/10s, 10 stacks
+sim_avg(0,10,3,1,8,10,0, 0,0,1,spread,ftNAX):0
+// Vengeance of the Illidari, 14 crit plus 
+sim_onUse(120,15,90):0
+// Eye of Magtheridon, +54 dmg , +170dmg for 10s on ressist
+sim_onProc(170,10,2.2,0.03,0.001)+54
+// Ashtongue Talisman of Shadows, each Corr tick has 20% chance for +220dmg over 5sec
+sim_onProc(220,5,3,0.2,0.001)
+// The Skull of Gul'dan, 25hit, 50dmg, onUse: 175 haste for 20s, 2m CD
+sim_onUse(175,20,120):0
+// Hex Lord Malacrass, 53 dmg, 211dmg for 20sec on 2m CD
+sim_onUse(211,20,120):0
+// Shifting Naaru Sliver, 54 haste, 320dmg for 15sec on 1.5m CD
+sim_onUse(320,15,90):0
+
+
+
+
+//#C#
+// simulate one fight of given duration/spread
+double simOne(double initDmg, double duration, double castTime, 
+              double proc, double dDmgPerTrigger, int maxStacks, int maxCasts, 
+              double useCD, double procCD, bool refresh, double spread, double fightDuration)
+{
+    double tmFightEnd= fightDuration+ (nm.rnd.NextDouble()*2-1)*spread; // fight duration +/- spread%
+    if (tmFightEnd<1) tmFightEnd=1;
+    double GCD=1.5, tm=0, tmNextProcCDready=0, tmNext=0, tmNextDown=tmFightEnd;
+    double tmNextUse= useCD>0? 0: 2* tmFightEnd; // if no useCD, then this is not OnUSe effect
+    double tmNextSpell = castTime>0? 0 : 2 * tmFightEnd; // if no spells are applicable
+    int nStacks=0, nCasts=0;
+    bool inEffect=false;
+    double tmSumDmg=0, dmg=0;
+    do{
+        // update current stacks
+        tmSumDmg+= (tmNext-tm)*dmg;
+        tm=tmNext;
+        // process this event
+        if (tm==tmNextUse){ // onUse, trinket/potion
+            dmg=initDmg;
+            inEffect=true;
+            nCasts= maxCasts;
+            nStacks=0;
+            tmNextDown = tm + duration;
+            tmNextUse+= useCD;
+            if (castTime>0)
+                tmNextSpell= tm+ GCD+castTime; // assume trinket/potion trigger GCD
+        }else
+        if (tm==tmNextSpell){ // spell
+            // check if this spell will activate effect ( only if effect is proc based )
+            bool isProc=  (nm.rnd.NextDouble()<proc) && (tm>=tmNextProcCDready);
+            if (isProc) { 
+                tmNextProcCDready=tm+procCD;
+                if (!inEffect){
+                    dmg=initDmg-dDmgPerTrigger; // if spell started effect
+                    inEffect=true;
+                    nCasts= maxCasts;
+                    nStacks=0;
+                    tmNextDown = tm + duration;
+                }
+            }
+            // check if spell will change dmg value ( used in proc or non-proc based )
+            if (inEffect){
+                if ( isProc || (proc==0)){
+                    nStacks++;
+                    if ((maxStacks>0)&&(nStacks>maxStacks)) nStacks=maxStacks;
+                    if (nStacks<0) nStacks=0;
+                    dmg= initDmg + nStacks*dDmgPerTrigger;
+                    if (refresh) tmNextDown = tm + duration;
+                }
+                if (maxCasts>0){ // if effect is limited to number of casts ( regardless of proc )
+                    nCasts--;
+                    if (nCasts==0)  tmNextDown= tmNext; 
+                }
+            }
+            tmNextSpell += castTime;
+        }else
+        if (tm==tmNextDown){ // end of effect time
+            inEffect=false;
+            dmg=0;
+            tmNextDown = tmFightEnd;
+        }
+        // find next event
+        tmNext= Math.Min(tmNextSpell,Math.Min(tmNextUse,tmNextDown));
+    }while(tmNext<tmFightEnd);
+    // update final stacks, and return average value over fight
+    tmSumDmg+= (tmFightEnd-tm)*dmg;
+    return tmSumDmg/tmFightEnd;
+}
+
+
+// simulate single fight duration multiple times ( either due to random procs or random spreads )
+double simFight(double initDmg, double duration, double castTime, 
+              double proc, double dDmgPerTrigger, int maxStacks, int maxCasts, 
+              double useCD, double procCD, bool refresh, double spread, double fightDuration,int nSim=1000 )
+{
+    double avg=0;
+    for(int i=0; i<nSim; i++)
+        avg+= simOne( initDmg, duration, castTime, proc, dDmgPerTrigger, maxStacks, maxCasts, useCD, procCD, refresh, spread, fightDuration);
+    return avg/nSim;
+}
+
+
+// simulate multiple fight durations with given spread
+// - maxStacks:  max number of stacks, or 0 if no stacks
+// - maxCasts:  max number of casts after which effect will drop, 0 if not applicable
+// - useCD : CoolDown for OnUSE effects , if 0 assume not 'on use'
+// - procCD : CoolDown for OnProc effects , 0 is default and just mean no proc CD ( can proc again immediatelly )
+// - proc : 0.0 .. 1.0 probability that spell will trigger effect, 0 if not proc based ( if spell does not activate effect )
+// - spread: 0.0 .. 1.0 , percent of fight duration spread - randomly FightDur+/- spread%
+// - refresh: true if procs/spells refresh duration
+double sim_avg( double initDmg, double duration, double castTime, double proc, 
+                double dDmgPerTrigger, int maxStacks, int maxCasts, 
+                double useCD, double procCD, bool refresh, double spread, double[] fightDurations,int nSim=1000 )
+{
+    double avg=0;
+    foreach(var fd in fightDurations)
+        avg+= simFight( initDmg, duration, castTime, proc, dDmgPerTrigger, maxStacks, maxCasts,useCD, procCD, refresh, spread, fd, nSim);
+    return avg/fightDurations.Length;
+}
+
+
+double[] NAXdurations=new double[] { 142, 164, 173, 102, 122, 205, 121, 125, 199, 327, 515, 100, 152, 347, 311 };//NAX
+
+// simulate onUse , simplified parameters
+double sim_onUse( double initDmg, double duration, double CD, double[] fightDurations=null )
+{
+    return sim_avg( initDmg, duration, 0,0,0,0,0, CD,0,  false, 0.20, fightDurations??NAXdurations);
+}
+
+// simulate onProc , simplified parameters
+double sim_onProc( double initDmg, double duration, double castTime, double proc, double CD, double[] fightDurations=null )
+{
+    return sim_avg( initDmg, duration, castTime,proc, 0,0,0, 0,CD,  true, 0.20, fightDurations??NAXdurations);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

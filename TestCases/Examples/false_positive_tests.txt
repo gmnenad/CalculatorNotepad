@@ -1,0 +1,53 @@
+fluWK=120   // flu infections per week per 100k people
+covidWK=450 // covid infections per week per 100k people
+pFP=0.10   // test false positive probability is 0.5%
+pFN=0.10    // test false negative probability is 13%
+
+// POSITIVE:
+//a) if two test of same person are positive, chance both tests are valid and person has COVID ?
+//   a1) if tests are done using different processes ( or different companies) and false is not tied to person:
+//   a2)*if false positivity is tied to random variation/contaminations in process, even with same procs/company
+pIndepenent= 1-pFP^2  // based on chance that false positive happened twice
+//   a3) if false positives are tied to person, then even with different processes/companies
+//   a4) if false positivity is tied to process, and both tests use same process/company
+pDependent=1-pFP   // based only on chance that SINGLE test would be false
+//   ==> false POSITIVE is mainly due to process contamination, so is mostly random on each attempt
+pActual= pIndepenent // mostly a2 reason
+
+//b) if two test of two persons are positive, chance both tests are valid and BOTH persons has COVID ?
+//   a1) if tests are done using different processes ( or different companies) and false is not tied to person:
+//   a2)*if false positivity is tied to random variation/contaminations in process, even with same procs/company
+//   a3) if false positives are tied to person, then even with different processes/companies
+pIndepenent= (1-pFP)^2  // based on chance that false positive did not happen at all
+//   a4) if false positivity is tied to process, and both tests use same process/company
+pDependent=1-pFP   // based only on chance that SINGLE test would be false
+//   ==> false POSITIVE is mainly due to process contamination, so is mostly random on each attempt
+pActual= pIndepenent // mostly a2 reason
+
+
+// NEGATIVE:
+//c) if two test of same person are NEGATIVE, chance both tests are valid and person does NOT have COVID ?
+//   a1) if tests are done using different processes ( or different companies) and false is not tied to person:
+//   a2)*if false negativity is tied to random variation/contaminations in process, even with same procs/company/person
+pIndepenent= 1-pFN^2  // based on chance that false negative happened twice
+//   a3) if false negatives are tied to person, then even with different processes/companies
+//   a4) if false negativity is tied to process, and both tests use same process/company
+pDependent=1-pFN   // based only on chance that SINGLE test would be false
+//==> false NEGATIVE is due to person (stage of infection, location of infection), but also process(sample taking, low sensitivity) and random(variable viral shedding)
+pActual= 2/3*pDependent+1/3*pIndepenent // assume equal chance of person, process (dependent) and random (independent) as cause to false
+
+//d) if two test of two persons are NEGATIVE, chance both tests are valid and BOTH persons does NOT have COVID ?
+//   a1) if tests are done using different processes ( or different companies) and false is not tied to person:
+//   a2)*if false negativity is tied to random variation/contaminations in process, even with same procs/company/person
+//   a3) if false negatives are tied to person, then even with different processes/companies
+pIndepenent= 1-pFN^2  // based on chance that false negative happened twice
+//   a4) if false negativity is tied to process, and both tests use same process/company
+pDependent=1-pFN   // based only on chance that SINGLE test would be false
+//==> false NEGATIVE is due to person (stage of infection, location of infection), but also process(sample taking, low sensitivity) and random(variable viral shedding)
+pActual= 1/3*pDependent+2/3*pIndepenent // assume equal chance of process (dependent) and person, random (independent) as cause to false
+
+
+//==> false POSITIVE is mainly due to process contamination, so is mostly random on each attempt
+//==> false NEGATIVE is due to person (stage of infection, location of infection), but also process(sample taking, low sensitivity) and random(variable viral shedding)
+
+

@@ -1,0 +1,44 @@
+// Highest card on left pile        ( http://www.greylabyrinth.com/discussion/viewtopic.php?t=15576&highlight=probability )
+// A standard deck of 52 cards is shuffled and dealt one card at a time into two piles as follows: 
+//      the first card is laid on the table. If the second card is of lower value it is placed to the left of the first card. 
+//      If higher, it is placed to its right. This establishes two piles. 
+//      Each successive card goes on the left (right) pile if it is of lower (higher) value than the preceding card. 
+//      When the deck has been dealt, the left pile is examined and its highest card is identified.
+// What is expected highest card on left (snmaller) pile?
+
+
+
+n=52
+// Calculating in C# function
+MaxOnLeft(n)
+
+// Calculating in while block, using global variables
+calcBlock(N)= while(ex=0;pSum=0;pK=0;k=1, k<N, {pK=pK+1/(N-k);pKS=pK*(1-pSum);pSum=pSum+pKS;ex=ex+pKS*k;k=k+1},ex)  
+calcBlock(n)
+
+//Calculate recursive, using vec(pK,pSum, ex) and multiple call()
+calcRec1(k,N)= if(k<1,vec(0,0,0), call((v)=> call((newPK)=> call((PKS)=> vec(newPK,v[1]+PKS,v[2]+PKS*k), newPK*(1-v[1])), v[0]+1/(N-k)), calcRec1(k-1,N)))
+calcRec(N)=calcRec1(N-1,N)[2]
+calcRec(n)
+
+
+//Simulate in notepad
+oneSim(N)= while(v=rndShuffle(N); mx=vMax(v[0..1]); i=2, i<N, {if ((v[i]>v[i-1])&(v[i]<mx), mx=v[i], 0); i=i+1}, mx)
+simPad(N, nSim)= ∑(()=>oneSim(N),1,nSim)/nSim
+simPad(n,300)
+
+
+
+//#C#
+double MaxOnLeft(int N) { 
+    double expected = 0, pSum = 0, pK=0; 
+    for (int k = 1; k <N; k++){ 
+        pK += 1.0 / (N - k); 
+        double pKS = pK *(1 - pSum); 
+        pSum += pKS; 
+        expected += pKS * k; 
+    } 
+    return expected; 
+    
+}
+

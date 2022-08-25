@@ -1,0 +1,48 @@
+// Eddington:
+// 'a' random different items are selected out of N
+// then 'b' random different items are also selected out of N
+// what is the chance that at least one item is same?
+// ( http://www.greylabyrinth.com/discussion/viewtopic.php?t=16454 )
+pn(a,b,N)= if(b<1,1, (1-a/(N-b+1))*pn(a,b-1,N) )
+P1r(a,b,N)=1-pn(a,b,N)
+// P1=alternative solution without recursion, for K=1
+P1(a,b,N)= 1-choose(N-a,b)/choose(N,b)
+P1(3,2,10)
+P1(3,3,10)
+
+// what is the chance that at least K items are same?
+// 0) Given that a' items are randomly selected, how can we select 'b'?
+// 1) ways to select 'b' items to have exactly 'i' matches with 'a'
+//      - choose(i,a) ≡ ways to select those i matches out of all 'a'
+//      - 'b' selection also need to have those same 'i' items
+//      - remaining 'b-i' items from 'b' can not be placed on 'a' items, so must be on 'N-a'
+//      - and that has choose(b-i,N-a) combinations
+//      - so total number with exactly 'i' matches is  choose(b-i,N-a)*choose(i,a)
+// 2) #combos that do NOT have 'at least' K matches is ∑ when i=0, i=1,...i=K-1
+//      - all ways to select 'b' with less than K matches to 'a' :
+//      - ∑ (i=0..K-1) choose(b-i,N-a)*choose(i,a)   
+// 3) probability of NO match is above #combosNomatch divided by #combosALL
+//      - #combosALL = all ways to select 'b' out of 'N' items: choose(b,N)
+//      - p(no match)= ∑(...) / choose(b,N)
+// 4) probability of 'al least K matches' is 1-p(no match)
+//      - p(a,n,N,K)= 1- ∑(...) / choose(b,N)
+p(a,b,N,K)= 1- ∑((i)=>choose(N-a,b-i)*choose(a,i), 0,K-1) /choose(N,b)
+p(3,2,10,1)
+p(2,3,10,2)
+p(3,3,10,2)
+
+//simulation for one random draw
+// - randomly choose 'a' out of possible 'N' values, and place thenm in vector: 
+//      - rndChoose(a,N), eg rndChoose(3,10)= vec(1,4,8)
+// - intersection of similar 'b out of N' vector gives same items in vector: 
+//      - rndChoose(a,N) ∩ rndChoose(b,N), eg vec(1,4,8)∩vec(4,6,9)==vec(4)
+// - number of same items is number of elements in intersection vector: vLen(vec)
+// - we have 'at least K' matches if vLen(∩)≥K
+//now repeat above nSim times, add all matches and divide by nSim for probability
+//  - ∑((i)=> vLen(rndChoose(a,N) ∩ rndChoose(b,N))≥K,1,nSim)/nSim
+//or use pSim(func,nSim) which does same thing
+//  - pSim((i)=> vLen(rndChoose(a,N) ∩ rndChoose(b,N))≥K,nSim)
+sim(a,b,N,K, nSim)= ∑((i)=> vLen(rndChoose(a,N) ∩ rndChoose(b,N))≥K,1,nSim)/nSim
+sim(3,3,10,2, 20000)
+
+

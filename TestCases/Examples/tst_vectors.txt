@@ -1,0 +1,12 @@
+// Vectors
+vv= vec(1,1,2,3,4,4,5,6,6)  // vec(1, 1, 2, 3, 4, 4, 5, 6, 6)
+va= vv[-10…6] // vec(1, 1, 2, 3, 4, 4)
+vb= vv[4…200] // vec(4, 4, 5, 6, 6)
+vx=vec(1,rndVector(2,9),4,rndChoose(3,5)) 
+z=1
+va ∩ ( vb U vx[z][1] ) // vec(4, 5)
+
+
+
+
+

@@ -1,0 +1,110 @@
+pn(n)={
+    n2=n*n;
+    bits= ceiling(log(n2,2));
+    b2=2^bits;
+    pf= n2/b2;
+    pb= (b2-n2)/n2;
+    return pf+(1-pf)*pb;
+}
+
+pn2(n)={
+    x= n^2 / 2^ceiling(log(n^2,2)); 
+    return 2*(x-1)+1/x
+}
+
+pn3(S)={
+    x= S / 2^ceiling(log(S,2)); 
+    return 2*(x-1)+1/x
+}
+
+fmax(mn)={
+  mx=0;
+  mxi=0;
+  for(i=2, i<=mn, i=i+1){
+    p=pn3(i);
+    if ((p<1)&(p>mx)){
+      mx=p;
+      mxi=i;
+    }
+  }
+  return mxi;
+}
+
+fmin(mn)={
+  mx=2;
+  mxi=0;
+  for(i=2, i<=mn, i=i+1){
+    p=pn3(i);
+    if (p<mx){
+      mx=p;
+      mxi=i;
+    }
+  }
+  return mxi;
+}
+
+avp(mn)={
+  s=0;
+  for(n=1, n<=mn, n=n+1) s=s+pn3(n);
+  return s/mn;
+}
+
+//n=fm(250)
+n=44
+pn(n)
+pn2(n)
+//sim(n,2)
+//avp(1000000)
+pn3(41)
+
+fmax(100)
+m=fmin(30)
+pn3(m)
+
+
+//#C#
+int first(bool[] Board, int Key){
+    int n2=Board.Length;
+    int B=0;
+    for(int k=0; k<n2; k++)  if (Board[k]) B ^= k ;
+    if ((B ^ Key) < n2) return B ^ Key;
+    return (B ^ (Key+n2)) % n2;
+}
+
+int second(bool[] Board){
+    int n2=Board.Length;
+    int B=0;
+    for(int k=0; k<n2; k++)  if (Board[k]) B ^= k ;
+    return B % n2;
+}
+
+
+int first1(bool[] Board, int Key){
+    for(int k=0; k<Board.Length; k++)  if (Board[k]) Key ^= k ;
+    return Key;    
+}
+
+int second1(bool[] Board){
+    return first(Board,0);
+}
+
+// return percentage of found key
+double sim(int n, int nSimM=1){
+    int ok=0, nSim=nSimM*1000000;
+    int n2=n*n;
+    var board= new bool[n2];
+    for(int s=0; s<nSim; s++){
+        // generate random board and Key position
+        for (int i=0; i<n2; i++)
+            board[i]= nm.rnd.NextDouble()<0.5;
+        int key= nm.rnd.Next(n2);
+        // call first to determine what to flip
+        int flip=first(board,key);
+        board[flip]= !board[flip];
+        // call second to guess key position
+        int keyGuess= second(board);
+        if (keyGuess==key)
+            ok++;
+    }
+    return ok/(double)nSim;
+}

@@ -1,0 +1,109 @@
+// SPACE ELEVATOR : material and shape needed to support entire space elevator
+// Sources:
+//  - tensile/yield strengths:    https://en.wikipedia.org/wiki/Ultimate_tensile_strength  
+//  - centrifugal force (and acceleration ac=w^2*r) :  https://en.wikipedia.org/wiki/Centrifugal_force
+//  - geostationary orbit and earth mass/const:  https://en.wikipedia.org/wiki/Geostationary_orbit
+//  - coeficient of expansion due to temperature (alpha~10^-5 ): https://www.sciencedirect.com/topics/engineering/linear-coefficient-of-expansion
+
+
+// Principles:
+//  - wire needs to widen as it goes up until geostacionary orbit (35,785 km), due to tensile/yeild limits of material (to support increasing weight below)
+//  - above geostac material pulls away from earth, so it reduce total weight, and wire can reduce diameter
+//  - r0 at h0: starting diameter at bottom determined by pod weight and desired wire constant tauntness ( to ensure stability ), at earth surface
+//  - r1 at h1: largest diameter at geostac orbit height
+//  - r2 at h2: final diameter/heigh determined by space station weight 
+//  - mh[kg/m]: additional influence is 'scaffolding' weight , in kg per meter of height ( power cables, ladders to connect pod ...)
+//  - pT[Pa=N/m2]/pY[Pa],d[kg/m3]: rate of diameter increase determined by material yield/tensile strength AND materiel density
+//  - tol[%]: certain tolerance to material density and tensile strength can be included 
+//  - flex[%]:  range of elongation due to temperature differences = alpha*278 (-157C .. +121C=278C delta) ~ +/-0.3%
+
+// gravity force:  Fg= G*Me*m/r^2
+// centrifugal force:  Fc= w^2*m*r , w=2pi/24h
+Me= 5.9736E24 // [kg] Earth mass 
+G= 6.67428E-11 // [m3/kg*s2] gravitational constant
+we=2*pi/24/60/60 // [rad/s] earth angular velocity 
+r0= 6378e3 // earth radius
+// setup constants
+mS= 20000 // station weight 20t
+mP= 5000  // pod weight 5t
+Fpt= 6e8 // pretensile strength, constant force to keep wire tense and prevent instabilities
+// material properties : carbon fiber
+pX= 7000*1e6 // tensile/yield strength from [MPa] to [Pa]=[N/m2]
+ro= 1.79*1000 // density of material, from [g/cm3] to [kg/m3]
+aT= 1e-6      // Coefficient of linear expansion, how much it strecth for temperature increase ( ~1e-5 for most materials)
+
+// math calculations
+S0= (G*Me*mP/r0^2+Fpt)/pX // area at bottom, determined by pod weight, pretensile wire force and material strength
+r1= (G*Me/we^2)^(1/3) // geostationary orbit, distance from earths center
+Z1=G*Me*(1/r0-1/r1)-we^2/2*(r1^2-r0^2)
+Z2=(G*Me*(r1-r0^2/r1+2*r0*ln(r0/r1))-we^2/6*(r0-r1)^2*(r0+2*r1))/(r1-r0)^2
+S1=S0*(Z1-Z2)/(pX/ro-Z2)
+
+// comp calculations
+// force of mass at height r
+Fr(m,r)=m*(Me*G/r^2 - we^2*r) ; 
+// force of material with density ro, area S and height h, if bottom at distance/radius r 
+Fdh(ro,S,h,r)=ro*S*(Me*G*(1/r-1/(r+h)) - we^2/2*((r+h)^2-r^2)) ; // allows larger h
+// return r0,D0 (at bottom), r1,D1 (at max width), r2,D2 (at top)
+calc(dh)={
+    F=G*Me*mP/r0^2+Fpt; // starts with pretensile/pod force
+    S=F/pX;
+    R=r0;
+    res= vDim(6);
+    res[0]=round(R/1000);
+    res[1]=sqrt(S/pi)*2; // D0
+    do{
+        S2=F/pX; // new area of this section, needed to hold all below it
+        if ((S2<S)&(res[2]==0)){ // if first reduction of diameter, mark as max width
+            res[2]=round(R/1000);
+            res[3]=sqrt(S/pi)*2; // D1
+        }
+        S=S2;
+        F=F+Fdh(ro,S,dh,R); // add weight of this section
+        R=R+dh; // add height of this section
+        // check if station weight would complete at this height
+    }while((F+Fr(mS,R)>0)&(R<1e9));
+    res[4]=round(R/1000);
+    res[5]=sqrt(S/pi)*2; // D2
+    return res;
+}
+
+calc2(dh)={
+    F=G*Me*mP/r0^2+Fpt; // starts with pretensile/pod force
+    FH=FL=F; // high/low forces are for max/min temperature stretch
+    S=F/pX;
+    R=r0;
+    aH= 1+aT*121; // expansion at +121C, compared to 0C
+    aL= 1-aT*157; // contraciton at -157C, compared to 0C
+    res= vDim(6);
+    res[0]=round(R/1000);
+    res[1]=sqrt(S/pi)*2; // D0
+    do{
+        S2=max(F,FH,FL)/pX; // area according to largest stretch/shrink force
+        if ((S2<S)&(res[2]==0)){ // if first reduction of diameter, mark as max width
+            res[2]=round(R/1000);
+            res[3]=sqrt(S/pi)*2; // D1
+        }
+        S=S2;
+        F=F+Fdh(ro,S,dh,R); // add weight of this section
+        FH=FH+Fdh(ro,S,dh*aH,R*aH); // add weight when wire is stretched ( high temp)
+        FL=FL+Fdh(ro,S,dh*aL,R*aL); // add weight when wire is compressed ( low temp)
+        R=R+dh; // add height of this section
+    }while((FL+Fr(mS,R*aL)>0)&(R<1e9)); // end when wire can be supported in worst case (low/contracted)
+    res[4]=round(R/1000);
+    res[5]=sqrt(S/pi)*2; // D2
+    return res;
+}
+
+x=calc2(10000):3
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,48 @@
+// Each of 100 prisoners must find their number randomly mixed
+// among 100 boxes, by opening at most 50 boxes.
+// - what is best probability that ALL of them will find their numbers?
+
+// https://en.wikipedia.org/wiki/100_prisoners_problem
+// http://www.greylabyrinth.com/discussion/viewtopic.php?p=550095
+
+pn(n,k)= 1-harmonic(n)+harmonic(k)
+N=10
+k=6
+pn(N,k)
+vec( simCC(N,N,k), simCC(N,1,k) )
+
+
+
+
+
+
+
+//#C#
+// simulate chain cycle solution for arbitrary :
+//   N= total number of boxes
+//   G= number of players in game ( default N )
+//   K= number of boxes each player can open ( default N/2)
+// return probability that all will find their number using cycle approach
+double simCC(int N, int G=-1, int K=-1, int nSim=1000000){
+    if (G<0) G=N;
+    if (K<0) K=N/2;
+    double succ=0;
+    for(int ns=0; ns<nSim; ns++){
+        var d= nm.rndShuffle(N); // random permutation of N numbers
+        bool ok=true;
+        for(int g=0; (g<G) && ok ; g++){ // each player try to find
+            int x=g;
+            bool found=false;
+            int k=K;
+            do{
+                int C= d[x];
+                if (C==g) found=true;
+                x=C;
+                k--;
+            } while( (k>0) && !found );
+            if (!found) ok=false;
+        }
+        if (ok) succ++;
+    }
+    return succ/nSim;
+}

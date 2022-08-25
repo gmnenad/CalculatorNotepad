@@ -1,0 +1,29 @@
+// Bertrand's box paradox
+// https://en.wikipedia.org/wiki/Bertrand%27s_box_paradox
+
+// There are three boxes : one has two gold coins, one has two silver coins and last has one silver and one gold coin.
+// You randomly select coin from one box . If it was gold coin, what is probability that the other coin from same box is also gold one ?
+
+// simulate result
+v= vec(vec(1,1),vec(0,0),vec(1,0)) // three boxes, each with two coins (1=gold coin)
+simB(nSim)={
+  nTst=0;
+  nOk=0;
+  for(i=0, i<nSim, i=i+1){
+    k=rndNumber(3); // random box (0..2)
+    p=rndNumber(2); // random coin in box (0..1)
+    if (v[k][p]){   // if it was gold coin
+       nTst=nTst+1;
+       if (v[k][1-p]) // count if other one was also gold coin
+          nOk=nOk+1;
+    }
+  }
+  return nOk/nTst;
+}
+simB(10000)  // p~2/3
+
+
+// Solution (confirmed with simulation):
+// There are 6 coins, and equal chance to pick each. Out of those, only 3 satisfy "first picked was gold". 
+// Out of those 3, in 2 cases (two coins from gold/gold box) other coin is also gold. So chance is p=2/3
+

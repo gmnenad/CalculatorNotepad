@@ -1,0 +1,21 @@
+// A huge bin is filled with distinctly numbered balls, and you choose two of them at random. What is the chance they share common denominator? 
+// http://www.greylabyrinth.com/discussion/viewtopic.php?t=15345&highlight=probability
+
+Nb=10           // number of balls in bin
+Np= primePi(Nb) // number of primes in that bin
+
+// Simulation - chance that two randomly picked numbers (up to N) share denominator
+sim(N, nSim) =  pSim(()=>gcd(rndNumber(N)+1, rndNumber(N)+1)>1 , nSim)
+sim(Nb,10000) 
+
+// Calculation up to Nth prime
+//   chance to have common denominators is equal to chance they share primes (other numbers would be repeating)
+//   chance to share 3 is 1/3*1/3 , to share 5 is 1/5*1/5, so chance to share any prime p is 1/p^2. Chance NOT to share that p is 1-1/p^2
+//   chance not to share ANY p is Product of 1-1/p^2 for all possible p's (since it is independent of each other)
+//   and final chance to  have common denominator is 1-chance NOT to share any prime
+calc(N)= 1- ∏((i)=> 1- 1/prime(i)^2, 1, N)
+calc(Np)
+
+// Formula for infinite N, from symbolic solution of above calc when N→inf
+// https://www.wolframalpha.com/input/?i=product(i%3D1..inf)+(1-1%2Fprime(i)%5E2)
+formula= 1-6/π^2

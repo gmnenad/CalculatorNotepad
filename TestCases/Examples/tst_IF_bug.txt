@@ -1,0 +1,12 @@
+
+calc3()={
+    res=1; 
+    {
+        res=res+ 3; 
+    }
+    res
+}
+calc3()
+
+// without {} around res=res+3:  4  - correct
+// with {} around {res=res+3;}  :  1 !!!! - like it does not find res in upper block !!!

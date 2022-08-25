@@ -1,0 +1,119 @@
+// ** Problem: 
+// What is chance to get D in row after N attempts, if chance to get one is p
+
+// specific test values used in both simulations and formulas below
+tD=5        // change to get this many in row
+tN=44       // after this many draws
+tp=50%      // if this is chance to get one in single draw
+
+// ** SIMULATION in notepad - multiple lines to demonstrate what single line actually does
+mVN(N,p)=vDim(N,()=>rnd≤p)  // create big vector (N=200), where each element is 1 or 0 with chance p
+mOnes(v)=vSum(v)≡vLen(v)    // return true if all elements of vector are 1 , same as vSum(v)≡D
+mSub(v,i,D)=v[i-D+1 … i]      // return subvector of length D, ending at position 'i' (@...,i-2,i-1,i)
+mSubOnes(v,i,D)= mOnes(mSub(v,i,D))  // true if subvector of length D, ending at position 'i' has all ones
+mEach(v,D)= ∑((i)=> mSubOnes(v,i,D), D-1,vLen(v)-1) // ∑ how many subvectors (in v) of len D had all ones
+mOneTry(N,p,D)= mEach(mVN(N,p), D)>0 // true (1) if at least once in N draws we have D in row
+mRepeat(N,p,D, nRep)=∑(()=>mOneTry(N,p,D), 1,nRep) // how many times we got D in row after nRep repeats
+mSim(N,p,D, nSim) = mRepeat(N,p,D, nSim)/nSim // probability to get D in row, as percentage of successes
+
+// ** SIMULATION in notepad - one line, equivalent to above multilines
+// - mSim and mRepeat are replaced by builtin pSim() which does exactly same thing
+// - mOneTry is replaced by call(), to generate big random vector once and use it many times
+// - other mFuncs from above are just folded into same line, with vLen(bigVec)≡N and vLen(subVec)≡D
+simND(N,p,D, nSim)= pSim(()=>call((v)=>∑((i)=>vSum(v[i-D+1…i])≡D,D-1,N-1),vDim(N,()=>rnd≤p))>0,nSim)
+// ** ** SIMULATION in notepad - one line, using stack variable 'v'
+simN2(N,p,D, nSim)= pSim(()=> { v=vDim(N,()=>rnd≤p); ∑((i)=>vSum(v[i-D…i-1])≡D,D,N)>0 } ,nSim)
+
+// call notepad simulation and c# simulation with same parameters
+simND(tN,tp,tD, 500)
+simN2(tN,tp,tD, 500)
+csSim(tN,tp,tD, 50000) 
+
+// ** CALCULATION formula using recursion
+prvNV(v,p,D)= vFor((i)=> if(i≡0,vSum(v)*(1-p), v[i-1]*p  ) , D)
+prvV(p,D,k)= if (k≡0, vDim(D,(i)=>i≡0),  prvNV( prvV(p,D,k-1),p,D))
+prv(p,D,k)= 1-vSum(prvV(p,D,k))
+
+// call notepad calculation (prv) and c# calculation function (csPrv) , with same parameters
+p=prv(tp,tD,tN)
+csPrv(tp,tD,tN) 
+
+
+
+//#C#
+// c# simulation: prob to get at least once D in row after N attempts
+
+    // draw N times and return true if got D times in 
+    bool simOne(int N, double p, int D){
+      var lastD=new bool[D];
+      for(int i=0; i<N; i++){
+          lastD[i%D]= nm.rnd.NextDouble()<=p;
+        bool allD=true;
+        for (int u=0; u<D; u++)
+          if (!lastD[u]) allD=false;
+        if (allD) return true;
+      }
+      return false;
+    }
+
+double csSim(int N, double p, int D, int nSim){
+    // repeat above test many times (nSim) and find prob
+    double nok = 0;
+    for (int i=0; i<nSim; i++)
+    if (simOne(N,p,D)) nok++;
+    return nok/nSim;
+}
+
+
+// Three code lines result, without artificially stacking sentences behind ;
+//      1) first 4 lines, including declaration, can be joined in one big line
+//      2) return x[0];
+//      3) }  - since ; behind return can not be omitted
+double cSimND2(int N, double p, int D, int nSim, double[] nD=null, double[] x=null){
+    for (x=new double[5]{0,0,0,0,p}; (null!=(nD=new double[D+1]))&&(x[3]<nSim); x[3]++)
+    for(int i=0; ((x[2]=nD[D]<D?0:1)>=0)&&((x[0]+=x[2]/nSim)>=0)&&(x[2]==0)&&(i<N); i++)
+        nD[D]+= (x[1]= nm.rnd.NextDouble()<=x[4]?1:0)-nD[i%D]+((nD[i%D]= x[1])>=0?0:0);
+    return x[0];
+}
+
+// c# non-recursive calculation
+double csPrv(double p, int D, int N){
+  // create initial vector
+  var v= new double[D];
+  v[0]=1;
+  // N times calculate new probability vector
+  for (int k=0; k<N; k++){
+    double sum= v.Sum();
+    for (int i=D-1; i>0; i--) v[i]=v[i-1]*p;
+    v[0]=sum*(1-p);
+  }
+  // get final result from prob vector
+  double res=1;
+  for (int i=0; i<D; i++) res-=v[i];
+  return res;
+}
+
+
+
+#region Description of calculation
+// Notepad calculation formula using recursion, three lines in notepad
+// 1) prvNV(v,p,D)= vFor((i)=> if(i≡0,vSum(v)*(1-p), v[i-1]*p  ) , D)
+//      find next 'v' given current 'v', where p=prob to get '1' and D= num '1s' in row we seek
+//      v[i]= prob for 'i' 1s at end, so v[0]=prob xxx0, v[1]=prob xx01, v[3]=prob xx0111 etc
+//      probs in 'v', vSum(v), are all given D '1s' were NOT found so far
+//          - v[0]= prob of 0 at end = p(not found)*p(get 0)= vSum(v)*(1-p)
+//          - v[i]= prob of i '1s' at end = p(i-1 previous '1s')*p(get 1)= v[i-1]*p
+// 2) prvV(p,D,k)= if (k≡0, vDim(D,(i)=>i≡0),  prvNV( prvV(p,D,k-1),p,D))
+//      find 'v' ( as described above) after k draws
+//          - call recursively to find for 'k-1' draws, then call "find next" from above
+//          - initial 'v' value is (1,0,0,...,0) vector of size D, for k==0
+// 3) prv(p,D,k)= 1-vSum(prvV(p,D,k))
+//      probability to draw at least once D '1s' in row
+//      since vSum(v)=prob not to have drawn D '1s' in row in k attempts, then
+//      1-vSum(v)= prob to draw at least once
+
+// C# calculation follows same logic, only in non-recursive approach
+//   - start with same (1,0,0,...,0) vector of size D
+//   - N times change vector in for loop with same logic as in recursive prvNV
+//   - return result same as prv() , 1- sum vector
+#endregion

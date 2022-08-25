@@ -1,0 +1,74 @@
+// Fibonacci
+fib(x)= if(x≤1,x,fib(x-1)+fib(x-2))
+
+b(x)= round( ((1+√5)/2)^x/√5 )
+
+b(23)
+fib(203)
+fibC(203)
+fibD(203)
+
+
+∑((x)=>b(x),1,360) // sum(b,1,375000) max, 
+// 620000 after cache only for recursive +75%
+// 510000 after mcValue -18%
+// 585000 after int removal -6%
+// 450000 after List<mcValue[]>  -25%
+// 395000 after lambda (x)=>  -23% due to lambda&list, -12% just from lambda
+// 360000 after lambda wrapper -9%
+
+
+∑((x)=> 1/fib(x),1,100) // sum(fr,25)at 1500ms, 
+//180000 after cache only for recursive +33%
+//135000 after mcValue -25%
+//110000 after List<mcValue[]> ∑(fr,1,110)  -20%  
+//120000 after lambda (x)=>  -11% due to lambda&list, +10% after lambda ?!
+//110000 after lambda wrapper  -8%
+
+
+c(x)= 1/(b(x/2)-x*3)
+∑((x)=>c(x),1,170)   // test +*-/
+//260000 after mcValue -8%
+//275000 after int removal
+//220000 after List<mcValue[]> ∑(c,1,220)   -20%
+//190000 after lambda (x)=>  -30% due to lambda&list, -14% just from lambda
+//170000 after lambda wrapper  -11%
+
+graph(fib)
+graph(b)
+graph(c)
+
+
+//#C#
+// fibonacci standard recursive
+int fibA(int n){
+  if (n<=1) return n;
+  return fibA(n-1)+fibA(n-2);
+}
+
+
+// fibonacchi cached recursive, much faster
+int fibC(int n){
+  if (n<=1) return n;
+  var obj = nmCache.Get(n);
+  if (obj!=null) return obj;
+  int res= fibC(n-1)+fibC(n-2);
+  nmCache.Add(n, res);
+  return res;
+}
+
+// fibonacci with named cache and compact float version 
+double fibD(int n){
+    if (nmCache.Try("fibD",n)) return nmCache.Result;
+    return nmCache.Add("fibD",n, n<=1? n: fibD(n-1)+fibD(n-2) ) ;
+}
+
+
+// fibonacci non-recursive
+double fibE(int n){
+  if (n<=1) return n;
+  double[] two=new double[2]{0,1};
+  for (int i=2; i<n; i++) two[i%2]=two.Sum();
+  return two.Sum();
+}
+

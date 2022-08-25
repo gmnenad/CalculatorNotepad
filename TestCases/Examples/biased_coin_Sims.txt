@@ -1,0 +1,296 @@
+//=2*integral  (0.5 ..1) ((1/(1+(1/p-1)^X)*(p^D-(1-p)^D)+(1-p)^D)
+N=10 ; // total number of tosses
+
+// 1+9: flip one, then bet all on it
+// K= multiplier on win
+// p= probability to get heads
+oneA(K,p)={
+    first= rnd<p;
+    res=1;
+    for(i=2, (i<=N)&(res>0), i=i+1){
+        toss=rnd<p;
+        if (toss==first) res=res*K; else res=0;
+    }
+    return res;
+}
+
+B(p,X)=1/(1+(1/p-1)^X)  // prob we selected biased side after X head/tail differences
+// flip based on X=|H-T| difference
+oneB(K,p)={
+    H=0; T=0;
+    start=0;
+    n=0;
+    // toss until X good enough
+    while ((start==0)&(n<N)){
+        X= abs(H-T);
+        D=N-n;
+        pw=2*integral((z)=> B(z,X)*z^D+(1-B(z,X))*(1-z)^D , 0.5,1,20);
+        if (pw*K^D>1) 
+            start=1; 
+        else {
+            n=n+1;
+            if (rnd<p) H=H+1; else T=T+1;
+        }
+    }
+    res=1;
+    // now bet all until end
+    betON= H>=T;
+    for(, (n<N)&(res>0), n=n+1){
+        toss=rnd<p;
+        if (toss==betON) res=res*K; else res=0;
+    }
+    return res;
+}
+
+
+
+// flip based on N=H+T and Misses=min(H,T) = Mith's approach
+oneM(K,p)={
+    H=0; T=0;
+    start=0;
+    n=0;
+    // toss until Bw good enough
+    while ((start==0)&(n<N)){
+        M=min(H,T);
+        pw=(n+1-M)/(n+2);
+        if (pw*K>1) 
+            start=1; 
+        else {
+            n=n+1;
+            if (rnd<p) H=H+1; else T=T+1;
+        }
+    }
+    res=1;
+    // now bet all until end
+    betON= H>=T;
+    for(, (n<N)&(res>0), n=n+1){
+        toss=rnd<p;
+        if (toss==betON) res=res*K; else res=0;
+    }
+    return res;
+}
+
+b2(n,M)=(10-M)!/11!*(n+1)!/(n-M)! // was (11-M)!/12!*(n+1)!/(n-M)!;
+bex(n,M,K)=b2(n,M)*K^(10-n)
+oneM2(K,p)={
+    H=0; T=0;
+    start=0;
+    if (rnd<p) H=H+1; else T=T+1;
+    n=1;
+    // toss until Bw good enough
+    while ((start==0)&(n<N)){
+        M=min(H,T);
+        pw=b2(n,M);
+        if (pw*K^(10-n)>1) 
+            start=1; 
+        else {
+            n=n+1;
+            if (rnd<p) H=H+1; else T=T+1;
+        }
+    }
+    //return n;
+    res=1;
+    // now bet all until end
+    betON= H>=T;
+    for(, (n<N)&(res>0), n=n+1){
+        toss=rnd<p;
+        if (toss==betON) res=res*K; else res=0;
+    }
+    return res;
+}
+oneM3(K,p)={
+    H=0; T=0;
+    start=0;
+    //if (rnd<p) H=H+1; else T=T+1;
+    n=0;
+    // toss until Bw good enough
+    while ((start==0)&(n<N)){
+        M=min(H,T);
+        ex=bex(n,M,K);
+        ex1=0;
+        if (n<10){
+            pw1=(n+1-M)/(n+2);
+            ex1=pw1*bex(n+1,M,K)+(1-pw1)*bex(n+1,min(M+1,n-M),K);
+        }
+        if ( (ex>1) & (ex>ex1) )
+            start=1; 
+        else {
+            n=n+1;
+            if (rnd<p) H=H+1; else T=T+1;
+        }
+    }
+    return n;
+    res=1;
+    // now bet all until end
+    betON= H>=T;
+    for(, (n<N)&(res>0), n=n+1){
+        toss=rnd<p;
+        if (toss==betON) res=res*K; else res=0;
+    }
+    return res;
+}
+
+// simulate for one K
+simK(K, nSim)={
+    res=0;
+    for(i=1, i<=nSim, i=i+1){
+        p=rnd;
+        res=res+ oneM(K,p);
+    }
+    return res/nSim;
+}
+
+
+oneC(K,p,X)={
+    H=0; T=0;
+    for(n=0, n<X, n=n+1)
+        if (rnd<p) H=H+1; else T=T+1;
+    if ((H!=X) & (T!=X)) return 1; // do not bet unless X same
+    res=1;
+    // now bet all until end
+    betON= H>=T;
+    for(i=X+1, (i<=N)&(res>0), i=i+1){
+        toss=rnd<p;
+        if (toss==betON) res=res*K; else res=0;
+    }
+    return res;
+}
+simC(K, nSim)={
+    res=0;
+    // find how many (X) we need to skip for this K to get best ex10
+    X=0;
+    ex=K^10/11;
+    for(n=1, n<=10, n=n+1){
+        ex2= 2/11*K^(10-n)+ (n-1)/(n+1);
+        if (ex2>ex){
+            ex=ex2;
+            X=n;
+        }
+    }
+    // now simulate , bet only if you got X same at start
+    for(i=1, i<=nSim, i=i+1){
+        p=rnd;
+        res=res+ oneC(K,p,X);
+    }
+    return res/nSim;
+}
+
+oneC2(K,p,X)={
+    H=0; T=0;
+    for(n=0, (n<10)&(abs(H-T)<X), n=n+1)
+        if (rnd<p) H=H+1; else T=T+1;
+    if ((abs(H-T)<X)) return 1; // do not bet unless diff =X
+    res=1;
+    // now bet all until end
+    betON= H>=T;
+    for(i=H+T+1, (i<=N)&(res>0), i=i+1){
+        toss=rnd<p;
+        if (toss==betON) res=res*K; else res=0;
+    }
+    return res;
+}
+simC2(K, nSim)={
+    res=0;
+    // find how many (X) we need to skip for this K to get best ex10
+    X=0;
+    ex=K^10/11;
+    for(n=1, n<=10, n=n+1){
+        ex2= 2/11*K^(10-n)+ (n-1)/(n+1);
+        if (ex2>ex){
+            ex=ex2;
+            X=n;
+        }
+    }
+    // now simulate , bet only if you got X same at start
+    for(i=1, i<=nSim, i=i+1){
+        p=rnd;
+        res=res+ oneC2(K,p,X);
+    }
+    return res/nSim;
+}
+K=3
+//simK(K, 80000)
+//simC2(K, 50000)
+
+
+// chance to win next bet after N previous tosses, for random p
+// result= vec[M] ... for each possible 'miss' value M
+calcL(N)={
+  szM= floor(N/2);
+  res= vDim(szM+1);
+  for(m=0, m<= szM, m=m+1){
+    X= N-2*m;
+    rm= 2*integral((p)=> B(p,X)*p+(1-B(p,X))*(1-p), 0.5,1);
+    res[m]= round(rm,4);
+  } 
+  return res;
+}
+calcM(N)= vDim(floor(N/2)+1, (m)=> round((N+1-m)/(N+2),4) )
+calc10(N)= vDim(floor(N/2)+1, (m)=> b2(N,m) )
+
+N=2
+//calc10(N)
+//sim10(N,1000000) // sim shows that mith's math is correct
+
+
+
+
+
+
+
+
+
+
+
+//#C#
+// chance to win N+1st bet on whichewer side dropped more in previous N tosses
+double[] simN(int N, int nSim  ){
+    int szM=N/2+1;
+    var ex= new int[szM];
+    var cntM= new int[szM];
+    for (int s=0; s<nSim; s++){
+        double p= nm.rnd.NextDouble();
+        int H=0, T=0;
+        for(int i=0; i<N; i++)
+            if (nm.rnd.NextDouble()<p) H++; else T++;
+        // M= min(H,T) = number of 'misses' = 0 when all same side
+        // X= | H-T| = difference between sides = N- 2*M
+        int M= Math.Min(H,T);
+        // try to bet on whichever side dropped most
+        bool betOnHeads= (H>=T);
+        bool won= (nm.rnd.NextDouble()<p) == betOnHeads;
+        // update stats
+        cntM[M]++;
+        if (won) ex[M]++;
+    }
+    var res= new double[szM];
+    for(int i=0; i<szM; i++) res[i]=cntM[i]>0? ex[i]*10000/cntM[i]/(double)10000 : 0;
+    return res;
+}
+
+// chance to win all up to 10 bets after previous N tosses
+double[] sim10(int N, int nSim  ){
+    int szM=N/2+1;
+    var ex= new int[szM];
+    var cntM= new int[szM];
+    for (int s=0; s<nSim; s++){
+        double p= nm.rnd.NextDouble();
+        int H=0, T=0;
+        for(int i=0; i<N; i++)
+            if (nm.rnd.NextDouble()<p) H++; else T++;
+        // M= min(H,T) = number of 'misses' = 0 when all same side
+        // X= | H-T| = difference between sides = N- 2*M
+        int M= Math.Min(H,T);
+        // try to bet on whichever side dropped most
+        bool betOnHeads= (H>=T);
+        bool won= true;
+        for(int b=0; b<10-N; b++) 
+            if ((nm.rnd.NextDouble()<p) != betOnHeads) won=false;
+        // update stats
+        cntM[M]++;
+        if (won) ex[M]++;
+    }
+    var res= new double[szM];
+    for(int i=0; i<szM; i++) res[i]=cntM[i]>0? ex[i]/(double)cntM[i] : 0;
+    return res;
+}
