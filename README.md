@@ -153,7 +153,7 @@ for common number type that supports several floating points: standard 64-bit do
 There are several libraries that are used in this project:
 - [FastColoredTextBox](https://github.com/PavelTorgashov/FastColoredTextBox/blob/master/FastColoredTextBox/FastColoredTextBox.cs) - modified version used for code panels
 - [Quad](https://github.com/Razenpok/BreakInfinity.cs/blob/master/BreakInfinity.Benchmarks/Quadruple/Quad.cs) - heavily modified version used for 128-bit Quad float number class
-- [MPFR](https://github.com/MachineCognitis/Math.Mpfr.Native/) - modified source of nuget used as basis for MPFR number class
+- [MPFR](https://github.com/MachineCognitis/Math.Mpfr.Native/) - modified source of nuget used as basis for [MPFR](https://www.mpfr.org/) number class
 
 
 

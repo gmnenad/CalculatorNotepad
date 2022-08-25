@@ -45,6 +45,7 @@ namespace CalculatorNotepad
         public FormWindowState lastWinState;
         public int  lastHistWidth, lastEditWidth, lastCSheight;
         public bool CSvisible, CSerrorVisible;
+        public string LastFileName, LastFileDirectory;
         public bool notProperlyClosed;
 
         static private string defPath(string path)

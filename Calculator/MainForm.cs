@@ -645,13 +645,13 @@ namespace CalculatorNotepad
         {
             if (isBusy()) return;
             var dlg = new OpenFileDialog();
-            dlg.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            dlg.InitialDirectory = string.IsNullOrEmpty(mc.cfg.LastFileDirectory)? AppDomain.CurrentDomain.BaseDirectory : mc.cfg.LastFileDirectory;
             dlg.Filter = "txt files (*.txt)|*.txt|RTF files (*.rtf)|*.rtf|Calc files (*.calc)|*.calc|All files (*.*)|*.*";
             dlg.FilterIndex = 1;
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-
+                mc.cfg.LastFileDirectory = Path.GetDirectoryName(dlg.FileName);
                 if (!await LoadFileAsync(dlg.FileName))
                     msg("Error loading " + dlg.FileName);
             }
@@ -920,15 +920,14 @@ namespace CalculatorNotepad
 
         #region Files Load/Save
 
-        string _lastFileName = "";
         public string lastFileName
         {
-            get { return _lastFileName; }
+            get { return mc.cfg.LastFileName??""; }
             set
             {
-                _lastFileName = value.Trim();
-                Text = "Calculator Notepad" + (_lastFileName != "" ? " - " + Path.GetFileName(_lastFileName) : "");
-                if (mnuSave != null) mnuSave.Enabled = (_lastFileName != "");
+                mc.cfg.LastFileName = value.Trim();
+                Text = "Calculator Notepad" + (mc.cfg.LastFileName != "" ? " - " + Path.GetFileName(mc.cfg.LastFileName) : "");
+                if (mnuSave != null) mnuSave.Enabled = (mc.cfg.LastFileName != "");
             }
         }
 
@@ -1113,12 +1112,15 @@ namespace CalculatorNotepad
                     else
                         dlg.FilterIndex = 4; // all files if unknown
                 }
-                if (dlg.InitialDirectory == "")
-                    dlg.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                if (string.IsNullOrEmpty(dlg.InitialDirectory))
+                    dlg.InitialDirectory = string.IsNullOrEmpty(mc.cfg.LastFileDirectory) ? AppDomain.CurrentDomain.BaseDirectory : mc.cfg.LastFileDirectory;
                 dlg.RestoreDirectory = true;
                 if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    mc.cfg.LastFileDirectory = Path.GetDirectoryName(dlg.FileName);
                     if (!SaveFile(dlg.FileName))
                         msg("Error saving " + dlg.FileName);
+                }
             }
             else
             {
