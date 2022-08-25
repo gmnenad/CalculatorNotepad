@@ -39,10 +39,11 @@ listing notepad functions starting with those letters and describing their synta
 But since just parsing all available functions can be tedious, this section will introduce some basic concepts. Instead of doing it for different syntax or function groups, 
 it will use few 'real life' scenarios - those will show not only basic notepad functionality but also demonstrate few problems that are suitable to be solved using CalculatorNotepad.
 
-### Fibonnaci function
+### E1) Fibonnaci function
 This is very simple example - function to calculate [Fibonacci number](https://en.wikipedia.org/wiki/Fibonacci_number) : 
 
 > fib(0)=0, fib(1)=1,  fib(x)=fib(x-1)+fib(x-2) 
+
 ![Fib_1](Images/cn_Fibb_1.jpg)
 
 This simple example demonstrate several features of CalculatorNotepad:
@@ -65,8 +66,8 @@ This simple example demonstrate several features of CalculatorNotepad:
         - note that CalculatorNotepad is doing automatic casting : Double > Quad > MPFR
         - that means any operation involving double and Quad will have Quad result, and any operation involving Double/Quad and MPFR will have MPFR result
         - it is similar to how C++/C# languages automatically cast int to double if 1+2.0 is used
-        - disadvantage of using number type literals is that result will be displayed with number of decimals typical for default type
-            - so if default is Double it will show ~15 decimals even for MPFR results, eg `fib(2000m) == 4.224696333392e417m`
+        - disadvantage of using number type literals is that result will be displayed with number of decimals typical for default type ( even if it actually has larger precision )
+            - so if default is Double it will show ~15 decimals in left result panel even for MPFR results, eg `fib(2000m) == 4.224696333392e417m`
             - if 'MPFR 127 bits' is set as default, if would show `fib(2000m) == 4.22469633339230487870672560234148278e417`
             - note that when MPFR is default, it does not show suffix 'm' ... it will instead show suffix 'd' for Double results
 
@@ -76,7 +77,7 @@ This example exist as [file](TestCases/Examples/FibonnaciExample.txt) in 'TestCa
 But even if user exit CalculatorNotepad without saving, latest notepad remains remembered and will be loaded upon next app start.
 
 
-### Draw M distinct numbers
+### E2) Draw M distinct numbers
 This example problem is related to probability, and it can show both simulation and calculation features of CalculatorNotepad:
 > What is probability after T random draws (with replacement) of numbers 1..N to get M distinct numbers: p(M,T,N)=?
 
