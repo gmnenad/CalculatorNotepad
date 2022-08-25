@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyVersion>2.8.$([System.DateTime]::Now.ToString(MMdd)).$([System.DateTime]::Now.ToString(HHff))</AssemblyVersion>
+    <AssemblyVersion>3.0.$([System.DateTime]::Now.ToString(MMdd)).$([System.DateTime]::Now.ToString(HHff))</AssemblyVersion>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net7.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
