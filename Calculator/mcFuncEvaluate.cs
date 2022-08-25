@@ -49,7 +49,9 @@ namespace CalculatorNotepad
                     Evaluate = SubFuncEvaluate;
                     if (!subFunctLevel.HasValue)
                     {
-                        if ((subFunct.FuncType == mcFuncType.Parameter) || (subFunct.FuncType == mcFuncType.Constant)) Evaluate = SubConst_FuncEvaluate;
+                        if (subFunct.FuncType == mcFuncType.Constant) Evaluate = SubConst_FuncEvaluate;
+                        else
+                        if (subFunct.FuncType == mcFuncType.Parameter)  Evaluate = SubParameter_FuncEvaluate;
                         else
                         if (subFunct.Name == "return") Evaluate = Return_FuncEvaluate;
                         else
@@ -223,7 +225,7 @@ namespace CalculatorNotepad
             int paramIdx2 = constValue.Int;
             int paramDepth = paramIdx2 / 1000;
             int paramNum = paramIdx2 % 1000;
-            // sometimes when optimizing for constant, evaluation can be called without prameters even if func have one in def. Eg:  c(x)=5  ;  evaluate(null) ... so return 0 to avoid exceptions
+            // sometimes when optimizing for constant, evaluation can be called without parameters even if func have one in def. Eg:  c(x)=5  ;  evaluate(null) ... so return 0 to avoid exceptions
             if ((Params == null) || ((Params.Count == 1) && (Params[0] == null)))
                 return new mcValue();
             // check params index
@@ -297,7 +299,19 @@ namespace CalculatorNotepad
             return false;
         }
 
-
+        // subfunc to calculate values of each factor function in 'factors' based on passed parameters in 'Params' - convert mcFunc[] to mcValue[]
+        mcValue[] calcFactors(List<mcValue[]> Params)
+        {
+            if (factors == null)
+                return new mcValue[0];
+            var factorValues = new mcValue[factors.Length];
+            for (int i = 0; i < factors.Length; i++)
+                if (factors[i] != null)
+                    factorValues[i] = factors[i].Evaluate(Params);
+                else
+                    factorValues[i] = null;
+            return factorValues;
+        }
 
 
         // SubConst delegate, if subFunc is either constant or parameter
@@ -307,6 +321,23 @@ namespace CalculatorNotepad
             {
                 stackPlus();
                 return subFunct.Evaluate(Params, resolveLambdas);
+            }
+            finally { stackCount--; }
+        }
+
+        // SubParameter delegate, if subFunc is parameter ( should be called only for constant parameters )
+        public mcValue SubParameter_FuncEvaluate(List<mcValue[]> Params, bool resolveLambdas = false)
+        {
+            try
+            {
+                stackPlus();
+                if ((Params == null || Params.Count == 0) && factors != null && factors.Length>0 )
+                {
+                    // if no parameters are passes for this single parameter, assume it is param#0 and use first factor value
+                    return factors[0].Evaluate(Params);
+                }
+                else
+                    return subFunct.Evaluate(Params, resolveLambdas);
             }
             finally { stackCount--; }
         }
@@ -355,12 +386,7 @@ namespace CalculatorNotepad
                 mcValue res;
                 if (TryFuncCache(Params, out res)) return res;
                 // for all other functions, evaluate all factors, then execute subFunc
-                var factorValues = new mcValue[factors != null ? factors.Length : 0];
-                for (int i = 0; i < factors.Length; i++)
-                    if (factors[i] != null)
-                        factorValues[i] = factors[i].Evaluate(Params);
-                    else
-                        factorValues[i] = null;
+                var factorValues = calcFactors(Params);
                 // call operation calculation with these new parameters. 
                 res = subFunct.Evaluate(new List<mcValue[]>() { factorValues }, resolveLambdas);
                 AddFuncCache(Params, res);

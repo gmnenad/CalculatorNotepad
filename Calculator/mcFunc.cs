@@ -106,10 +106,11 @@ namespace CalculatorNotepad
             _forcedConstant = forcedConstant;
             subFunctLevel = subLevel;
             updateEvalDelegate();
-            // check if this function (and its arguments) can be optimized to constant (!! do on evaluate??)
+            // check if this function (and its arguments) can be optimized to constant 
             if ((!mc.cfg.disableConstantOptimization) && isConstant())
             {
-                constValue = EvaluateFunc();
+                constValue = EvaluateFunc(); // same as Evaluate(new List<mcValue[]>())
+                //constValue = EvaluateFunc(new List<mcValue[]>() { calcFactors(Params) });
                 FuncType = mcFuncType.Constant;
                 subFunct = null;
                 factors = null;
