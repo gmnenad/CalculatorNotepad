@@ -1,0 +1,8 @@
+
+fib(x)= if(x≤1,x,fib(x-1)+fib(x-2))  // Fibonacci function in one line version
+
+fib(1000)  // demonstrate fast calculation due to internal use of cached results for fib(x)
+fib(2000)  // overflow due to 'double' limit of up to 10^308
+fib(2000q) // workaround is to use larger number constant, suffix 'm' is for MPFR and 'q' for Quad
+
+

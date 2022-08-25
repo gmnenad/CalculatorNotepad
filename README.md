@@ -1,4 +1,4 @@
-# CalculatorNotepad
+﻿# CalculatorNotepad
 
 CalculatorNotepad is intended for easy calculations with support for user defined functions/formulas and rich set of integrated mathematical and probability functions.
 
@@ -39,8 +39,41 @@ listing notepad functions starting with those letters and describing their synta
 But since just parsing all available functions can be tedious, this section will introduce some basic concepts. Instead of doing it for different syntax or function groups, 
 it will use few 'real life' scenarios - those will show not only basic notepad functionality but also demonstrate few problems that are suitable to be solved using CalculatorNotepad.
 
+### Fibonnaci function
+This is very simple example - function to calculate [Fibonacci number](https://en.wikipedia.org/wiki/Fibonacci_number) where fib(0)=0, fib(1)=1 and fib(x)=fib(x-1)+fib(x-2) :
+![Fib_1](Images/cn_Fibb_1.jpg)
+
+This simple example demonstrate several features of CalculatorNotepad:
+- user defined function `fib(x)`, in this case defined in single line
+- `if` conditional used as Excel-like function with syntax `if(condition, true_expression, false_expression)`
+    - note that `if` also has normal `if(condition) true_expression_block else false_expression_block;` variant
+    - this functional **single line format** exist for some other functions like `while`, `for` etc
+    - for single-line functions like `fib(x)` this functional form is more suitable
+- condition `x≤1` uses 'less than equal' sign, which is alternative to using '<='
+    - CalculatorNotepad support **alternative symbols** and Greek letters for most suitable functions and operators
+    - examples are ≡/==, ≠/== , ≥/>=, ≤/<=, π/pi , √/sqrt , ∑/sum, ∏/product, ∫/integral, ∩/vIntersect, ‼/!!  
+- `fib(1000)` is example of using user defined function, which is used same as any integrated function
+    - in this case x=1000 is large number for fibonacci function which would need ages to compute if this was written in normal language like C# ( without some form of dynamic programming, such naive recursive solution would call `fib` function around 2^x times )
+    - but CalculatorNotepad is using **automatic cache** for function results, so even recursive solutions would complete in same time as (often mush more complicated) non-recursive functions
+- `fib(2000)` is example where function result in infinite result (∞), since actual result is larger than 10^308 limit for 'double' precision floating number 
+    - this can be overcome by changing **default number format** in Menu\Options from 'Double 64-bit' to either 'Quad 128-bit' or 'MPFR' ( both Quad and MPFR can support huge exponent values)
+    - alternative is to use **number literal suffix** for specific number type:  suffix 'm' means that number will be MPFR, and suffix 'q' means than number will be Quad
+        - advantage of using number type literals is that it i spossible to mix different types
+        - note that CalculatorNotepad is doing automatic casting : Double > Quad > MPFR
+        - that means any operation involving double and Quad will have Quad result, and any operation involving Double/Quad and MPFR will have MPFR result
+        - it is similar to how C++/C# languages automatically cast int to double if 1+2.0 is used
+        - disadvantage of using number type literals is that result will be displayed with number of decimals typical for default type
+            - so if default is Double it will show ~15 decimals even for MPFR results, eg `fib(2000m) == 4.224696333392e417m`
+            - if 'MPFR 127 bits' is set as default, if would show `fib(2000m) == 4.22469633339230487870672560234148278e417`
+            - note that when MPFR is default, it does not show suffix 'm' ... it will instead show suffix 'd' for Double results
+
+This example exist as [file](TestCases/Examples/Fibonnaci Example.txt) in 'TestCases\Examples' folder, but if it was written as new solution then usual next step would be to save it.
+**Saving** notepad files is available from menu ( upper left icon ![icon](Images/Menu_DarkGreen.png) with three horizontal bars ), using 'Save As' to name new file. 
+But even if user exit CalculatorNotepad without saving, latest notepad remains remembered and will be loaded upon next app start.
+
+
 ### Draw M distinct numbers
-First problem to be used is one related to probability, since it can show both simulation and calculation features:
+This example problem is related to probability, and it can show both simulation and calculation features of CalculatorNotepad:
 > What is probability after T random draws (with replacement) of numbers 1..N to get M distinct numbers: p(M,T,N)=?
 
 Few specific examples:
@@ -56,16 +89,16 @@ One way to do it in CalculatorNotepad would be:
 This 'classic' solution demonstrate several basic features of CalculatorNotepad:
 - user defined function `pClassicSim(M,T,N)`, which in this case is not simple one-liner but in `{}` block with multiple lines ( each ending in semicolon `;` )
 - function parameters `(M,T,N)` which are passed when function is called. Note that they do not have type - all variables in notepad language are either numbers or vectors (arrays of numbers or other vectors)
-- declaration and use of local variables inside function ( like `nSim`,`nSame`). Notepad support nested names in inner blocks.
-- `for` loop block with syntax `for([init],condition,[iterator]) body`
+- declaration and use of **local variables** inside function ( like `nSim`,`nSame`). Notepad support nested names in inner blocks.
+- `for` **loop** block with syntax `for([init],condition,[iterator]) body`
     - in this case body is another block inside `{}`
     - unlike c#, notepad `for` parameters are separated by commas ( `for` is actually just another function, and thus usable in one-liners )
-- arrays in notepad language are 'vectors', and one is declared here with `t=vDim(size)` syntax
+- **arrays** in notepad language are 'vectors', and one is declared here with `t=vDim(size)` syntax
     - elements of vectors/arrays are accessible with usual `t[i]` syntax
     - there is large number of integrated vector functions, like `x=vec(1,2,3)` or `vLen(x)` or `vMax(x)`
     - they all have names in the form `vSomething` so autocomplete will show them upon typing 'v'
     - this specific vector 't' is used as boolean array, to mark all numbers that were drawn in one trial
-- random number generation, with `r= rndNumber(N)` which return random integer between 0 and N-1 inclusive
+- **random number** generation, with `r= rndNumber(N)` which return random integer between 0 and N-1 inclusive
     - there is large number of integrated random functions like `rnd`, `rndVector`, `rndShuffle`, `rndChoose` - again, use autocomplete on 'rnd'
     - there is also support for different random distributions, other than uniform one, try autocomplete on 'dist' - but they may be used in different example
 - function return uses standard `return` keyword, and support mid-function returns
@@ -74,9 +107,7 @@ This 'classic' solution demonstrate several basic features of CalculatorNotepad:
     - in this case `pClassicSim(4,5,6)` will simulate what fraction of rolling 5 dice (T=5,N=6) will result in 4 distinct numbers (M=3), resulting in ~46% probability
     - also `pClassicSim(10,10,52)` will simulate drawing 10 cards (T=10) out of reshuffled deck (N=52) with all different cards (M=10), resulting in ~40% probability
 
-This example exist as [file](TestCases/Examples/Draw_M_distinct.txt) in 'TestCases\Examples' folder, but if it was written as new solution then usual next step would be to save it.
-Saving notepad files is available from menu ( upper left icon ![icon](Images/Menu_DarkGreen.png) with three horizontal bars ), using 'Save As' to name new file. 
-But even if user exit CalculatorNotepad without saving, latest notepad remains remembered and will be loaded upon next app start.
+This example exist as [file](TestCases/Examples/Draw_M_distinct.txt) in 'TestCases\Examples' folder.
 
 Results from last two lines show probability after calling user defined `pClassicSim` function with suitable parameters. 
 They also demonstrate one feature of CalculatorNotepad - it recalculate only those lines at and below last changed line. 
@@ -85,7 +116,7 @@ Thus if you add space after `pClassicSim(10,10,52)` line and move cursor down, i
 
 Those results in last two lines show something else too -  execution time, with some 0.5sec needed for first case and 2.5sec for second case. 
 Those numbers would be 10x larger if we simulated 100k times instead of just 10k times. This demonstrate one important limitation of notepad language - 
-it is interpreted as opposed to compiled. That has impact on its performance, but allows language to remain as flexible as needed. 
+it is **interpreted** as opposed to compiled. That has impact on its performance, but allows language to remain as flexible as needed. 
 
 #### C# notepad panel
 Alternative approach, for those cases where we need complex calculations for hundreds of thousands iterations, would be to use another feature of CalculatorNotepad : user defined functions in c# panel. 
@@ -94,8 +125,8 @@ That panel is shown upon pressing second icon ![second icon](Images/csharp-icon.
 
 This 'c#' solution demonstrate several features:
 - it shows that notepad language is (intentionally) similar to c# ... only few changes to previous code was needed (mainly typing variables)
-- `nm.rnd` is global variable in 'nm' namespace. That 'nm' namespace contains many useful CalculatorNotepad functions and classes. In this case it only replace need for `var rnd= new Random();` in C# code.
-- c# user functions are callable from notepad as soon as typed - they are internally compiled as soon as focus shift to notepad panel
+- `nm.rnd` is global variable in '**nm**' namespace. That 'nm' namespace contains many useful CalculatorNotepad functions and classes. In this case it only replace need for `var rnd= new Random();` in C# code.
+- c# user functions are callable from notepad as soon as typed - they are **internally compiled** as soon as focus shift to notepad panel
 - naturally, c# functions are much faster at ~20ms for first and ~40ms for second simulation, which is ~200x speedup due to ~20x less time and 10x more iterations (100k vs 10k)
 - another feature demonstrated here is shortening of results if result panel is shrunk too much - numbers are shown with elipsis(...) to indicate they are not shown entirely. 
 - when notepad that contain c# code is saved, it saves c# code in same TXT file as notepad code
