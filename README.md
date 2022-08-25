@@ -40,7 +40,9 @@ But since just parsing all available functions can be tedious, this section will
 it will use few 'real life' scenarios - those will show not only basic notepad functionality but also demonstrate few problems that are suitable to be solved using CalculatorNotepad.
 
 ### Fibonnaci function
-This is very simple example - function to calculate [Fibonacci number](https://en.wikipedia.org/wiki/Fibonacci_number) where fib(0)=0, fib(1)=1 and fib(x)=fib(x-1)+fib(x-2) :
+This is very simple example - function to calculate [Fibonacci number](https://en.wikipedia.org/wiki/Fibonacci_number) : 
+
+> fib(0)=0, fib(1)=1,  fib(x)=fib(x-1)+fib(x-2) 
 ![Fib_1](Images/cn_Fibb_1.jpg)
 
 This simple example demonstrate several features of CalculatorNotepad:
@@ -49,16 +51,17 @@ This simple example demonstrate several features of CalculatorNotepad:
     - note that `if` also has normal `if(condition) true_expression_block else false_expression_block;` variant
     - this functional **single line format** exist for some other functions like `while`, `for` etc
     - for single-line functions like `fib(x)` this functional form is more suitable
-- condition `x≤1` uses 'less than equal' sign, which is alternative to using '<='
+- condition `x≤1` uses 'less or equal' sign, which is alternative to using '<='
     - CalculatorNotepad support **alternative symbols** and Greek letters for most suitable functions and operators
-    - examples are ≡/==, ≠/== , ≥/>=, ≤/<=, π/pi , √/sqrt , ∑/sum, ∏/product, ∫/integral, ∩/vIntersect, ‼/!!  
+    - examples are ≡/==, ≠/== , ≥/>=, ≤/<=, π/pi , √/sqrt , ∑/sum, ∏/product, ∫/integral, ∩/vIntersect, ....
+    - there is even option in Menu/Options to 'Automatically replace known symbols' (disabled by default), which would replace 'sqrt' with '√' etc
 - `fib(1000)` is example of using user defined function, which is used same as any integrated function
     - in this case x=1000 is large number for fibonacci function which would need ages to compute if this was written in normal language like C# ( without some form of dynamic programming, such naive recursive solution would call `fib` function around 2^x times )
-    - but CalculatorNotepad is using **automatic cache** for function results, so even recursive solutions would complete in same time as (often mush more complicated) non-recursive functions
-- `fib(2000)` is example where function result in infinite result (∞), since actual result is larger than 10^308 limit for 'double' precision floating number 
+    - but CalculatorNotepad is using **automatic cache** for function results, so even recursive solutions would complete in same time as (often mush more complicated) non-recursive functions. This case needed just 6ms.
+- `fib(2000)` is example where function result in infinite (∞), since actual result is larger than 10^308 limit for 'double' precision floating number 
     - this can be overcome by changing **default number format** in Menu\Options from 'Double 64-bit' to either 'Quad 128-bit' or 'MPFR' ( both Quad and MPFR can support huge exponent values)
     - alternative is to use **number literal suffix** for specific number type:  suffix 'm' means that number will be MPFR, and suffix 'q' means than number will be Quad
-        - advantage of using number type literals is that it i spossible to mix different types
+        - advantage of using number type literals is that it is possible to mix different types
         - note that CalculatorNotepad is doing automatic casting : Double > Quad > MPFR
         - that means any operation involving double and Quad will have Quad result, and any operation involving Double/Quad and MPFR will have MPFR result
         - it is similar to how C++/C# languages automatically cast int to double if 1+2.0 is used
@@ -67,7 +70,8 @@ This simple example demonstrate several features of CalculatorNotepad:
             - if 'MPFR 127 bits' is set as default, if would show `fib(2000m) == 4.22469633339230487870672560234148278e417`
             - note that when MPFR is default, it does not show suffix 'm' ... it will instead show suffix 'd' for Double results
 
-This example exist as [file](TestCases/Examples/Fibonnaci Example.txt) in 'TestCases\Examples' folder, but if it was written as new solution then usual next step would be to save it.
+This example exist as [file](TestCases/Examples/FibonnaciExample.txt) in 'TestCases\Examples' folder, but if it was written as new solution then usual next step would be to save it.
+
 **Saving** notepad files is available from menu ( upper left icon ![icon](Images/Menu_DarkGreen.png) with three horizontal bars ), using 'Save As' to name new file. 
 But even if user exit CalculatorNotepad without saving, latest notepad remains remembered and will be loaded upon next app start.
 
