@@ -42,8 +42,10 @@ it will use few 'real life' scenarios - those will show not only basic notepad f
 ### Draw M distinct numbers
 First problem to be used is one related to probability, since it can show both simulation and calculation features:
 > What is probability after T random draws (with replacement) of numbers 1..N to get M distinct numbers: p(M,T,N)=?
+
 Few specific examples:
 > What is probability after rolling 5 dice to get 4 distinct numbers, p(4,5,6)=?
+
 > What is probability after drawing card 10 times out of reshuffled deck to get all different cards, p(10,10,52)=?
 
 #### Classical solution
@@ -73,7 +75,7 @@ This 'classic' solution demonstrate several basic features of CalculatorNotepad:
     - also `pClassicSim(10,10,52)` will simulate drawing 10 cards (T=10) out of reshuffled deck (N=52) with all different cards (M=10), resulting in ~40% probability
 
 This example exist as [file](TestCases/Examples/Draw_M_distinct.txt) in 'TestCases\Examples' folder, but if it was written as new solution then usual next step would be to save it.
-Saving notepad files is available from menu ( upper left ![icon](Images\Menu_DarkGreen.png) with three horizontal bars ), using 'Save As' to name new file. 
+Saving notepad files is available from menu ( upper left icon ![icon](Images/Menu_DarkGreen.png) with three horizontal bars ), using 'Save As' to name new file. 
 But even if user exit CalculatorNotepad without saving, latest notepad remains remembered and will be loaded upon next app start.
 
 Results from last two lines show probability after calling user defined `pClassicSim` function with suitable parameters. 
@@ -87,7 +89,7 @@ it is interpreted as opposed to compiled. That has impact on its performanse, bu
 
 #### C# notepad panel
 Alternative approach, for those cases where we need complex calculations for hundreds of thousands iterations, would be to use another feature of CalculatorNotepad : user defined functions in c# panel. 
-That panel is shown upon pressing ![second icon](Images\csharp-icon.png) from the left, splitting notepad in two horizontal areas. Those areas, just like rest of notepad, can be freely resized.
+That panel is shown upon pressing second icon ![second icon](Images/csharp-icon.png) from the left, splitting notepad in two horizontal areas. Those areas, just like rest of notepad, can be freely resized.
 ![DrawM_2](Images/cn_drawM_2.jpg)
 
 This 'c#' solution demonstrate several features:
@@ -95,6 +97,7 @@ This 'c#' solution demonstrate several features:
 - c# user functions are callable from notepad as soon as typed - they are internally compiled as soon as focus shift to notepad panel
 - naturally, c# functions are much faster at ~20ms for first and ~40ms for second simulation, which is ~200x speedup due to ~20x less time and 10x more iterations (100k vs 10k)
 - another feature demonstrated here is shortening of results if result panel is shrunk too much - numbers are shown with elipsis(...) to indicate they are not shown entirely. 
+- when notepad that contain c# code is saved, it saves c# code in same TXT file as notepad code
 
 #### Using notepad vector functions
 Yet another approach would be to use other integrated functions of notepad language - that could not only improve performance compared to 'classic' aproach,
@@ -119,12 +122,13 @@ While solving that is outside scope for this document, it turns out that mathema
 > pMath(M,T,N)= (N-1)!/(N-M)!/N^(T-1)*Psum(T-M,M)
 
 Where `Psum(d,m)` is sum of product of all non-descending arrangements of 'd' numbers, where each number can go from 1 .. 'm'. Some examples:
-> Psum(2,3)= 3*3 + 2*3 + 2*2 + 1*3 + 1*2 + 1*1
-> Psum(3,3)= 3*3*3 +2*3*3 +2*2*3 +2*2*2 +1*3*3 +1*2*3 +1*2*2 +1*1*3 +1*1*2 +1*1*1
+> Psum(2,3)= 3x3 + 2x3 + 2x2 + 1x3 + 1x2 + 1x1
+
+> Psum(3,3)= 3x3x3 +2x3x3 +2x2x3 +2x2x2 +1x3x3 +1x2x3 +1x2x2 +1x1x3 +1x1x2 +1x1x1
 
 Classical solution to calculate `Psum(d,m)` would require program with D nested loops, where D is not fixed at program time but supplied as parameter. 
 This is not trivial to program even in high-end languages like c#, and it would require probaby several pages of error-prone code. 
-Luckily, CalculatorNotepad have another integrated function that can help here: **counter** :
+Luckily, CalculatorNotepad have **counter** integrated functions that can help here :
 ![DrawM_4](Images/cn_drawM_4.jpg)
 
 User defined function `pMath(M,T,N)` uses above mentioned formula, and simplify calculation of `Psum(d,m)` by using integrated counter functions:
@@ -132,14 +136,14 @@ User defined function `pMath(M,T,N)` uses above mentioned formula, and simplify 
     - as used in `counterCreateComb(d,m,1,1)`, it counts 'd' digits, each 1..m, and allows repeat ( so 3*3*3 is allowed)
     - since it is 'combination' counter, it automatically include only combinations without repeating, so if [2,3] is returned, it will not return [3,2]
         - for example, `counterCreateComb(2,4)` will count 12,13,14,23,24,34
-        - there are different versions of counters: `counterCreateComb` will count all permutations, and `counterCreate` will count all possible values
-    - ``counterCreateXX` functions return actual counter as a vector, which is here put in variable 'ac'
+        - there are different versions of counters: `counterCreatePerm` will count all permutations, and `counterCreate` will count all possible values
+    - `counterCreateXX` functions return actual counter as a vector, which is here put in variable 'ac'
 - `counterNotFinished(ac)` return true if counter is not finished counting. It works for all types of counters, and here used as `for` condition
-- `ac= counterNext(ac)` iterate to next valid counter combination, and store it back in 'ac'. When it reach last valid combo, next counterNotFinished will be false
+- `ac= counterNext(ac)` iterate to next valid counter combination, and store it back in 'ac'. When it reach last valid combo, next `counterNotFinished` will be false
 - `counterValues(ac)` return vector with current counter values, eg `vec(2,3,3)`
-- `vMul(vector)` return product of each element in vector, so if we had `vec(2,3,3)` this will be calculate 2*3*3
-- naturally, execution time of mathematical calculation is instant (0ms)
-- this demonstrate very simple code that would be fairly complex if done using standard languages like C#
+- `vMul(vector)` return product of each element in vector, so if we had `vec(2,3,3)` this will calculate 2x3x3
+- naturally, execution time of mathematical calculation is instant (~0ms)
+- this demonstrate very simple notepad code that would be fairly complex if done using standard languages like C#
 
 
 
