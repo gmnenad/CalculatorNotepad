@@ -94,6 +94,7 @@ That panel is shown upon pressing second icon ![second icon](Images/csharp-icon.
 
 This 'c#' solution demonstrate several features:
 - it shows that notepad language is (intentionally) similar to c# ... only few changes to previous code was needed (mainly typing variables)
+- `nm.rnd` is global variable in 'nm' namespace. That 'nm' namespace contains many useful CalculatorNotepad functions and classes. In this case it only replace need for `var rnd= new Random();` in C# code.
 - c# user functions are callable from notepad as soon as typed - they are internally compiled as soon as focus shift to notepad panel
 - naturally, c# functions are much faster at ~20ms for first and ~40ms for second simulation, which is ~200x speedup due to ~20x less time and 10x more iterations (100k vs 10k)
 - another feature demonstrated here is shortening of results if result panel is shrunk too much - numbers are shown with elipsis(...) to indicate they are not shown entirely. 
@@ -144,6 +145,18 @@ User defined function `pMath(M,T,N)` uses above mentioned formula, and simplify 
 - `vMul(vector)` return product of each element in vector, so if we had `vec(2,3,3)` this will calculate 2x3x3
 - naturally, execution time of mathematical calculation is instant (~0ms)
 - this demonstrate very simple notepad code that would be fairly complex if done using standard languages like C#
+
+## Technical details
+CalculatorNotepad is written in C# and latest version is updated for Net 7, using some experimental features like [C# generic math](https://devblogs.microsoft.com/dotnet/dotnet-7-generic-math/) 
+for common number type that supports several floationg points: standard 64-bit double, custom 128-bit Quad and variable length MPFR. That experimental features require Visual Studio 2022 **Preview**.
+
+There are several open source libraries that are used in this project:
+- [FastColoredTextBox](https://github.com/PavelTorgashov/FastColoredTextBox/blob/master/FastColoredTextBox/FastColoredTextBox.cs) - modified version used for code panels
+- [Quad](https://github.com/Razenpok/BreakInfinity.cs/blob/master/BreakInfinity.Benchmarks/Quadruple/Quad.cs) - heavily modified version used for 128-bit Quad float number class
+- [MPFR](https://github.com/MachineCognitis/Math.Mpfr.Native/) - modified source of nuget used as basis for MPFR number class
+
+
+
 
 
 
