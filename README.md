@@ -7,7 +7,7 @@ To use latest published version copy all files from repository `Release` folder.
 It can be used as simple calculator with each line showing calculation result, but it also support user variables (storing results of previous calculations and using them in new calculations)
 and user defined functions that can be written as simple one line or multiline using integrated script language (or as c# functions in side panel). 
 
-It is also suitable for simple simulation scenarions, with support for random numbers using different distributions and simulation aggregation functions.
+It is also suitable for simple simulation scenarions, with support for random numbers using different distributions and simulation aggregation functions. Pressing ![icon](Images/Help.png) icon will show following examples:
 
 ![Help screen in CalculatorNotepad](Images/cn_example_help.jpg)
 
@@ -24,15 +24,17 @@ It is also suitable for simple simulation scenarions, with support for random nu
     - alternative to notepad functions are user defined c# functions writeable directly in notepad
     - user defined notepad functions can call other user defined notepad or c# functions
     - notepad user functions can be recursive (notepad does auto cache optimization and stack guard) 
-- allow definition of C# user functions (in right C# panel, enabled by 2nd toolbar icon )
+- allow definition of C# user functions (in right C# panel, enabled by 2nd toolbar icon ![second icon](Images/csharp-icon.png) )
     - instantly usable in notepad, allow for complex/faster functions
 - Syntax Highlighting of both Notepad and C# panels
     - matching parentheses are highlighted, use Ctrl-Arrows to jump between them
 - Autocomplete for Notepad and C# panels
     - Notepad autocomplete also show help/descriptions for builtin custom language functions
     - Ctrl-Space to show all, or automaticaly shown after first typed characters
-- Menu (leftmost toolbar icon) allows Load,Save and Options settings
+- Menu (leftmost toolbar icon ![icon](Images/Menu_DarkGreen.png)) allows Load,Save and Options settings
     - Preset file allow permanent user defined functions and constants
+- Help icon ![help](Images/Help.png) shows basic examples ( note that it also overwrite current notepad context - save before use )
+- Reset icon ![clear](Images/Reset_red.png) clears notepad
 
 
 
