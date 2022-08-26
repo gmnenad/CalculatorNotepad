@@ -2,7 +2,7 @@
 
 CalculatorNotepad is intended for easy calculations with support for user defined functions/formulas and rich set of integrated mathematical and probability functions.
 
-To use it, copy published version from repository `Release` folder. Alternatively, to get latest changes, compile C# project with Visual Studio 2022 Preview or later.
+To use latest published version copy all files from repository `Release` folder. Alternatively, to get latest changes, compile C# `CalculatorNotepad.sln` solution with Visual Studio 2022 Preview or later.
 
 It can be used as simple calculator with each line showing calculation result, but it also support user variables (storing results of previous calculations and using them in new calculations)
 and user defined functions that can be written as simple one line or multiline using integrated script language (or as c# functions in side panel). 
