@@ -7,7 +7,7 @@ To use latest published version copy all files from repository `Release` folder.
 It can be used as simple calculator with each line showing calculation result, but it also support user variables (storing results of previous calculations and using them in new calculations)
 and user defined functions that can be written as simple one line or multiline using integrated script language (or as c# functions in side panel). 
 
-It is also suitable for simple simulation scenarions, with support for random numbers using different distributions and simulation aggregation functions. Pressing ![icon](Images/Help.png) icon will show following examples:
+It is also suitable for simple simulation scenarios, with support for random numbers using different distributions and simulation aggregation functions. Pressing ![icon](Images/Help.png) icon will show following examples:
 
 ![Help screen in CalculatorNotepad](Images/cn_example_help.jpg)
 
@@ -30,7 +30,7 @@ It is also suitable for simple simulation scenarions, with support for random nu
     - matching parentheses are highlighted, use Ctrl-Arrows to jump between them
 - Autocomplete for Notepad and C# panels
     - Notepad autocomplete also show help/descriptions for builtin custom language functions
-    - Ctrl-Space to show all, or automaticaly shown after first typed characters
+    - Ctrl-Space to show all, or automatically shown after first typed characters
 - Menu (leftmost toolbar icon ![icon](Images/Menu_DarkGreen.png)) allows Load,Save and Options settings
     - Preset file allow permanent user defined functions and constants
 - Help icon ![help](Images/Help.png) shows basic examples ( note that it also overwrite current notepad context - save before use )
@@ -51,7 +51,7 @@ they are all shown and arrow up/down keys can be used to select one. Currently s
 
 ![Hint_1](Images/cn_hint_1.png)
 
-Alternative way to see same description of integrated function is to hower mouse over it. Howering over user defined functions will usually show just its name and 'user defined function' description.
+Alternative way to see same description of integrated function is to hover mouse over it. Hovering over user defined functions will usually show just its name and 'user defined function' description.
 But it is possible to also set custom description for user functions, by using `///` comment before (or in same line) as user function name definition (that is triple `///`, as opposed to regular comment with `//`)
 
 ![Hint_3](Images/cn_hint_3.png)
@@ -63,7 +63,7 @@ it will use few 'real life' scenarios - those will show not only basic notepad f
 
 
 
-### E1) Fibonnaci function
+### E1) Fibonacci function
 This is very simple example - function to calculate [Fibonacci number](https://en.wikipedia.org/wiki/Fibonacci_number) : 
 
 > fib(0)=0, fib(1)=1,  fib(x)=fib(x-1)+fib(x-2) 
@@ -73,7 +73,7 @@ This is very simple example - function to calculate [Fibonacci number](https://e
 This simple example demonstrate several features of CalculatorNotepad:
 - user defined function `fib(x)`, in this case defined in single line
 - comments have `//` syntax, and can be used at the end of line
-    - special comment `///` above or in same line as definition/name of user function will define autocomplete/hower description 
+    - special comment `///` above or in same line as definition/name of user function will define autocomplete/hover description 
 - `if` conditional used as Excel-like function with syntax `if(condition, true_expression, false_expression)`
     - note that `if` also has normal `if(condition)` true_expression_block `else` false_expression_block; variant
     - this functional **single line format** exist for some other functions like `while`, `for` etc
@@ -85,9 +85,9 @@ This simple example demonstrate several features of CalculatorNotepad:
 - notepad support recursive calls, as seen here since `fib` calls same `fib` function
     - there is integrated stack guard that will report error instead of crashing app if user recursive function is not bounded and use too much of stack
 - `fib(1000)` is example of using user defined function, which is used same as any integrated function
-    - in this case x=1000 is large number for fibonacci function which would need ages to compute if this was written in normal language like C# ( without some form of dynamic programming, such naive recursive solution would call `fib` function around 2^x times )
+    - in this case x=1000 is large number for Fibonacci function which would need ages to compute if this was written in normal language like C# ( without some form of dynamic programming, such naive recursive solution would call `fib` function around 2^x times )
     - but CalculatorNotepad is using **automatic cache** for function results, so even recursive solutions would complete in same time as (often much more complicated) non-recursive functions. This case needed just 6ms.
-    - while notepad c# functions do not automatically use cache, they can use `nmCache` class - see example of cached C# Fibonacci function with Help icon ![help](Images/Help.png)
+    - while notepad c# functions do not automatically use cache, they can use `nmCache` class - see example of cached C# Fibonacci function with Help icon ![help](Images/Help.png) or as a first image here
 - `fib(2000)` is example where function result in infinite (∞), since actual result is larger than 10^308 limit for 'double' precision floating number 
     - this can be overcome by changing **default number format** in Menu\Options from 'Double 64-bit' to either 'Quad 128-bit' or 'MPFR' ( both Quad and MPFR can support huge exponent values)
     - alternative is to use **number literal suffix** for specific number type:  suffix 'm' means that number will be MPFR, and suffix 'q' means than number will be Quad
@@ -102,7 +102,7 @@ This simple example demonstrate several features of CalculatorNotepad:
     - naturally, MPFR and Quad are slower than native Double. This is not visible in this simple example, but would be in cases where loop is executed hundreds of thousands times
     - this also demonstrate that notepad can work with infinite values - those can be valid result of computations, stored in variables, used as literal ∞ etc
 
-This example exist as [file](TestCases/Examples/FibonnaciExample.txt) in 'TestCases\Examples' folder, but if it was written as new solution then usual next step would be to save it.
+This example exist as [file](TestCases/Examples/FibonacciExample.txt) in 'TestCases\Examples' folder, but if it was written as new solution then usual next step would be to save it.
 
 **Saving** notepad files is available from menu ( upper left icon ![icon](Images/Menu_DarkGreen.png) with three horizontal bars ), using `Save As` to name new file, or `Save` to overwrite old file. 
 But even if user exit CalculatorNotepad without saving, latest notepad remains remembered and will be loaded upon next app start.
@@ -168,7 +168,7 @@ This 'c#' solution demonstrate several features:
 - `nm.rnd` is global variable in '**nm**' namespace. That 'nm' namespace contains many useful CalculatorNotepad functions and classes. In this case it only replace need for `var rnd= new Random();` in C# code.
 - c# user functions are callable from notepad as soon as typed - they are **internally compiled** as soon as focus shift to notepad panel
 - naturally, c# functions are much faster at ~20ms for first and ~40ms for second simulation, which is ~200x speedup due to ~20x less time and 10x more iterations (100k vs 10k)
-- another feature demonstrated here is shortening of results if result panel is shrunk too much - numbers are shown with elipsis(...) to indicate they are not shown entirely. 
+- another feature demonstrated here is shortening of results if result panel is shrunk too much - numbers are shown with ellipsis(...) to indicate they are not shown entirely. 
 - when notepad that contain c# code is saved, it saves c# code in same TXT file as notepad code
 
 #### Using notepad vector functions
@@ -205,8 +205,8 @@ This is not trivial to program even in high-end languages like c#, and it would 
 User defined function `pMath(M,T,N)` uses above mentioned formula, and simplify calculation of `Psum(d,m)` by using integrated counter functions:
 - `counterCreateComb(numDigits, maxValue, minValue, canRepeat)` : create 'combination' counter where order does not matter, so it is always non-descending
     - as used in `counterCreateComb(d,m,1,1)`, it counts 'd' digits, each 1..m, and allows repeat ( so 3*3*3 is allowed)
-        - last parameter is boolean 'canRepeat', and notepad follof C/C# convention than anything other than zero is true 
-        - here `1` was suplied, but `true` and `false` are also supported as aliases to `1` and `0` respectivelly
+        - last parameter is boolean 'canRepeat', and notepad follows C/C# convention than anything other than zero is true 
+        - here `1` was supplied, but `true` and `false` are also supported as aliases to `1` and `0` respectively
     - since it is 'combination' counter, it automatically include only combinations without repeating, so if [2,3] is returned, it will not return [3,2]
         - for example, `counterCreateComb(2,4)` will count 12,13,14,23,24,34
         - there are different versions of counters: `counterCreatePerm` will count all permutations, and `counterCreate` will count all possible values
@@ -229,7 +229,7 @@ for common number type that supports simultaneous use of several floating point 
 There are several libraries that are used in this project:
 - [FastColoredTextBox](https://github.com/PavelTorgashov/FastColoredTextBox/blob/master/FastColoredTextBox/FastColoredTextBox.cs) - modified version used for code panels
 - [Quad](https://github.com/Razenpok/BreakInfinity.cs/blob/master/BreakInfinity.Benchmarks/Quadruple/Quad.cs) - heavily modified version used for 128-bit Quad float number class
-- [MPFR](https://github.com/MachineCognitis/Math.Mpfr.Native/) - modified source of nuget used as basis for [MPFR](https://www.mpfr.org/) number class
+- [MPFR](https://github.com/MachineCognitis/Math.Mpfr.Native/) - modified source of nugget used as basis for [MPFR](https://www.mpfr.org/) number class
 
 
 
