@@ -72,6 +72,8 @@ This is very simple example - function to calculate [Fibonacci number](https://e
 
 This simple example demonstrate several features of CalculatorNotepad:
 - user defined function `fib(x)`, in this case defined in single line
+- comments have `//` syntax, and can be used at the end of line
+    - special comment `///` above or in same line as definition/name of user function will define autocomplete/hower description 
 - `if` conditional used as Excel-like function with syntax `if(condition, true_expression, false_expression)`
     - note that `if` also has normal `if(condition)` true_expression_block `else` false_expression_block; variant
     - this functional **single line format** exist for some other functions like `while`, `for` etc
@@ -85,6 +87,7 @@ This simple example demonstrate several features of CalculatorNotepad:
 - `fib(1000)` is example of using user defined function, which is used same as any integrated function
     - in this case x=1000 is large number for fibonacci function which would need ages to compute if this was written in normal language like C# ( without some form of dynamic programming, such naive recursive solution would call `fib` function around 2^x times )
     - but CalculatorNotepad is using **automatic cache** for function results, so even recursive solutions would complete in same time as (often much more complicated) non-recursive functions. This case needed just 6ms.
+    - while notepad c# functions do not automatically use cache, they can use `nmCache` class - see example of cached C# Fibonacci function with Help icon ![help](Images/Help.png)
 - `fib(2000)` is example where function result in infinite (∞), since actual result is larger than 10^308 limit for 'double' precision floating number 
     - this can be overcome by changing **default number format** in Menu\Options from 'Double 64-bit' to either 'Quad 128-bit' or 'MPFR' ( both Quad and MPFR can support huge exponent values)
     - alternative is to use **number literal suffix** for specific number type:  suffix 'm' means that number will be MPFR, and suffix 'q' means than number will be Quad

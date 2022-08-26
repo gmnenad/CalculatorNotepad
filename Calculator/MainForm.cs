@@ -695,7 +695,7 @@ namespace CalculatorNotepad
                 "" + Environment.NewLine +
                 "// fibonacci with cache helper, much faster " + Environment.NewLine +
                 "// type 'nm.' to get autocomplete suggestion for other calculator specific" + Environment.NewLine +
-                "// functions like nmm.rnd.Next()  or  nmm.nCr(n,r) etc" + Environment.NewLine +
+                "// functions like nm.rnd.Next(N)  or  nm.nCr(n,r) etc" + Environment.NewLine +
                 "double fibC(int n)" + Environment.NewLine +
                 "{" + Environment.NewLine +
                 "    if (nmCache.Try(\"fibC\", n)) return nmCache.Result;" + Environment.NewLine +
