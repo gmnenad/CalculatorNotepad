@@ -32,12 +32,29 @@ It is also suitable for simple simulation scenarions, with support for random nu
 - Menu (leftmost toolbar icon) allows Load,Save and Options settings
     - Preset file allow permanent user defined functions and constants
 
+
+
+
 ## Examples for notepad features
 Basic way to get additional information about notepad language features is to use **autocomplete** which will automatically appear after first entered letter(s), 
-listing notepad functions starting with those letters and describing their syntax and usage. Alternativelly, pressing Ctrl-Space will list all available notepad language functions even without entering first letter. 
+listing notepad functions starting with those letters and describing their syntax and usage. Pressing `Enter` will accept currently selected function. 
+![Hint_2](Images/cn_hint_2.jpg)
 
-But since just parsing all available functions can be tedious, this section will introduce some basic concepts. Instead of doing it for different syntax or function groups, 
+
+Pressing Ctrl-Space will list all available notepad language functions even without entering first letter. When multiple functions start with same letters, or in case of Ctrl-Space, 
+they are all shown and arrow up/down keys can be used to select one. Currently selected function from autocomplete will show its description, and pressing `Enter` will accept that function.
+![Hint_1](Images/cn_hint_1.jpg)
+
+Alternative way to see same description of integrated function is to hower mouse over it. Howering over user defined functions will usually show just its name and 'user defined function' description.
+But it is possible to also set custom description for user functions, by using `///` comment before (or in same line) as user function name definition (that is triple `///`, as opposed to regular comment with `//`)
+![Hint_3](Images/cn_hint_3.jpg)
+
+
+But since parsing all available functions just to get familiar with notepad language can be tedious, this section will introduce some basic concepts. Instead of doing it for different syntax or function groups, 
 it will use few 'real life' scenarios - those will show not only basic notepad functionality but also demonstrate few problems that are suitable to be solved using CalculatorNotepad.
+
+
+
 
 ### E1) Fibonnaci function
 This is very simple example - function to calculate [Fibonacci number](https://en.wikipedia.org/wiki/Fibonacci_number) : 
@@ -70,11 +87,14 @@ This simple example demonstrate several features of CalculatorNotepad:
             - so if default is Double it will show ~15 decimals in left result panel even for MPFR results, eg `fib(2000m) == 4.224696333392e417m`
             - if 'MPFR 127 bits' is set as default, if would show `fib(2000m) == 4.22469633339230487870672560234148278e417`
             - note that when MPFR is default, it does not show suffix 'm' ... it will instead show suffix 'd' for Double results
+    - naturally, MPFR and Quad are slower than native Double. This is not visible in this simple example, but would be in cases where loop is executed hundreds of thousands times
 
 This example exist as [file](TestCases/Examples/FibonnaciExample.txt) in 'TestCases\Examples' folder, but if it was written as new solution then usual next step would be to save it.
 
 **Saving** notepad files is available from menu ( upper left icon ![icon](Images/Menu_DarkGreen.png) with three horizontal bars ), using 'Save As' to name new file. 
 But even if user exit CalculatorNotepad without saving, latest notepad remains remembered and will be loaded upon next app start.
+
+
 
 
 ### E2) Draw M distinct numbers
@@ -171,16 +191,22 @@ Luckily, CalculatorNotepad have **counter** integrated functions that can help h
 User defined function `pMath(M,T,N)` uses above mentioned formula, and simplify calculation of `Psum(d,m)` by using integrated counter functions:
 - `counterCreateComb(numDigits, maxValue, minValue, canRepeat)` : create 'combination' counter where order does not matter, so it is always non-descending
     - as used in `counterCreateComb(d,m,1,1)`, it counts 'd' digits, each 1..m, and allows repeat ( so 3*3*3 is allowed)
+        - last parameter is boolean 'canRepeat', and notepad follof C/C# convention than anything other than zero is true 
+        - here `1` was suplied, but `true` and `false` are also supported as aliases to `1` and `0` respectivelly
     - since it is 'combination' counter, it automatically include only combinations without repeating, so if [2,3] is returned, it will not return [3,2]
         - for example, `counterCreateComb(2,4)` will count 12,13,14,23,24,34
         - there are different versions of counters: `counterCreatePerm` will count all permutations, and `counterCreate` will count all possible values
     - `counterCreateXX` functions return actual counter as a vector, which is here put in variable 'ac'
-- `counterNotFinished(ac)` return true if counter is not finished counting. It works for all types of counters, and here used as `for` condition
-- `ac= counterNext(ac)` iterate to next valid counter combination, and store it back in 'ac'. When it reach last valid combo, next `counterNotFinished` will be false
+- `counterNotFinished(ac)` return true if counter `ac` is not finished counting. It works for all types of counters, and here used as `for` condition
+- `ac= counterNext(ac)` iterate to next valid counter `ac` combination, and store it back in `ac`. When it reach last valid combo, next `counterNotFinished` will be false
 - `counterValues(ac)` return vector with current counter values, eg `vec(2,3,3)`
 - `vMul(vector)` return product of each element in vector, so if we had `vec(2,3,3)` this will calculate 2x3x3
-- naturally, execution time of mathematical calculation is instant (~0ms)
+- naturally, execution time of mathematical calculation is instant (~0ms), which is both faster and more accurate than simulations
 - this demonstrate very simple notepad code that would be fairly complex if done using standard languages like C#
+
+
+
+
 
 ## Technical details
 CalculatorNotepad is written in **C#** and latest version is updated for **Net 7**, using some experimental features like [C# generic math](https://devblogs.microsoft.com/dotnet/dotnet-7-generic-math/) 
