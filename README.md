@@ -37,21 +37,24 @@ It is also suitable for simple simulation scenarions, with support for random nu
 
 ## Examples for notepad features
 Basic way to get additional information about notepad language features is to use **autocomplete** which will automatically appear after first entered letter(s), 
-listing notepad functions starting with those letters and describing their syntax and usage. Pressing `Enter` will accept currently selected function. 
-![Hint_2](Images/cn_hint_2.jpg)
+listing notepad functions starting with those letters and describing their syntax and usage. Pressing `Enter` will accept currently selected function : 
+
+![Hint_2](Images/cn_hint_2.png)
 
 
 Pressing Ctrl-Space will list all available notepad language functions even without entering first letter. When multiple functions start with same letters, or in case of Ctrl-Space, 
-they are all shown and arrow up/down keys can be used to select one. Currently selected function from autocomplete will show its description, and pressing `Enter` will accept that function.
-![Hint_1](Images/cn_hint_1.jpg)
+they are all shown and arrow up/down keys can be used to select one. Currently selected function from autocomplete will show its description, and pressing `Enter` will accept that function :
+
+![Hint_1](Images/cn_hint_1.png)
 
 Alternative way to see same description of integrated function is to hower mouse over it. Howering over user defined functions will usually show just its name and 'user defined function' description.
 But it is possible to also set custom description for user functions, by using `///` comment before (or in same line) as user function name definition (that is triple `///`, as opposed to regular comment with `//`)
-![Hint_3](Images/cn_hint_3.jpg)
 
+![Hint_3](Images/cn_hint_3.png)
 
-But since parsing all available functions just to get familiar with notepad language can be tedious, this section will introduce some basic concepts. Instead of doing it for different syntax or function groups, 
+Since parsing all available functions just to get familiar with notepad language can be tedious, this section will introduce some basic concepts. Instead of doing it for different syntax or function groups, 
 it will use few 'real life' scenarios - those will show not only basic notepad functionality but also demonstrate few problems that are suitable to be solved using CalculatorNotepad.
+
 
 
 
@@ -73,6 +76,8 @@ This simple example demonstrate several features of CalculatorNotepad:
     - CalculatorNotepad support **alternative symbols** and Greek letters for most suitable functions and operators
     - examples are ≡/==, ≠/== , ≥/>=, ≤/<=, π/pi , √/sqrt , ∑/sum, ∏/product, ∫/integral, ∩/vIntersect, ....
     - there is even option in Menu/Options to 'Automatically replace known symbols' (disabled by default), which would replace 'sqrt' with '√' etc
+- notepad support recursive calls, as seen here since `fib` calls same `fib` function
+    - there is integrated stack guard that will report error instead of crashing app if user recursive function is not bounded and use too much of stack
 - `fib(1000)` is example of using user defined function, which is used same as any integrated function
     - in this case x=1000 is large number for fibonacci function which would need ages to compute if this was written in normal language like C# ( without some form of dynamic programming, such naive recursive solution would call `fib` function around 2^x times )
     - but CalculatorNotepad is using **automatic cache** for function results, so even recursive solutions would complete in same time as (often mush more complicated) non-recursive functions. This case needed just 6ms.
