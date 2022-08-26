@@ -2,6 +2,8 @@
 
 CalculatorNotepad is intended for easy calculations with support for user defined functions/formulas and rich set of integrated mathematical and probability functions.
 
+To use it, copy published version from repository `Release` folder. Alternatively, to get latest changes, compile C# project with Visual Studio 2022 Preview or later.
+
 It can be used as simple calculator with each line showing calculation result, but it also support user variables (storing results of previous calculations and using them in new calculations)
 and user defined functions that can be written as simple one line or multiline using integrated script language (or as c# functions in side panel). 
 
@@ -12,16 +14,16 @@ It is also suitable for simple simulation scenarions, with support for random nu
 ## Overview of supported features
 - simple use of math functions, variables and user defined functions 
 - support using of units ('kg','in'..), their conversion and user defined units
-- support vectors and many functions working on vectors (vec,vDim,vFunc,vSum...)
-- provide random generating functions for simulations ( random, rndChoose/Weighted ...)  
-- allows easy definition of new user functions using custom language
+- support vectors/arrays and many functions working on vectors (vec,vDim,vFunc,vSum...)
+- provide random generating functions for simulations ( random, rndChoose/rndVector/Weighted ...)  
+- allows easy definition of new user functions using custom notepad language
     - simple single line definitions in the form `myF(a,b)= 3*a+b`
-    - functions can be multiline `f(a,b)={ ... new lines... }`
+    - functions can be multiline `f(a,b)={ ... multiple lines... }`
     - notepad language support conditions (`if`/`else`), loops (`for`,`while`), global/local variables
     - most block functions (like `if`,`for`,`while`...) have single-line versions similar to Excel
-    - alternative to notepad functions are user defined c# functions 
+    - alternative to notepad functions are user defined c# functions writeable directly in notepad
     - user defined notepad functions can call other user defined notepad or c# functions
-    - notepad user functions can be recursive (notepad does auto cache optimization) 
+    - notepad user functions can be recursive (notepad does auto cache optimization and stack guard) 
 - allow definition of C# user functions (in right C# panel, enabled by 2nd toolbar icon )
     - instantly usable in notepad, allow for complex/faster functions
 - Syntax Highlighting of both Notepad and C# panels
@@ -69,18 +71,18 @@ This is very simple example - function to calculate [Fibonacci number](https://e
 This simple example demonstrate several features of CalculatorNotepad:
 - user defined function `fib(x)`, in this case defined in single line
 - `if` conditional used as Excel-like function with syntax `if(condition, true_expression, false_expression)`
-    - note that `if` also has normal `if(condition) true_expression_block else false_expression_block;` variant
+    - note that `if` also has normal `if(condition)` true_expression_block `else` false_expression_block; variant
     - this functional **single line format** exist for some other functions like `while`, `for` etc
     - for single-line functions like `fib(x)` this functional form is more suitable
 - condition `x≤1` uses 'less or equal' sign, which is alternative to using '<='
     - CalculatorNotepad support **alternative symbols** and Greek letters for most suitable functions and operators
     - examples are ≡/==, ≠/== , ≥/>=, ≤/<=, π/pi , √/sqrt , ∑/sum, ∏/product, ∫/integral, ∩/vIntersect, ....
-    - there is even option in Menu/Options to 'Automatically replace known symbols' (disabled by default), which would replace 'sqrt' with '√' etc
+    - there is even option in Menu/Options to 'Automatically replace known symbols' (disabled by default), which would for example replace 'sqrt' with '√' as soon as typed
 - notepad support recursive calls, as seen here since `fib` calls same `fib` function
     - there is integrated stack guard that will report error instead of crashing app if user recursive function is not bounded and use too much of stack
 - `fib(1000)` is example of using user defined function, which is used same as any integrated function
     - in this case x=1000 is large number for fibonacci function which would need ages to compute if this was written in normal language like C# ( without some form of dynamic programming, such naive recursive solution would call `fib` function around 2^x times )
-    - but CalculatorNotepad is using **automatic cache** for function results, so even recursive solutions would complete in same time as (often mush more complicated) non-recursive functions. This case needed just 6ms.
+    - but CalculatorNotepad is using **automatic cache** for function results, so even recursive solutions would complete in same time as (often much more complicated) non-recursive functions. This case needed just 6ms.
 - `fib(2000)` is example where function result in infinite (∞), since actual result is larger than 10^308 limit for 'double' precision floating number 
     - this can be overcome by changing **default number format** in Menu\Options from 'Double 64-bit' to either 'Quad 128-bit' or 'MPFR' ( both Quad and MPFR can support huge exponent values)
     - alternative is to use **number literal suffix** for specific number type:  suffix 'm' means that number will be MPFR, and suffix 'q' means than number will be Quad
@@ -93,10 +95,11 @@ This simple example demonstrate several features of CalculatorNotepad:
             - if 'MPFR 127 bits' is set as default, if would show `fib(2000m) == 4.22469633339230487870672560234148278e417`
             - note that when MPFR is default, it does not show suffix 'm' ... it will instead show suffix 'd' for Double results
     - naturally, MPFR and Quad are slower than native Double. This is not visible in this simple example, but would be in cases where loop is executed hundreds of thousands times
+    - this also demonstrate that notepad can work with infinite values - those can be valid result of computations, stored in variables, used as literal ∞ etc
 
 This example exist as [file](TestCases/Examples/FibonnaciExample.txt) in 'TestCases\Examples' folder, but if it was written as new solution then usual next step would be to save it.
 
-**Saving** notepad files is available from menu ( upper left icon ![icon](Images/Menu_DarkGreen.png) with three horizontal bars ), using 'Save As' to name new file. 
+**Saving** notepad files is available from menu ( upper left icon ![icon](Images/Menu_DarkGreen.png) with three horizontal bars ), using `Save As` to name new file, or `Save` to overwrite old file. 
 But even if user exit CalculatorNotepad without saving, latest notepad remains remembered and will be loaded upon next app start.
 
 
@@ -148,6 +151,7 @@ Thus if you add space after `pClassicSim(10,10,52)` line and move cursor down, i
 Those results in last two lines show something else too -  execution time, with some 0.5sec needed for first case and 2.5sec for second case. 
 Those numbers would be 10x larger if we simulated 100k times instead of just 10k times. This demonstrate one important limitation of notepad language - 
 it is **interpreted** as opposed to compiled. That has impact on its performance, but allows language to remain as flexible as needed. 
+Note that execution time is not shown by default - it can be enabled in Menu/Options/Advanced Options as "Show execution time next to results". Same section allows setting timeout values for execution time.
 
 #### C# notepad panel
 Alternative approach, for those cases where we need complex calculations for hundreds of thousands iterations, would be to use another feature of CalculatorNotepad : user defined functions in c# panel. 
