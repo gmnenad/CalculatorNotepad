@@ -381,7 +381,7 @@ namespace Mpfr.Native
     public static class mpfr_lib
     {
         // paths to DLL files, relative to EXE
-        public const string libmpfr6dll = @"Calculator\libmpfr-6.dll";
+        public const string libmpfr6dll = @"libmpfr-6.dll";
 
 
         // Safe handle to the loaded MPFR library.

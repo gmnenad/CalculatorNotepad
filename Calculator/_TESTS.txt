@@ -1,15 +1,14 @@
 // *******  EXAMPLES  
 123/4     //  30.75
-~30.75+ 2*~ + last  // 123
 if (2/3<1, 5.5!+3*sin(π/2)-e^2 , 44)    //  283.4962217161...
 ∫( (x)=> sin(x) ,0, 45'deg') // 0.2928932186628...
-22'lb/in^2>kg/cm^2'  // 1.54675307520615...
+22'lb/in^2>kg/cm^2'  // 1.546753075206...
 AU= 149.6e6'km' // 149600000000
 1'ly'/AU  // 63240.176955754...
 uf(x)= if (x > 1, x* uf(x-1) ,1)  
 t(L, Va, Vc)= L/Vc* (e^(Vc/Va)-1)  
-t(0.1,0.1,1)  // 2202.5465794806...
-t(0.1'mi',0.1'mph',10'mi/h')/1'year'  // 3.068626874219...E+37 ; test unit conversion of parameters
+t(0.1,0.1,1)  // 2202.546579480...
+t(0.1'mi',0.1'mph',10'mi/h')/1's'  // 9.67722171053...E44 ; test unit conversion of parameters
 ∏( (x)=> x+∑((i)=>i/x, 1,x) ,2,3) // 17.5
 // *******  Eddington:
 P1(a,b,N)= 1-choose(N-a,b)/choose(N,b)
@@ -41,13 +40,13 @@ vv ∩ ( vec(3,4) U vx[c7(3)][1] ) // v(3,4)
 // Complex functions
 fullSim(N,w, nP)= pSim( ()=> while( c=0; fs=vDim(vLen(w)), vSum(vFunc( (x)=> if (x≥nP,1,0) ,fs))<vLen(w),  fs= fs + vDim(vLen(w), (i)=>i≡rndNumberWeighted(w));c=c+1, c ), N)
 vSim=fullSim(100, vec(20%,30%,50%), 1 ) //~6.65
-{N=52;pSum=0; while(ex=0;pK=0;k=1, k<N, {pK=pK+1/(N-k);pKS=pK*(1-pSum);pSum=pSum+pKS;ex=ex+pKS*k;k=k+1},ex)  }  // 8.3416403967015...
-Psum(d,n)={ msum=0; for(ac= counterCreatePerm(d,n,1,1),counterNotFinished(ac),ac=counterNext(ac)) msum=msum+ vMul(counterValues(ac));}
+{N=52;pSum=0; while(ex=0;pK=0;k=1, k<N, {pK=pK+1/(N-k);pKS=pK*(1-pSum);pSum=pSum+pKS;ex=ex+pKS*k;k=k+1},ex)  }  // 8.341640396701...
+Psum(d,n)={ msum=0; for(ac= counterCreateComb(d,n,1,1),counterNotFinished(ac),ac=counterNext(ac)) msum=msum+ vMul(counterValues(ac));}
 pDistM(M,T,N)= (N-1)!/(N-M)!/N^(T-1)*Psum(T-M,M)
 pDistM(9,10,52) // 0.415605033508...
 { pInr=0; askInr(x)= {pInr= pInr + x } askInr(3); pInr; }  // 3 ; test inner func stack
 // c# functions
-fibD(400) // 1.76023680645...E+83
+fibD(400) // 1.76023680645...E83
 simUse(200,20,120) // ~41.5
 
 //#C#

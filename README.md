@@ -130,12 +130,13 @@ This 'classic' solution demonstrate several basic features of CalculatorNotepad:
     - this specific vector 't' is used as boolean array, to mark all numbers that were drawn in one trial
 - **random number** generation, with `r= rndNumber(N)` which return random integer between 0 and N-1 inclusive
     - there is large number of integrated random functions like `rnd`, `rndVector`, `rndShuffle`, `rndChoose` - again, use autocomplete on 'rnd'
-    - there is also support for different random distributions, other than uniform one, try autocomplete on 'dist' - but they may be used in different example
-- function return uses standard `return` keyword, and support mid-function returns
-    - but in absence of `return` keywords, functions return last calculated value, thus `f(x)=3*x` will naturally return 3*x
+    - there is also support for different random distributions in addition to uniform one, try autocomplete on `dist`
+- function **return** uses standard `return` keyword, and support mid-function returns. Functions always return some value
+    - in absence of `return resValue;` keyword (or in case of `return;` without result parameter) functions return last calculated value
+    - thus `f(x)=3*x` will naturally return 3*x
 - calling of user defined functions is using same format as calling integrated functions
     - in this case `pClassicSim(4,5,6)` will simulate what fraction of rolling 5 dice (T=5,N=6) will result in 4 distinct numbers (M=3), resulting in ~46% probability
-    - also `pClassicSim(10,10,52)` will simulate drawing 10 cards (T=10) out of reshuffled deck (N=52) with all different cards (M=10), resulting in ~40% probability
+    - and `pClassicSim(10,10,52)` will simulate drawing 10 cards (T=10) out of reshuffled deck (N=52) with all different cards (M=10), resulting in ~40% probability
 
 This example exist as [file](TestCases/Examples/Draw_M_distinct.txt) in 'TestCases\Examples' folder.
 
@@ -189,8 +190,7 @@ Where `Psum(d,m)` is sum of product of all non-descending arrangements of 'd' nu
 > Psum(3,3)= 3x3x3 +2x3x3 +2x2x3 +2x2x2 +1x3x3 +1x2x3 +1x2x2 +1x1x3 +1x1x2 +1x1x1
 
 Classical solution to calculate `Psum(d,m)` would require program with D nested loops, where D is not fixed at program time but supplied as parameter. 
-This is not trivial to program even in high-end languages like c#, and it would require probably several pages of error-prone code. 
-Luckily, CalculatorNotepad have **counter** integrated functions that can help here :
+This is not trivial to program even in high-end languages like c#, and it would require lot of code. Luckily, CalculatorNotepad have **counter** integrated functions that can help here :
 ![DrawM_4](Images/cn_drawM_4.jpg)
 
 User defined function `pMath(M,T,N)` uses above mentioned formula, and simplify calculation of `Psum(d,m)` by using integrated counter functions:
@@ -205,8 +205,8 @@ User defined function `pMath(M,T,N)` uses above mentioned formula, and simplify 
 - `counterNotFinished(ac)` return true if counter `ac` is not finished counting. It works for all types of counters, and here used as `for` condition
 - `ac= counterNext(ac)` iterate to next valid counter `ac` combination, and store it back in `ac`. When it reach last valid combo, next `counterNotFinished` will be false
 - `counterValues(ac)` return vector with current counter values, eg `vec(2,3,3)`
-- `vMul(vector)` return product of each element in vector, so if we had `vec(2,3,3)` this will calculate 2x3x3
-- naturally, execution time of mathematical calculation is instant (~0ms), which is both faster and more accurate than simulations
+- `vMul(vector)` return product of each element in vector, so if we had `vec(2,3,3)` this will calculate 2x3x3=18
+- execution time of mathematical calculation is almost instant (~0ms) which, as expected, is both faster and more accurate than simulations
 - this demonstrate very simple notepad code that would be fairly complex if done using standard languages like C#
 
 
@@ -215,7 +215,7 @@ User defined function `pMath(M,T,N)` uses above mentioned formula, and simplify 
 
 ## Technical details
 CalculatorNotepad is written in **C#** and latest version is updated for **Net 7**, using some experimental features like [C# generic math](https://devblogs.microsoft.com/dotnet/dotnet-7-generic-math/) 
-for common number type that supports several floating points: standard 64-bit double, custom 128-bit Quad and variable length MPFR. That experimental features require Visual Studio **2022 Preview**.
+for common number type that supports simultaneous use of several floating point types: standard 64-bit double, custom 128-bit Quad and variable length MPFR. That experimental features require Visual Studio **2022 Preview**.
 
 There are several libraries that are used in this project:
 - [FastColoredTextBox](https://github.com/PavelTorgashov/FastColoredTextBox/blob/master/FastColoredTextBox/FastColoredTextBox.cs) - modified version used for code panels

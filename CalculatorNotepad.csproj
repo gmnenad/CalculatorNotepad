@@ -1,9 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyVersion>3.0.$([System.DateTime]::Now.ToString(MMdd)).$([System.DateTime]::Now.ToString(HHff))</AssemblyVersion>
+    <AssemblyVersion>3.1.$([System.DateTime]::Now.ToString(MMdd)).$([System.DateTime]::Now.ToString(HHff))</AssemblyVersion>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net7.0-windows</TargetFramework>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -61,15 +62,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Calculator\libgmp-10.dll">
+    <ContentWithTargetPath Include="Calculator\libgmp-10.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Calculator\libmpfr-6.dll">
+      <TargetPath>libgmp-10.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Calculator\libmpfr-6.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Calculator\_TESTS.txt">
+      <TargetPath>libmpfr-6.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Calculator\_TESTS.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+      <TargetPath>_TESTS.txt</TargetPath>
+    </ContentWithTargetPath>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

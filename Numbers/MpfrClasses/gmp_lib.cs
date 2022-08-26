@@ -517,7 +517,7 @@ namespace Mpfr.Gmp
     public static class gmp_lib
     {
         // paths to DLL files, relative to EXE
-        public const string libgmp10dll = @"Calculator\libgmp-10.dll";
+        public const string libgmp10dll = @"libgmp-10.dll";
 
         // Safe handle to the loaded GMP library.
         private static SafeHandle _gmp_lib = new SafeHandle(_load_gmp_lib());
