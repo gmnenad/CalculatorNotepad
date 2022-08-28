@@ -254,7 +254,7 @@ Logic behind both simulation and mathematical solutions are explained in comment
 
 
 ## Additional features
-In addition to features that can be seen in above examples, several other features could be mentioned ( in no particular order ):
+In addition to features that can be seen in above examples, several other features could be mentioned, many of them configurable in Meny/Options :
 - support for display in different number bases, like binary `bin` and hexadecimal `hex` , in addition to default `dec`
     - those commands are used alone in line, and all results after them are displayed in that number base
     - numbers can be entered as literals directly in binary base ( prefix `0b`, eg `x=0b101` ) or hexadecimal base ( prefix `0x`, eg `y=0xFF` )
@@ -267,8 +267,20 @@ In addition to features that can be seen in above examples, several other featur
     - each of them return distribution vector that can be used as parameter in common functions like `cdf`, `pmf`, `pdf`
     - for example, `d= dist_binomial(10,0.5)` would create in variable `d` distribution suitable for toss of 10 coins
         - `cdf(d,3)` would show probability to get 3 or less 'heads' out of those 10 tosses (~17%)
-        - `pmf(d,3)` would show probability to get exactly 3 'heads' out of those 10 tosses (~11%)
-    
+        - `pmf(d,3)` would show probability to get exactly 3 'heads' out of those 10 tosses (~12%)
+    - support getting distribution from data (vectors) using `dist_sample(vector)`
+    - support generating random numbers that match given distribution, using `rndNumber_dist(d)`
+- both built-in and user function names are highlighted in editor, and user functions also support custom descriptions with `///`
+- support both case sensitive and case insensitive names at **same time** :  
+    - if function is defined as `ab(x)=3*x` it is allowed to use it as `AB(5)==15`
+    - when new function `AB(y)=100*y` is defined, next call to `AB` will use it `AB(5)==500`
+- allow definition of timeouts on single line (finction call) level or on entire document level, and allow disabling timeouts
+- support 'Preset file', allowing to define user functions (or variables/constants) that will be accessible in any user document
+- display of user syntax errors both in notepad or c# panel, and positioning on that error if doubleclicked
+- option to format result numbers with specified number of decimals and/or digit and decimal separators
+- support digit separators for number literal imputs, using either underscore `_` or reverse apostrophe `````, eg `1_000_000` or ``1`000`000``
+
+
 
 
 ## Technical details
