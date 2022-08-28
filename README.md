@@ -128,6 +128,9 @@ This 'classic' solution demonstrate several basic features of CalculatorNotepad:
 - user defined function `pClassicSim(M,T,N)`, which in this case is not simple one-liner but in `{}` block with multiple lines ( each ending in semicolon `;` )
 - function parameters `(M,T,N)` which are passed when function is called. Note that they do not have type - all variables in notepad language are either numbers or vectors (arrays of numbers or other vectors)
 - declaration and use of **local variables** inside function ( like `nSim`,`nSame`). Notepad support nested names in inner blocks.
+    - variable is 'defined' first time it is assigned value. Notepad automatically use variables defined in outer blocks, so {x=1;{x=2} y=x} will result in y=2
+    - in rare cases when one desires to create new variable in inner block with same name already defined in outer block, `new` keyword can be used
+    - functions can also use 'global' variables (defined outside any function) as long as they are defined before/above that function
 - `for` **loop** block with syntax `for([init],condition,[iterator]) body`
     - in this case body is another block inside `{}`
     - unlike c#, notepad `for` parameters are separated by commas ( `for` is actually just another function, and thus usable in one-liners )
@@ -164,25 +167,26 @@ That panel is shown upon pressing second icon ![second icon](Images/csharp-icon.
 ![DrawM_2](Images/cn_drawM_2.jpg)
 
 This 'c#' solution demonstrate several features:
-- it shows that notepad language is (intentionally) similar to c# ... only few changes to previous code was needed (mainly typing variables)
-- `nm.rnd` is global variable in '**nm**' namespace. That 'nm' namespace contains many useful CalculatorNotepad functions and classes. In this case it only replace need for `var rnd= new Random();` in C# code.
+- it shows that notepad language is (intentionally) similar to c# ... only few changes to previous code were needed (mainly typing variables)
+- `nm.rnd` is global variable in '**nm**' namespace. That `nm` is short for 'NotepadMath'  and contains many useful functions and classes not present in C# by default. In this case it only replace need for `var rnd= new Random();` in C# code.
 - c# user functions are callable from notepad as soon as typed - they are **internally compiled** as soon as focus shift to notepad panel
 - naturally, c# functions are much faster at ~20ms for first and ~40ms for second simulation, which is ~200x speedup due to ~20x less time and 10x more iterations (100k vs 10k)
 - another feature demonstrated here is shortening of results if result panel is shrunk too much - numbers are shown with ellipsis(...) to indicate they are not shown entirely. 
 - when notepad that contain c# code is saved, it saves c# code in same TXT file as notepad code
 
 #### Using notepad vector functions
-Yet another approach would be to use other integrated functions of notepad language - that could not only improve performance compared to 'classic' approach,
+Yet another approach would be to use suitable integrated (built-in) functions of notepad language - that could not only improve performance compared to 'classic' approach,
 but also make solution much simpler:
 ![DrawM_3](Images/cn_drawM_3.jpg)
 
-This result in single line simulation function, using following integrated notepad functions:
+This result in single line simulation function, using following built-in notepad functions:
 - `rndVector(T,N)` generate vector with T random numbers, each between 0..N-1 (thus generating T random numbers we needed)
 - `vUnion(vector1 [,vector2...])` create union of one or more vectors, with only distinct elements ( since we want to count distinct results)
 - `vLen(vector)` return number of elements in vector ( thus counting how many distinct results we had in one trial)
 - `pSim(()=>boolFunc, nSimulations)` repeat supplied boolean function 'nSimulations' times, and report percentage it returns true
     - thus `pSim(()=> vLen(..)==M, 10000)` will repeat 10k times and count when number of distinct values (vLen) equals M, returning fraction of successes
     - this also demonstrate that notepad language support lambda functions as parameters for many integrated functions (integrals, root finders, sums...)
+        - lambda function was used here since `pSim` accepts parameterless boolean function, and we needed to use parameters (M,T,N) in simulation
     - `pSim` function is useful in most simulations, to count single trials
 - it also demonstrate improved speed compared to 'classical' solution, at 35ms and 55ms it is around 30x faster than classical solution
     - c# panel solution is still some 10x faster, but it is much more code compared to using integrated notepad functions

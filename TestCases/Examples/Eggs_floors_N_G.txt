@@ -1,3 +1,12 @@
+// How to measure at/above which floor in 100 floor building eggs break when dropped, if you have only 2 eggs  ?
+// Specifically, what is best way to find breaking floor using least number of tries (egg drops) in worst case?
+//  - assume eggs are identical and break after same height ( and do not weaken if not broken )
+//  - for example, if we drop egg from floor #1, then #2 etc until break ... if breaking floor is 3, it would need just 3 tries, 
+//    but worst case would be if breaking floor is 100, needing 100 drops in this 'drop sequentially' approach
+//  - best approach is to drop from 14th floor, then 27th.. if it breaks, drop sequentially from previously tested floor,
+//    so worst case is always 14 tries
+
+// Generalized solution:
 // mN(x,g)= return max # of floors 'N' covered by 'g' eggs with optimal approach using max X measurements:
 // - first egg is dropped at floor one above max floors covered by 'g-1' eggs in 'X-1' measurements, ie mN(x-1,g-1)+1
 //      so if it break, g-1 eggs will need max X-1 measurements for lower floors, totaling max X
@@ -86,42 +95,19 @@ ex2(N,g)={
 
 
 
-N=100
-g=3
+N=100   // test number of floors
+g=2     // test number of eggs
 
 x=ex(N,g) // optimal max measurements 'x' needed for 'N' floors with 'g' eggs
 ex2(N,g)  // same, using binary search instead of initial approximaiton
 aXng(N,g) // estimate for 'x' based on approximate formula
 
 
-mN(x,g)   // max floors N coverable by 'x'
-mNv(x,g)  // floors to drop 1st egg, until it breaks
+mN(x,g)   // max floors N coverable by 'x' measurements
+mNv(x,g)  // floors to drop 1st egg, until it breaks ( then apply 'g-1' logic for floors between last two tested )
 
 
-// test approximation for each g=1..G
-tstG(N,g)={
-    r=vDim(g);
-    for(i=1, i<=g, i=i+1){
-        e1=ex(N,i);
-        e2=aXng(N,i);
-        r[i-1]=e2-e1;
-    }
-    return r;
-}
-// test approximation for each N=10^1..10^n
-tstN(N,g)={
-    L=ceiling(log(N,10));
-    r=vDim(L);
-    for(i=1, i<=L, i=i+1){
-        e1=ex(10^i,g);
-        e2=aXng(10^i,g);
-        r[i-1]=e2-e1;
-    }
-    return r;
-}
 
-tstG(N,g)
-tstN(N,g)
 
 
 
