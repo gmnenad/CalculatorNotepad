@@ -22,8 +22,8 @@ AttackRoll(mm)={
    // actual calculation
    Target = max(2,min(20,AC-atkBonus)); // target to roll is AC reduced by bonus, but it can not be over 20 or under 2
    d= rndNumber(20)+1;
-   if ((Advantages>0) & (Disadvantages==0)) d= max( d, rndNumber(20)+1 );  // if advantage, use better of two rolls
-   if ((Advantages==0) & (Disadvantages>0)) d= min( d, rndNumber(20)+1 );  // if disadvantage, use worse of two rolls
+   if ((Advantages>0) && (Disadvantages==0)) d= max( d, rndNumber(20)+1 );  // if advantage, use better of two rolls
+   if ((Advantages==0) && (Disadvantages>0)) d= min( d, rndNumber(20)+1 );  // if disadvantage, use worse of two rolls
    if (d==20) return vec(true, true, 1.00); // critical hit
    if (d==1) return vec(true, false, 1.00); // critical miss
    TM= if( maxMiss>0, floor(maxMiss/5%+1.01), 20); // maximal allowed target if misses are limited
@@ -49,7 +49,7 @@ DamageRoll(mm)= {
       for (i=1, i<=Rolls, i=i+1) {
             dp= diceRoll(D,diceF);
             d=dp[0]; p=dp[1];
-            if (GWF & (d<=2) & (rnd<1/D/p)) d=diceRoll(D,diceF)[0]; // repeat roll in case of GWF
+            if (GWF && (d<=2) && (rnd<1/D/p)) d=diceRoll(D,diceF)[0]; // repeat roll in case of GWF
             damage = damage+d;
       }
       damage=damage+ ceiling(f*dmgBonus);
@@ -64,7 +64,7 @@ tst(maxMiss,N)={
         dr= DamageRoll(maxMiss);
         s=s+dr[2];
         if (dr[1]==false) nMiss=nMiss+1;
-        if (dr[0] & dr[1]) nCrit=nCrit+1;
+        if (dr[0] && dr[1]) nCrit=nCrit+1;
     }
     return vec(s/N, nMiss/N, nCrit/N);
 }

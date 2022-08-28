@@ -54,7 +54,7 @@ calc(dh)={
     res[1]=sqrt(S/pi)*2; // D0
     do{
         S2=F/pX; // new area of this section, needed to hold all below it
-        if ((S2<S)&(res[2]==0)){ // if first reduction of diameter, mark as max width
+        if ((S2<S)&&(res[2]==0)){ // if first reduction of diameter, mark as max width
             res[2]=round(R/1000);
             res[3]=sqrt(S/pi)*2; // D1
         }
@@ -62,7 +62,7 @@ calc(dh)={
         F=F+Fdh(ro,S,dh,R); // add weight of this section
         R=R+dh; // add height of this section
         // check if station weight would complete at this height
-    }while((F+Fr(mS,R)>0)&(R<1e9));
+    }while((F+Fr(mS,R)>0)&&(R<1e9));
     res[4]=round(R/1000);
     res[5]=sqrt(S/pi)*2; // D2
     return res;
@@ -80,7 +80,7 @@ calc2(dh)={
     res[1]=sqrt(S/pi)*2; // D0
     do{
         S2=max(F,FH,FL)/pX; // area according to largest stretch/shrink force
-        if ((S2<S)&(res[2]==0)){ // if first reduction of diameter, mark as max width
+        if ((S2<S)&&(res[2]==0)){ // if first reduction of diameter, mark as max width
             res[2]=round(R/1000);
             res[3]=sqrt(S/pi)*2; // D1
         }
@@ -89,7 +89,7 @@ calc2(dh)={
         FH=FH+Fdh(ro,S,dh*aH,R*aH); // add weight when wire is stretched ( high temp)
         FL=FL+Fdh(ro,S,dh*aL,R*aL); // add weight when wire is compressed ( low temp)
         R=R+dh; // add height of this section
-    }while((FL+Fr(mS,R*aL)>0)&(R<1e9)); // end when wire can be supported in worst case (low/contracted)
+    }while((FL+Fr(mS,R*aL)>0)&&(R<1e9)); // end when wire can be supported in worst case (low/contracted)
     res[4]=round(R/1000);
     res[5]=sqrt(S/pi)*2; // D2
     return res;

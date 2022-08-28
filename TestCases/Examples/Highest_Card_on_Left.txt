@@ -23,7 +23,7 @@ calcRec(n)
 
 
 //Simulate in notepad
-oneSim(N)= while(v=rndShuffle(N); mx=vMax(v[0..1]); i=2, i<N, {if ((v[i]>v[i-1])&(v[i]<mx), mx=v[i], 0); i=i+1}, mx)
+oneSim(N)= while(v=rndShuffle(N); mx=vMax(v[0..1]); i=2, i<N, {if ((v[i]>v[i-1])&&(v[i]<mx), mx=v[i], 0); i=i+1}, mx)
 simPad(N, nSim)= ∑(()=>oneSim(N),1,nSim)/nSim
 simPad(n,300)
 
