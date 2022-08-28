@@ -982,8 +982,8 @@ namespace CalculatorNotepad
         public static mcValue pmf(mcValue[] args)
         {
             testArgs(args, "pmf", 2, 2, ArgTst.None, new ArgTst[] { ArgTst.Number, ArgTst.Vector });
-            double x = args[0].Double;
-            var dist_vec = args[1].getListDouble();
+            var dist_vec = args[0].getListDouble();
+            double x = args[1].Double;
             return new mcValue(nm.pmf(x, dist_vec));
         }
 

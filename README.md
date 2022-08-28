@@ -31,6 +31,10 @@ It is also suitable for simple simulation scenarios, with support for random num
 - Autocomplete for Notepad and C# panels
     - Notepad autocomplete also show help/descriptions for builtin custom language functions
     - Ctrl-Space to show all, or automatically shown after first typed characters
+- support multiple number types with different precision (number of digits and size of exponent): 
+    - default 64-bit **Double**, 128-bit **Quad** and variable size **MPFR** 
+    - they can be set as default type in options, and also mixed and used simultaneously
+    - internal BinaryFloatNumber type is used for floating point bitwise operations
 - Menu (leftmost toolbar icon ![icon](Images/Menu_DarkGreen.png)) allows Load,Save and Options settings
     - Preset file allow permanent user defined functions and constants
 - Help icon ![help](Images/Help.png) shows basic examples ( note that it also overwrite current notepad context - save before use )
@@ -223,17 +227,18 @@ User defined function `pMath(M,T,N)` uses above mentioned formula, and simplify 
 - this demonstrate very simple notepad code that would be fairly complex if done using standard languages like C#
 
 
-### E3) Common denominators of random numbers
+### E3) Common denominators
 Another example problem related to probability, which can demonstrate use of prime number functions:
 > A huge bin is filled with distinctly numbered balls, and you choose two of them at random. What is the chance they share common denominator? 
 
 ![GCF_1](Images/cn_GCF.png)
 
 Logic behind both simulation and mathematical solutions are explained in comments visible on above image, and it is simplified using some **prime** notepad functions :
+- simulation is again very simple one liner, thanks to notepad fuctions
 - `primePi(N)` return number of primes smaller or equal to given number N 
     - both number of balls `Nb` and number of primes among those balls `Np` are set in variables to be reused in comparison between simulations and calculations
 - `prime(i)` return i-th prime (where 1st prime is 2)
-    - there are other useful prime functions, like 'primeNext', `primesBetween`,`primeFactors`,`isPrime`
+    - there are other useful prime functions, like `primeNext`, `primesBetween`,`primeFactors`,`isPrime`
     - as usual, using autocomplete suggestion on `prime` will show all of them with their descriptions
     - primes are efficiently calculated, using optimized sieve algorithm up to N~2bil, and cached for further use
     - for larger numbers, modified Miller test is used
@@ -247,6 +252,23 @@ Logic behind both simulation and mathematical solutions are explained in comment
 - example shows that simulation result matches calculation result, and both are close to theoretical result for infinite N
 
 
+
+## Additional features
+In addition to features that can be seen in above examples, several other features could be mentioned ( in no particular order ):
+- support for display in different number bases, like binary `bin` and hexadecimal `hex` , in addition to default `dec`
+    - those commands are used alone in line, and all results after them are displayed in that number base
+    - numbers can be entered as literals directly in binary base ( prefix `0b`, eg `x=0b101` ) or hexadecimal base ( prefix `0x`, eg `y=0xFF` )
+    - or directly as any base, using prefix `0[base]`, for example  `0[3]11 == 4` or `0[16]FF == 0xFF == 0[10]255 == 255`
+- support for bitwise operators on floating point numbers
+    - `0b101.01 | 0b0.1` results in `0b101.11 == 5.75`
+    - it support all number types, so can work with very large number of bits in MPFR 
+    - it support exponentials ( eg `5e20 | 1e19`) and underflow/overflows (so eg `5e20 | 1e-30 == 5e20`)
+- support for dozen different random distibutions ( uniform, normal, binomial, poisson ...  use `dist` to get full list in autocomplete)
+    - each of them return distribution vector that can be used as parameter in common functions like `cdf`, `pmf`, `pdf`
+    - for example, `d= dist_binomial(10,0.5)` would create in variable `d` distribution suitable for toss of 10 coins
+        - `cdf(d,3)` would show probability to get 3 or less 'heads' out of those 10 tosses (~17%)
+        - `pmf(d,3)` would show probability to get exactly 3 'heads' out of those 10 tosses (~11%)
+    
 
 
 ## Technical details
