@@ -279,7 +279,7 @@ In addition to features that can be seen in above examples, several other featur
 - support 'Preset file', allowing to define user functions (or variables/constants) that will be accessible in any user document
 - display of user syntax errors both in notepad or c# panel, and positioning on that error if doubleclicked
 - option to format result numbers with specified number of decimals and/or digit and decimal separators
-- support digit separators for number literal imputs, using either underscore `_` or reverse apostrophe ```, eg `1_000_000` or ``1`000`000``
+- support digit separators for number literal imputs, using either underscore `1_000_000` or reverse apostrophe ``1`000`000``
 
 
 
