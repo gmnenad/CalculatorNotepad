@@ -263,8 +263,9 @@ In addition to features that can be seen in above examples, several other featur
     - `0b101.01 | 0b0.1` results in `0b101.11 == 5.75`
     - it support all number types, so can work with very large number of bits in MPFR 
     - it support exponentials ( eg `5e20 | 1e19`) and underflow/overflows (so eg `5e20 | 1e-30 == 5e20`)
-- support for dozen different random distibutions ( uniform, normal, binomial, poisson ...  use `dist` to get full list in autocomplete)
-    - each of them return distribution vector that can be used as parameter in common functions like `cdf`, `pmf`, `pdf`
+- support for dozen different random distibutions ( uniform, normal, binomial, poisson ...  
+    - use `dist` to get full list of distributions in autocomplete
+    - each of `dist_xyz(...)` function returns distribution vector that can be used as parameter in common functions like `cdf`, `pmf`, `pdf`
     - for example, `d= dist_binomial(10,0.5)` would create in variable `d` distribution suitable for toss of 10 coins
         - `cdf(d,3)` would show probability to get 3 or less 'heads' out of those 10 tosses (~17%)
         - `pmf(d,3)` would show probability to get exactly 3 'heads' out of those 10 tosses (~12%)
@@ -272,13 +273,13 @@ In addition to features that can be seen in above examples, several other featur
     - support generating random numbers that match given distribution, using `rndNumber_dist(d)`
 - both built-in and user function names are highlighted in editor, and user functions also support custom descriptions with `///`
 - support both case sensitive and case insensitive names at **same time** :  
-    - if function is defined as `ab(x)=3*x` it is allowed to use it as `AB(5)==15`
-    - when new function `AB(y)=100*y` is defined, next call to `AB` will use it `AB(5)==500`
-- allow definition of timeouts on single line (finction call) level or on entire document level, and allow disabling timeouts
+    - if function is defined as `ab(x)=3*x` it is allowed to use it as `AB(5)==15` or 'aB(5)==15'
+    - when new function `AB(y)=100*y` is defined, next calls will use exact case, so 'ab(5)==15', `AB(5)==500` and 'aB(5)== error'
+- allow definition of timeouts on single line level (one function call) or on entire document level, and allow disabling timeouts
 - support 'Preset file', allowing to define user functions (or variables/constants) that will be accessible in any user document
 - display of user syntax errors both in notepad or c# panel, and positioning on that error if doubleclicked
 - option to format result numbers with specified number of decimals and/or digit and decimal separators
-- support digit separators for number literal imputs, using either underscore `_` or reverse apostrophe `````, eg `1_000_000` or ``1`000`000``
+- support digit separators for number literal imputs, using either underscore `_` or reverse apostrophe ```, eg `1_000_000` or ``1`000`000``
 
 
 
