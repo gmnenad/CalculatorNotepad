@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 //      + for binary conversions
 // + BinaryFloatNumber class for bitwise operations
 //      - option for negative numbers to be treated as 2nd complement in bitwise ops
-// - bug: compiler can not find 'mcValue' when published as single file app ?
+// + bug: compiler can not find 'mcValue' when published as single file app ?
 
 
 
@@ -169,29 +169,6 @@ namespace Numbers
 
 
         /// <summary>
-        /// Exponent of float value, assuming mantissa is UInt64[] in  1.xxxx format with highest bit in last element as only 'whole part' and others are fractional.
-        /// So 1.0 has exponent 0 and mantissa "1000..00" 
-        /// </summary>
-        public unsafe long Exponent
-        {
-            get
-            {
-                switch (classType)
-                {
-                    case NumberClass.Double:
-                        double d = (double)valueDouble;
-                        ulong bits = *(ulong*)&d;
-                        return (long)((bits >> 52) & 0x7FF) - 1023; // IEEE double has exponents biased for 1023
-                    case NumberClass.Quad:
-                        return valueQuad.Exponent + 63; // Quad has exponent shifted -63 for mantissa bits
-                    case NumberClass.MPFR:
-                        return valueMPFR.Exponent + 1; // MPFR assume 0.xxxx mantissa
-                };
-                throw new NumberException("Invalid Number class ");
-            }
-        }
-
-        /// <summary>
         /// How many useful bits in Mantissa, including implied highest "1." bit
         /// </summary>
         public int Precision => classType switch
@@ -202,29 +179,6 @@ namespace Numbers
             _ => throw new NumberException("Invalid floating number type : " + classType)
         };
 
-
-        /// <summary>
-        /// Mantissa of float value as UInt64[] array in  1.xxxx format with highest bit in last element as only 'whole part' and others are fractional.
-        /// So 1.0 has exponent 0 and mantissa "1000..00" 
-        /// </summary>
-        public unsafe UInt64[] Mantissa
-        {
-            get
-            {
-                switch (classType)
-                {
-                    case NumberClass.Double:
-                        double d = (double)valueDouble;
-                        ulong bits = *(ulong*)&d;
-                        return new UInt64[1] { (bits << 11) | (1ul << 63) }; // IEEE double has 52 mantissa in lowest 52 bits, with implied 53rd bit as 1
-                    case NumberClass.Quad:
-                        return new UInt64[1] { valueQuad.SignificandBits | (1ul << 63) }; // Quad has 63 bit mantissa with implied 64th bit 1, and actual 64th bit is sign
-                    case NumberClass.MPFR:
-                        return valueMPFR.Mantissa; // MPFR has mantissa in same format, as UInt64[] array with highest bit set to 1 in highest element
-                };
-                throw new NumberException("Invalid Number class ");
-            }
-        }
 
         public Double AsDouble
         {
@@ -1039,7 +993,6 @@ namespace Numbers
         }
         #endregion
 
-
         #region Trigonometric functions
         public static Number Sin(Number a)
         {
@@ -1301,64 +1254,6 @@ namespace Numbers
         }
         #endregion
 
-
-        #region string functions
-
-        public override string ToString() => ToString(new NumberFormat() { ShowNumberType=true, ShowPrecision=true});
-
-
-        public static string ClassName(NumberClass classType) => classType switch
-        {
-            NumberClass.Double => "Double",
-            NumberClass.MPFR => "MPFR",
-            NumberClass.Quad => "Quad",
-            _=>"Unknown?"
-        };
-
-
-        /// <summary>
-        /// Parse number from string in given Base. Assume exponent is decimal, sign is e/E for Base<=10 or @ otherwise.
-        /// Return float number or raise NumberException if invalid
-        /// </summary>
-        public static Number Parse(string NumStr, NumberFormat F=null)
-        {
-            // split string number into parts and check if number type is specified in suffix, eg '12q'
-            string Suffix;
-            if (F == null) F = new NumberFormat();
-            string? err = BinaryFloatNumber.ParseParts(out _, out _, out _, out Suffix, out _, out _, out _, out _, out _, NumStr, F);
-            if (err == null && Suffix.Length==1 )
-                switch (Suffix[0])
-                {
-                    case 'd': return new(Parse<Double>(NumStr, F));
-                    case 'q': return new(Parse<Quad>(NumStr, F));
-                    case 'm': return new(Parse<MPFR>(NumStr, F));
-                };
-            // otherwise parse using default type
-            switch (defaultClassType )
-            {
-                case NumberClass.Double: return new(Parse<Double>(NumStr, F));
-                case NumberClass.Quad:   return new(Parse<Quad>(NumStr, F));
-                case NumberClass.MPFR:   return new(Parse<MPFR>(NumStr, F));
-            };
-            throw new NumberException("Invalid Number class ");
-        }
-
-        public static bool TryParse(string input, out Number result, NumberFormat F=null)
-        {
-            try
-            {
-                result = Parse(input,F);
-                return true;
-            }
-            catch
-            {
-                result = NaN;
-                return false;
-            }
-        }
-
-        #endregion
-
         #region lambda functions - they do not have instance counterparts, use defaultType to decide calculation number type and assume it was same default type used for Func<Number>
         public static Number find_extreme(Func<Number, Number> func, Number left, Number right, int precisionDigits, int sign, Func<bool> isTimeout = null)
         {
@@ -1414,24 +1309,64 @@ namespace Numbers
 
         #endregion
 
+        #region static string functions
 
 
-
-        #region default string VIRTUAL implementations
-
-        public int CompareTo(Number other)
+        public static string ClassName(NumberClass classType) => classType switch
         {
-            if (other is null) return +1;
-            switch (classType > other.classType ? classType : other.classType)
+            NumberClass.Double => "Double",
+            NumberClass.MPFR => "MPFR",
+            NumberClass.Quad => "Quad",
+            _ => "Unknown?"
+        };
+
+
+        /// <summary>
+        /// Parse number from string in given Base. Assume exponent is decimal, sign is e/E for Base<=10 or @ otherwise.
+        /// Return float number or raise NumberException if invalid
+        /// </summary>
+        public static Number Parse(string NumStr, NumberFormat F = null)
+        {
+            // split string number into parts and check if number type is specified in suffix, eg '12q'
+            string Suffix;
+            if (F == null) F = new NumberFormat();
+            string? err = BinaryFloatNumber.ParseParts(out _, out _, out _, out Suffix, out _, out _, out _, out _, out _, NumStr, F);
+            if (err == null && Suffix.Length == 1)
+                switch (Suffix[0])
+                {
+                    case 'd': return new(Parse<Double>(NumStr, F));
+                    case 'q': return new(Parse<Quad>(NumStr, F));
+                    case 'm': return new(Parse<MPFR>(NumStr, F));
+                };
+            // otherwise parse using default type
+            switch (defaultClassType)
             {
-                case NumberClass.Double: return AsDouble.CompareTo(other.AsDouble);
-                case NumberClass.Quad: return AsQuad.CompareTo(other.AsQuad);
-                case NumberClass.MPFR: return AsMPFR.CompareTo(other.AsMPFR);
-            }
+                case NumberClass.Double: return new(Parse<Double>(NumStr, F));
+                case NumberClass.Quad: return new(Parse<Quad>(NumStr, F));
+                case NumberClass.MPFR: return new(Parse<MPFR>(NumStr, F));
+            };
             throw new NumberException("Invalid Number class ");
         }
 
-        // String functions
+        public static bool TryParse(string input, out Number result, NumberFormat F = null)
+        {
+            try
+            {
+                result = Parse(input, F);
+                return true;
+            }
+            catch
+            {
+                result = NaN;
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region INSTANCE string functions
+
+        public override string ToString() => ToString(new NumberFormat() { ShowNumberType = true, ShowPrecision = true });
 
 
         /// <summary>
@@ -1463,9 +1398,8 @@ namespace Numbers
             // if binary base, try direct binary convert
             if (IsNumber(this) && BinaryFloatNumber.CountOnes(Base).count == 1)
             {
-                var M = Mantissa;
-                if (M!=null)
-                    res = BinaryFloatNumber.ToStringFromBits(Base, Sign(this), Exponent, SignificantDigits, M);
+                var b = ToBinary(this);
+                res = b?.ToString();
             }
             // if not base 10 , binary or failed, use base class generic conversion
             if (res == null)
@@ -1510,6 +1444,20 @@ namespace Numbers
 
         #endregion
 
+        #region default INSTANCE implementations
+
+        public int CompareTo(Number other)
+        {
+            if (other is null) return +1;
+            switch (classType > other.classType ? classType : other.classType)
+            {
+                case NumberClass.Double: return AsDouble.CompareTo(other.AsDouble);
+                case NumberClass.Quad: return AsQuad.CompareTo(other.AsQuad);
+                case NumberClass.MPFR: return AsMPFR.CompareTo(other.AsMPFR);
+            }
+            throw new NumberException("Invalid Number class ");
+        }
+        #endregion
 
 
         #region fully GENERIC helper functions, usable from outside classes
