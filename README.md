@@ -255,14 +255,18 @@ Logic behind both simulation and mathematical solutions are explained in comment
 
 ## Additional features
 In addition to features that can be seen in above examples, several other features could be mentioned, many of them configurable in Meny/Options :
-- support for display in different number bases, like binary `bin` and hexadecimal `hex` , in addition to default `dec`
-    - those commands are used alone in line, and all results after them are displayed in that number base
-    - numbers can be entered as literals directly in binary base ( prefix `0b`, eg `x=0b101` ) or hexadecimal base ( prefix `0x`, eg `y=0xFF` )
+- support for different number bases, like binary `bin` and hexadecimal `hex` , in addition to default `dec`
+    - those commands are used alone in line, and all results (in left side result pane) after them are displayed in that number base 
+    - independently of those commands, numbers can be entered as literals directly in binary base ( prefix `0b`, eg `x=0b101` ) or hexadecimal base ( prefix `0x`, eg `y=0xFF` )
     - or directly as any base, using prefix `0[base]`, for example  `0[3]11 == 4` or `0[16]FF == 0xFF == 0[10]255 == 255`
 - support for bitwise operators on floating point numbers
     - `0b101.01 | 0b0.1` results in `0b101.11 == 5.75`
     - it support all number types, so can work with very large number of bits in MPFR 
     - it support exponentials ( eg `5e20 | 1e19`) and underflow/overflows (so eg `5e20 | 1e-30 == 5e20`)
+    - it differs from integer bitwise operations only for treatment of negative numbers
+        - negative numbers are NOT 2nd complements but instead retain their sign (so `-2 == -0b10` )
+        - bitwise operations are done on signs too, independently of values, where `-` is considered as '1' and `+` as '0'
+        - thus `+1|+1== 1` but both `+1|-1 == -1|-1 == -1` ; also `+1&+1 == +1|-1 == 1` but `-1|-1 == -1`
 - support for dozen different random distibutions ( uniform, normal, binomial, poisson ...  
     - use `dist` to get full list of distributions in autocomplete
     - each of `dist_xyz(...)` function returns distribution vector that can be used as parameter in common functions like `cdf`, `pmf`, `pdf`
@@ -273,8 +277,8 @@ In addition to features that can be seen in above examples, several other featur
     - support generating random numbers that match given distribution, using `rndNumber_dist(d)`
 - both built-in and user function names are highlighted in editor, and user functions also support custom descriptions with `///`
 - support both case sensitive and case insensitive names at **same time** :  
-    - if function is defined as `ab(x)=3*x` it is allowed to use it as `AB(5)==15` or 'aB(5)==15'
-    - when new function `AB(y)=100*y` is defined, next calls will use exact case, so 'ab(5)==15', `AB(5)==500` and 'aB(5)== error'
+    - if function is defined as `ab(x)=3*x` it is allowed to use it as `ab(5) == AB(5) == aB(5) == 15`
+    - when new function `AB(y)=100*y` is defined, next calls will use exact case, so `ab(5)==15`, `AB(5)==500` and `aB(5)== error`
 - allow definition of timeouts on single line level (one function call) or on entire document level, and allow disabling timeouts
 - support 'Preset file', allowing to define user functions (or variables/constants) that will be accessible in any user document
 - display of user syntax errors both in notepad or c# panel, and positioning on that error if doubleclicked
