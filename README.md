@@ -223,12 +223,36 @@ User defined function `pMath(M,T,N)` uses above mentioned formula, and simplify 
 - this demonstrate very simple notepad code that would be fairly complex if done using standard languages like C#
 
 
+### E3) Common denominators of random numbers
+Another example problem related to probability, which can demonstrate use of prime number functions:
+> A huge bin is filled with distinctly numbered balls, and you choose two of them at random. What is the chance they share common denominator? 
+
+![GCF_1](Images/cn_GCF.png)
+
+Logic behind both simulation and mathematical solutions are explained in comments visible on above image, and it is simplified using some **prime** notepad functions :
+- `primePi(N)` return number of primes smaller or equal to given number N 
+    - both number of balls `Nb` and number of primes among those balls `Np` are set in variables to be reused in comparison between simulations and calculations
+- `prime(i)` return i-th prime (where 1st prime is 2)
+    - there are other useful prime functions, like 'primeNext', `primesBetween`,`primeFactors`,`isPrime`
+    - as usual, using autocomplete suggestion on `prime` will show all of them with their descriptions
+    - primes are efficiently calculated, using optimized sieve algorithm up to N~2bil, and cached for further use
+    - for larger numbers, modified Miller test is used
+- `pSim(()=>boolFunc, nSimulations)` was explained in previous example - it execute simulation multiple times and count fraction of successes
+- `gcd(a,b)` return greater common denominator of multiple integer numbers
+- `rndNumber(N)` return integer random number in range 0..N-1 ( and thus +1 was used here to make it 1..N )
+- `∏( (i)=> func(i), i_start, i_end)` calculate product of results of func(i) for each integer `i` in range `i_start..i_end`
+    - `∏(...)` is equivalent to `product(...)`, and typing 'product' will also show autocomplete description
+    - it uses lambda function with one parameter that returns number which will be multiplied
+    - it is similar logic as other aggregate functions like `sum`, `integral` and even `solve`, unlike `pSim` which uses boolean parameterless lambda
+- example shows that simulation result matches calculation result, and both are close to theoretical result for infinite N
+
 
 
 
 ## Technical details
 CalculatorNotepad is written in **C#** and latest version is updated for **Net 7**, using some experimental features like [C# generic math](https://devblogs.microsoft.com/dotnet/dotnet-7-generic-math/) 
-for common number type that supports simultaneous use of several floating point types: standard 64-bit double, custom 128-bit Quad and variable length MPFR. That experimental features require Visual Studio **2022 Preview**.
+for common number type that supports simultaneous use of several floating point types: standard 64-bit double, custom 128-bit Quad and variable length MPFR. That experimental features require Visual Studio **2022 Preview**. 
+It is windows application since it uses WinForms and some specific Win32 APIs.
 
 There are several libraries that are used in this project:
 - [FastColoredTextBox](https://github.com/PavelTorgashov/FastColoredTextBox/blob/master/FastColoredTextBox/FastColoredTextBox.cs) - modified version used for code panels
