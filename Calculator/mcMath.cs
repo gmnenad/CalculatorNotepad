@@ -543,7 +543,7 @@ namespace CalculatorNotepad
                 var func_value = lambda.EvaluateFunc(new mcValue[] { new mcValue(x) });
                 res = mcValue.Mul(res, func_value);
                 x += step;
-                if (mc.isTimeout()) throw new ArgumentException("ERR:Timeout");
+                if (mc.isFuncTimeout()) throw new ArgumentException("ERR:Timeout");
             }
             // result of summation
             return res;
@@ -563,7 +563,7 @@ namespace CalculatorNotepad
             for (int i = 1; i <= nSim; i++)
             {
                 sum += lambda.EvaluateFunc(null).Double;
-                if (mc.isTimeout()) throw new ArgumentException("ERR:Timeout");
+                if (mc.isFuncTimeout()) throw new ArgumentException("ERR:Timeout");
             }
             // return probability
             return new mcValue(sum / nSim);
@@ -592,7 +592,7 @@ namespace CalculatorNotepad
                 var func_value = lambda.EvaluateFunc(x_param);
                 res = mcValue.Add(res, func_value);
                 x += step;
-                if (mc.isTimeout()) throw new ArgumentException("ERR:Timeout");
+                if (mc.isFuncTimeout()) throw new ArgumentException("ERR:Timeout");
             }
             // result of summation
             return res;

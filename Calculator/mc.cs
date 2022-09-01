@@ -308,13 +308,13 @@ namespace CalculatorNotepad
         }
 
 
-        public static bool isTimeout()
+        public static bool isFuncTimeout()
         {
             return (!cfg.timeoutDisabled) && (swFunc.ElapsedMilliseconds > cfg.timeoutFuncMs);
         }
-        public static void testTimeout()
+        public static void testFuncTimeout()
         {
-            if ((!cfg.timeoutDisabled) && (swFunc.ElapsedMilliseconds > cfg.timeoutFuncMs))
+            if (isFuncTimeout())
                 throw new mcException("ERR:Timeout");
         }
 
@@ -400,9 +400,10 @@ namespace CalculatorNotepad
 
 
         /// <summary>
-        /// call supplied lambda function within thread, abort on timeout (default mc.cfg.timeoutFuncMs)
+        /// Call supplied lambda function within thread, with increased stack size. 
+        /// This is NOT multithreading: thread must check timeout itself, and calling process is blocked.
         /// </summary>
-        static public Toutput CallThread<Toutput>(Func<Toutput> theFunc, long execTimeout=-1, int stackSize=4000000) where Toutput:class
+        static public Toutput CallThread<Toutput>(Func<Toutput> theFunc, int stackSize=4000000) where Toutput:class
         {
             //return theFunc(); // debug no-thread version
             Exception eThread = null;
@@ -418,32 +419,23 @@ namespace CalculatorNotepad
                     eThread = e;
                 }
             } , stackSize );
-            if (execTimeout < 0) execTimeout = mc.cfg.timeoutFuncMs;
             iThread.Start();
-            if (iThread.Join(mc.cfg.timeoutDisabled ? Timeout.Infinite : (int)execTimeout))
+            iThread.Join();
+            // check if there was in-thread exception, and unroll inner exception if any
+            if (eThread != null)
             {
-                // check if there was thread exception?
-                if (eThread != null)
-                {
-                    if (eThread is System.Reflection.TargetInvocationException)
-                        throw (eThread as System.Reflection.TargetInvocationException).InnerException;
-                    else
-                        throw eThread;
-                }
-            }
-            else
-            {
-                try
-                {
-                    iThread.Abort(); 
-                }
-                catch { } // throwing 'obsolete' warning on NET Core/5+, but still does abort ?!
-                throw new mcException("ERR:Timeout");
+                if (eThread is System.Reflection.TargetInvocationException)
+                    throw (eThread as System.Reflection.TargetInvocationException).InnerException;
+                else
+                    throw eThread;
             }
             return res;
         }
 
 
+        /// <summary>
+        /// evaluate one line
+        /// </summary>
         public static CalcResult Evaluate(string input, int srcLine)
         {
             try
@@ -469,7 +461,7 @@ namespace CalculatorNotepad
             if (input == "") return new CalcResult();
             CalcResult res;
             Stopwatch sw = new Stopwatch();
-            sw.Start(); // this one can not be reseted by compound commands like while
+            sw.Start(); // this one can not be reset by compound commands like while
             swFunc.Restart();
             try
             {

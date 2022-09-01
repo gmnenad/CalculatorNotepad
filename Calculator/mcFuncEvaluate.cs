@@ -211,7 +211,7 @@ namespace CalculatorNotepad
         // called from most delegates at start, and doing stackCount--; in finally section
         void stackPlus()
         {
-            if (mc.isTimeout()) throw new ArgumentException("ERR:Timeout");
+            if (mc.isFuncTimeout()) throw new ArgumentException("ERR:Timeout");
             stackCount++;
             stackGuard?.checkStackOverflow(stackCount);
         }
@@ -382,6 +382,7 @@ namespace CalculatorNotepad
         {
             try
             {
+                mc.testFuncTimeout();
                 stackPlus();
                 mcValue res;
                 if (TryFuncCache(Params, out res)) return res;
@@ -435,6 +436,7 @@ namespace CalculatorNotepad
                 for (int i = 0; i < factors.Length; i++)
                     if (factors[i] != null)
                     {
+                        mc.testFuncTimeout();
                         newRes = factors[i].Evaluate(Params);
                         if (testReturn(newRes, ref lastRes))
                             break;
@@ -481,8 +483,9 @@ namespace CalculatorNotepad
             nLoops++;
             // check document timeout and  reset on each step for single expressions
             if (mc.isDocTimeout()) throw new ArgumentException("ERR:Timeout");
+            mc.testFuncTimeout(); // check Func timeout
             mc.dbgShow(stackCount, subFunct.Name + " loop step [" + nLoops + "] >");
-            mc.restartFuncTimeout();
+            //mc.restartFuncTimeout(); // do not reset timeout - one for/while loop is called within one 'function'
         }
 
 

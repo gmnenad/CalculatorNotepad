@@ -1101,7 +1101,6 @@ namespace CalculatorNotepad
                     try
                     {
                         mc.cacheFuncClear();
-                        //res.Value = mc.CallThread<mcValue>(() => func.EvaluateFunc());
                         res.Value = func.EvaluateFunc();
                         res.isValue = (res.Value != null) && !res.Value.isFunction();
                         res.Text = "";
