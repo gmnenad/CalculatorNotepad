@@ -76,8 +76,4 @@
     </ContentWithTargetPath>
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="&quot;$(MSBuildProjectDirectory)\Calculator\EDITBIN.EXE&quot; /stack:4000000 &quot;$(TargetDir)$(TargetName).exe&quot;" />
-  </Target>
-
 </Project>

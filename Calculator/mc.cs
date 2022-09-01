@@ -398,9 +398,73 @@ namespace CalculatorNotepad
             return volatileNames.Contains(name);
         }
 
+
+        /// <summary>
+        /// call supplied lambda function within thread, abort on timeout (default mc.cfg.timeoutFuncMs)
+        /// </summary>
+        static public Toutput CallThread<Toutput>(Func<Toutput> theFunc, long execTimeout=-1, int stackSize=4000000) where Toutput:class
+        {
+            //return theFunc(); // debug no-thread version
+            Exception eThread = null;
+            Toutput res = null;
+            var iThread = new Thread(() =>
+            {
+                try
+                {
+                    res = theFunc();
+                }
+                catch (Exception e)
+                {
+                    eThread = e;
+                }
+            } , stackSize );
+            if (execTimeout < 0) execTimeout = mc.cfg.timeoutFuncMs;
+            iThread.Start();
+            if (iThread.Join(mc.cfg.timeoutDisabled ? Timeout.Infinite : (int)execTimeout))
+            {
+                // check if there was thread exception?
+                if (eThread != null)
+                {
+                    if (eThread is System.Reflection.TargetInvocationException)
+                        throw (eThread as System.Reflection.TargetInvocationException).InnerException;
+                    else
+                        throw eThread;
+                }
+            }
+            else
+            {
+                try
+                {
+                    iThread.Abort(); 
+                }
+                catch { } // throwing 'obsolete' warning on NET Core/5+, but still does abort ?!
+                throw new mcException("ERR:Timeout");
+            }
+            return res;
+        }
+
+
+        public static CalcResult Evaluate(string input, int srcLine)
+        {
+            try
+            {
+                return mc.CallThread<CalcResult>(() => Evaluate_inner(input, srcLine));
+            }
+            catch (Exception e)
+            {
+                // this should be called only in case of Timeout exception
+                var res = new CalcResult();
+                res.isValue = false;
+                res.isError = true;
+                res.Text = e.Message.Replace("\r\n", " ").Replace("\n", " ");
+                return res;
+            }
+        }
+
+
         public static mcExp lastExp = null;
         // updating, compiling and evaluating one single row
-        public static CalcResult Evaluate(string input, int srcLine)
+        public static CalcResult Evaluate_inner(string input, int srcLine)
         {
             if (input == "") return new CalcResult();
             CalcResult res;
@@ -456,6 +520,7 @@ namespace CalculatorNotepad
 
         static bool emergencyDocSaved = false;
         static string emergencyNotepadText = "";
+
 
         // calculate and evaluate multiline text, updating function lists etc
         static public mcTotalResult calcLines(string text, LineRange changedRange=null )
@@ -515,7 +580,7 @@ namespace CalculatorNotepad
             resetDbg();
             currentDbgLine = startLine;
             dbgShow(0,"start state>");
-            bool noTimeout = true; // will be true after first doc timeout
+            bool noTimeout = true; // will be set after first doc timeout
             int srcLine = 0;
             for (int i = 0; i < startLine; i++) srcLine += res.cLines[i].sNumLines;
             // now process every line

@@ -1101,15 +1101,15 @@ namespace CalculatorNotepad
                     try
                     {
                         mc.cacheFuncClear();
+                        //res.Value = mc.CallThread<mcValue>(() => func.EvaluateFunc());
                         res.Value = func.EvaluateFunc();
-                        mc.cacheFuncClear();
-                        res.isValue = (res.Value!=null)&&!res.Value.isFunction();
+                        res.isValue = (res.Value != null) && !res.Value.isFunction();
                         res.Text = "";
                         if (res.Value != null)
                         {
                             int nDec = mc.cfg.resFormatDecimals;
-                            if ((res.Value.valueType == mcValueType.Vector)&&(nDec<0)) nDec= Math.Min(2, nDec); // vectors with 2 decimals max
-                            res.Text= res.Value.ToString(mc.cfg.resFormatSeparator??"", nDec); 
+                            if ((res.Value.valueType == mcValueType.Vector) && (nDec < 0)) nDec = Math.Min(2, nDec); // vectors with 2 decimals max
+                            res.Text = res.Value.ToString(mc.cfg.resFormatSeparator ?? "", nDec);
                         }
                         res.isConstant = func.isConstant();
                     }
@@ -1118,6 +1118,10 @@ namespace CalculatorNotepad
                         res.isValue = false;
                         res.isError = true;
                         res.Text = e.Message.Replace("\r\n", " ").Replace("\n", " ");
+                    }
+                    finally
+                    {
+                        mc.cacheFuncClear();
                     }
                     break;
                 case mcExpType.NewDef:
