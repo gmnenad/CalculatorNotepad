@@ -740,7 +740,7 @@ namespace CalculatorNotepad
                 "if (2 / 3 < 1, 33, 44)    //  if (2/3<1) then 33 else 44 " + Environment.NewLine +
                 "integral((x) => sin(x), 0, 0.7) // numerical integration (approximate) " + Environment.NewLine +
                 "// statistical functions and simulations" + Environment.NewLine +
-                "pmf(2, dist_binomial(10, 50 %)) // probability to have exactly 2 Tails after 10 coin tosses" + Environment.NewLine +
+                "pmf(dist_binomial(10, 50 %),2 ) // probability to have exactly 2 Tails after 10 coin tosses" + Environment.NewLine +
                 "pSim(() => 2≡∑((i) => rnd < 0.5, 1, 10), 10000) // simulating same coin tosses 10k times and counting 'just 2 tails'" + Environment.NewLine +
                 "// Units (length,time,weight units, deg/rad etc)" + Environment.NewLine +
                 "100'kmh->mph'  // converts to desired units, '->' or '>' " + Environment.NewLine +

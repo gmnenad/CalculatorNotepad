@@ -15,6 +15,7 @@
   <ItemGroup>
     <Compile Include="..\Calculator\globals.cs" Link="Calculator\globals.cs" />
     <Compile Include="..\Calculator\mcSystem.cs" Link="Calculator\mcSystem.cs" />
+    <Compile Include="..\Numbers\BinaryFloatNumber.cs" Link="Numbers\BinaryFloatNumber.cs" />
     <Compile Include="..\Numbers\MpfrClasses\allocate_function.cs" Link="Numbers\MpfrClasses\allocate_function.cs" />
     <Compile Include="..\Numbers\MpfrClasses\char_ptr.cs" Link="Numbers\MpfrClasses\char_ptr.cs" />
     <Compile Include="..\Numbers\MpfrClasses\FILE.cs" Link="Numbers\MpfrClasses\FILE.cs" />
@@ -73,7 +74,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="&quot;C:\Program Files\Microsoft Visual Studio\2022\Preview\VC\Tools\MSVC\14.33.31517\bin\Hostx64\x64\EDITBIN.EXE&quot; /stack:4000000 &quot;$(TargetDir)$(TargetName).exe&quot;" />
+    <Exec Command="call &quot;$(DevEnvDir)..\Tools\VsDevCmd.bat&quot; &amp;&amp; editbin /stack:4000000 &quot;$(TargetDir)$(TargetName).exe&quot;" />
   </Target>
 
 

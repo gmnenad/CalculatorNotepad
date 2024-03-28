@@ -76,4 +76,8 @@
     </ContentWithTargetPath>
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="call &quot;$(DevEnvDir)..\Tools\VsDevCmd.bat&quot; &amp;&amp; editbin /stack:4000000 &quot;$(TargetDir)$(TargetName).exe&quot;" />
+  </Target>
+
 </Project>
