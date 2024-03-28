@@ -83,14 +83,15 @@ namespace CalculatorNotepad
             units = new Dictionary<string, Number>();
             unitsCased = new Dictionary<string, List<string>>();
             // length
-            addUnit("m", 1); addUnit("km", 1000); addUnit("dm", 0.1); addUnit("cm", 0.01); addUnit("mm", 1e-3); addUnit("um", 1e-6); addUnit("nm", 1e-9); addUnit("pm", 1e-12);
+            addUnitG("m", 1, maxExp:3); addUnit("dm", 0.1); addUnit("cm", 0.01);
             addUnit("mi", 1609.344); addUnit("mile", 1609.344); addUnit("yd", 0.9144); addUnit("yard", 0.9144); addUnit("ft", 0.3048); addUnit("foot", 0.3048); addUnit("in", 25.4e-3); addUnit("inch", 25.4e-3);
-            addUnit("ly", 9460730472580800); addUnit("pc", 30856775814671900); addUnit("kpc", 30856775814671900e+3); addUnit("mpc", 30856775814671900e+6);
+            addUnitG("Y", 31557600, minExp: 0); addUnitG("LY", 9460730472580800, minExp: 0); addUnitG("Pc", 30856775814671900, minExp: 0);
             // time
-            addUnit("s", 1); addUnit("min", 60); addUnit("h", 60 * 60); addUnit("d", 24 * 60 * 60); addUnit("year", 24 * 60 * 60 * 365); addUnit("yr", 24 * 60 * 60 * 365);
-            addUnit("ms", 1e-3); addUnit("us", 1e-6); addUnit("ns", 1e-9); addUnit("ps", 1e-12);
+            addUnitG("s", 1, maxExp: 0);
+            addUnit("min", 60); addUnit("h", 60 * 60); addUnit("d", 24 * 60 * 60); addUnit("day", 24 * 60 * 60); addUnit("month", 2629800);  addUnit("year", 31557600); addUnit("yr", 31557600);
             // weight
-            addUnit("kg", 1); addUnit("g", 1e-3); addUnit("gram", 1e-3); addUnit("tonne", 1000); addUnit("mg", 1e-6);
+            addUnitG("g", 1e-3, maxExp: 3); 
+            addUnit("gram", 1e-3); addUnit("ton", 1000); addUnit("tonne", 1000);
             addUnit("ounce", 28.349523125e-3); addUnit("oz", 28.349523125e-3); addUnit("pound", 0.45359237); addUnit("lb", 0.45359237);
             // derived units
             addUnit("mph", 1609.344 / 3600); addUnit("kmh", 1000.0 / 3600); addUnit("knot", 1852.0 / 3600); addUnit("c", 299792458);
@@ -695,8 +696,8 @@ namespace CalculatorNotepad
             }
         }
 
-        // check and return valid name, based on current case sensitivity, or empty if name not valid
-        public static string uncaseName(string name, Dictionary<string, List<string>> cdict)
+        // check and return valid name, based on specified case sensitivity, or empty if name not valid
+        public static string uncaseName(string name, Dictionary<string, List<string>> cdict, mcCaseSensitivity caseSensitivity)
         {
             if (name != "")
             {
@@ -706,7 +707,7 @@ namespace CalculatorNotepad
                     var nameList = cdict[loName];
                     if (nameList.Contains(name)) // if exact match exists, return true
                         return name;
-                    if (cfg.sensitivity == mcCaseSensitivity.Sensitive)
+                    if (caseSensitivity == mcCaseSensitivity.Sensitive)
                     {
                         // since exact name match did not exist, skip to return false
                     }
@@ -722,6 +723,8 @@ namespace CalculatorNotepad
             // if name match not found return empty == false
             return "";
         }
+        // check and return valid name, based on current case sensitivity, or empty if name not valid
+        public static string uncaseName(string name, Dictionary<string, List<string>> cdict) => uncaseName(name, cdict, cfg.sensitivity);
 
         // is this allowed new case name
         public static bool allowedNewCaseName(string name, Dictionary<string, List<string>> cdict, Func<string, bool> isBuiltin = null)
@@ -865,12 +868,28 @@ namespace CalculatorNotepad
 
         // *** CASED versions for <units>
 
-        // add new unit
+        // add new single unit, if same exact case match does not already exist ( ie it can add 'mm' and 'Mm' )
         public static void addUnit(string name, Number value)
         {
-            units.Add(name, value);
-            addCased(name, unitsCased);
+            if (!units.ContainsKey(name))
+            {
+                units.Add(name, value);
+                addCased(name, unitsCased);
+            }
         }
+        // add new unit group, from base unit ( adds k,M,G,T,m,u,n... versions if they do not already exist )
+        private static readonly (string prefix, double val)[] unitPrefixes = 
+                { ("",0), ("k", 3), ("M", 6), ("G", 9), ("B", 9),("T", 12), ("P", 15), ("E", 18) ,
+                  ("m", -3), ("u", -6), ("n", -9), ("p", -12) };
+        public static void addUnitG(string baseName, Number value, int minExp=-1000, int maxExp=+1000)
+        {
+            foreach (var p in unitPrefixes)
+            {
+                if ((p.val >= minExp) && (p.val <= maxExp))
+                    addUnit(p.prefix+baseName, value * Math.Pow(10, p.val)); 
+            }
+        }
+
         // return name of valid function, based on current case sensitivity, or empty if name not valid
         public static string uncaseUnitName(string name)
         {
