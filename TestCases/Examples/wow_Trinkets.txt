@@ -134,9 +134,30 @@ sim_onUse(175,20,120):0
 sim_onUse(211,20,120):0
 // Shifting Naaru Sliver, 54 haste, 320dmg for 15sec on 1.5m CD
 sim_onUse(320,15,90):0
-
-
-
+// Sundial of the Exiled, 84crit, 590dmg for 10sec, proc harm.spell 10% chance with 45s CD 
+sim_onProc(590,10,2.8,0.10,45)
+// Dying Curse, 71hit, 765dmg for 10sec, proc any spell 15% chance with 45s CD 
+sim_onProc(765,10,2.2,0.15,45)
+// Lightweave Embroidery, tailoring, 35% chance when casting, 1m CD to +295dmg for 15s 
+sim_onProc(295,15,2.2,0.35,60)
+// Mark of the War Prisoner, 73hit+  346dmg for 20s on use, 2m CD
+sim_onUse(346,20,120):0
+// Embrace of the Spider, 98dmg +505haste for 10s proc 10% any, 45s CD
+sim_onProc(505,10,2.2,0.10,45)
+// Enchant Weapon - Black Magic, +250 haste for 10s, proc harmful spells, 35% chance, 35s CD
+sim_onProc(250,10,2.8,0.35,35)
+// Flare of the Heavens, 135crit+ 959dmg for 10s proc 10% harm, 45s CD
+sim_onProc(959,10,2.8,0.10,45)
+// Living Flame, 113hit+ on use 534dmg for 20s, 2min CD
+sim_onUse(534,20,120):0
+// Scale of Fates, 132dmg+ on use 457 haste for 20s, 2min CD
+sim_onUse(457,20,120):0
+// Pandora's Plea, 114int +794dmg for 10s proc 10% on any, 45s CD 
+sim_onProc(794,10,2.2,0.10,45)
+// Illustration of the Dragon Soul, each dmg cast get +20dmg for 10s, stack x10
+sim_onStack(20,10,2.8,10)
+// Eye of the Broodmother, each spell get +26dmg for 10s, stack x5
+sim_onStack(20,10,2.2,5)
 
 //#C#
 // simulate one fight of given duration/spread
@@ -255,6 +276,11 @@ double sim_onProc( double initDmg, double duration, double castTime, double proc
     return sim_avg( initDmg, duration, castTime,proc, 0,0,0, 0,CD,  true, 0.20, fightDurations??NAXdurations);
 }
 
+// simulate stacks on cast, simplified parameters
+double sim_onStack( double stackDmg, double duration, double castTime, int maxStacks, double initDmg=0, double[] fightDurations=null )
+{
+    return sim_avg( initDmg, duration, castTime,1,  stackDmg,maxStacks,0, 0,0,  true, 0.20, fightDurations??NAXdurations);
+}
 
 
 

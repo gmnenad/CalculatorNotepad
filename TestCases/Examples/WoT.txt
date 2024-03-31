@@ -1,0 +1,19 @@
+// input:  RSD, kGold, Mcred
+// returns :  % better than buying 30k gold, % better than 2.5k gold, RSD per 2.5k gold (=30days prem) 
+bRSD(rsd,gold,cred)= { 
+    g2500rsd=1126/2500; // 2.5k gold cost 1126 rsd
+    g30Krsd=11308/30500; // 30k gold costs 11308 rsd
+    prem30gold=2500; // premium 30days costs 2500gold
+    credPerGold=400; // 1 gold gives 400 credits
+    a=rsd/(gold*1000+cred*1000000/credPerGold); // cost of 1 gold in offer
+    return vec((g30Krsd/a-1)*100,(g2500rsd/a-1)*100,a*prem30gold);
+}
+
+bRSD(11308,12.5,12.5):0 // 12.5kG, 12.5Mc
+bRSD(6784, 5+2.5,5):0 // 5kGold, 30days, 5Mc
+
+
+
+
+
+
