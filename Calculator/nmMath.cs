@@ -1001,7 +1001,7 @@ namespace CalculatorNotepad
         #endregion
 
 
-        #region VECTOR functions
+        #region VECTOR and EXTRAPOLATION functions
         //***  VECTOR functions 
 
 
@@ -1027,10 +1027,10 @@ namespace CalculatorNotepad
             Number exOne(int K) // y=f(x) based on Kth line segment
             {
                 Number X0 = vX[K - 1], X1 = vX[K], Y0 = vY[K - 1], Y1 = vY[K];
-                if (X1<=X0) throw new ArgumentException("extrapolate vecX must have increasing X values ! ");
+                if (X1<=X0) throw new ArgumentException("extrapolate vecX must have increasing X values ! X["+K+"] ("+X1+") <= X["+(K-1)+"] ("+X0+")");
                 return Y0 + (X - X0) / (X1 - X0) * (Y1 - Y0);
             }
-            if (vX.Count!=vY.Count) throw new ArgumentException("extrapolate vecX must have same number of elements as vecY ! ");
+            if (vX.Count!=vY.Count) throw new ArgumentException("extrapolate vecX["+vX.Count+"] must have same number of elements as vecY["+vY.Count+"] ! ");
             if (vX.Count < 2) throw new ArgumentException("extrapolate vecX & vecY must have at least two points ! ");
             for (var i = 1; i < vX.Count; i++)
                 if (X <= vX[i]) return exOne(i); // this also include X<vX[0] extrapolation
@@ -1040,7 +1040,7 @@ namespace CalculatorNotepad
         // Calculate area of extrapolated function between X1 and X2
         public static Number areapolate(Number X1, Number X2, List<Number> vX, List<Number> vY)
         {
-            if (vX.Count != vY.Count) throw new ArgumentException("areapolate vecX must have same number of elements as vecY ! ");
+            if (vX.Count != vY.Count) throw new ArgumentException("areapolate vecX[" + vX.Count + "] must have same number of elements as vecY[" + vY.Count + "] ! ");
             if (vX.Count < 2) throw new ArgumentException("areapolate vecX & vecY must have at least two points ! ");
             if (X2<X1) throw new ArgumentException("areapolate X2 can not be smaller than X1 ! ");
             // find right point of segment containing X1 ( if 2..3, then s1=3 ; if before first segment then s1=0 ; if after last segment,then s1= vX.Count )
@@ -1067,7 +1067,9 @@ namespace CalculatorNotepad
         // Average Y value between X1 and X2, weighted
         public static Number avgpolate(Number X1, Number X2, List<Number> vX, List<Number> vY)
         {
-            return areapolate(X1, X2, vX, vY) / (X2 - X1);
+            if (X1 == X2) return extrapolate(X1, vX, vY);
+            else if (X1 < X2) return areapolate(X1, X2, vX, vY) / (X2 - X1);
+            else return areapolate(X2, X1, vX, vY) / (X1 - X2);
         }
 
         #endregion

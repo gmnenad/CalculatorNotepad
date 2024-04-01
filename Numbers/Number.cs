@@ -1572,6 +1572,31 @@ namespace Numbers
             }
         }
 
+        /// <summary>
+        /// ProductLog or LambertW, returns w such that w*e^w=x
+        /// </summary>
+        public static Number LambertW(Number x)
+        {
+            if (x == 0) return 0;
+            else if (x < 0) throw new ArgumentOutOfRangeException("LambertW method only supports non-negative input values.");
+
+            var w = x;
+            int step = 0;
+            var delta = Number.MaxValue;
+            while (true)
+            {
+                step++;
+                var ew = Exp(w);
+                var wew = w * ew;
+                var wewx = wew - x;
+                var aWewx = Abs(wewx);
+                if ((aWewx < 1e-13)||(aWewx > delta)||(step>100)) // Check for convergence
+                    return w;
+                delta = aWewx;
+                w -= wewx / (ew * (w + 1) - (w + 2) * wewx / (2 * w + 2)); // Newton's method update
+            }
+        }
+
         #endregion
 
         #region Combinatoric generics

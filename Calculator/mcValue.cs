@@ -375,7 +375,7 @@ namespace CalculatorNotepad
 
 
         // return vector representation of value, valid for vectors and scalars (turned in vectors).  used in scalar transformation functions
-        private List<mcValue> getVector()
+        public List<mcValue> getVector()
         {
             switch (valueType)
             {

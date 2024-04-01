@@ -390,6 +390,7 @@ namespace CalculatorNotepad
         }
 
 
+
         #endregion
 
 
@@ -1584,6 +1585,24 @@ namespace CalculatorNotepad
             return new mcValue(vList);
         }
 
+        // reverse order of elements in vector :  vReverse(vec)
+        public static mcValue vReverse(mcValue[] args)
+        {
+            // get params
+            if (args.Length < 1) throw new ArgumentException("vReverse need at least one vector as input: vReverse( vec )  !");
+            var vector = args[0];
+            if ((vector == null) || !vector.isVector()) throw new ArgumentException("vReverse first argument must be a vector: vReverse( vec ) ! ");
+            var vList = vector.getVector();
+            var newVec = new List<mcValue>();
+            for(var i= vList.Count-1; i>=0; i--)
+                newVec.Add(vList[i]);
+            return new mcValue(newVec);
+        }
+
+        #endregion
+
+
+        #region Extrapolation functions ( vector based )
 
         // find Y value given X value and two vectors: vX-values and vY-values
         public static mcValue extrapolate(mcValue[] args)
