@@ -33,7 +33,7 @@ namespace CalculatorNotepad
         // some properties
 
         /// <summary>
-        /// return scalar floating point value, which is eaither Double or Quad or Mpfr( depending on compile setup )
+        /// return scalar floating point value, which is either Double or Quad or Mpfr( depending on compile setup )
         /// </summary>
         public Number Number { get => getNumber(); }
 

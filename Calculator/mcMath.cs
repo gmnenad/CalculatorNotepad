@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -1583,6 +1584,27 @@ namespace CalculatorNotepad
             return new mcValue(vList);
         }
 
+
+        // find Y value given X value and two vectors: vX-values and vY-values
+        public static mcValue extrapolate(mcValue[] args)
+        {
+            testArgs(args, "extrapolate", 1, 3, ArgTst.None, new ArgTst[] { ArgTst.Number, ArgTst.Vector, ArgTst.Vector });
+            return new mcValue( nm.extrapolate(args[0].Number, args[1].getListNumber(), args[2].getListNumber()) );
+        }
+
+        // Calculate area of extrapolated function between X1 and X2
+        public static mcValue areapolate(mcValue[] args)
+        {
+            testArgs(args, "areapolate", 1, 4, ArgTst.None, new ArgTst[] { ArgTst.Number, ArgTst.Number, ArgTst.Vector, ArgTst.Vector });
+            return new mcValue(nm.areapolate(args[0].Number, args[1].Number, args[2].getListNumber(), args[3].getListNumber()));
+        }
+
+        // Average Y value between X1 and X2, weighted
+        public static mcValue avgpolate(mcValue[] args)
+        {
+            testArgs(args, "avgpolate", 1, 4, ArgTst.None, new ArgTst[] { ArgTst.Number, ArgTst.Number, ArgTst.Vector, ArgTst.Vector });
+            return new mcValue(nm.avgpolate(args[0].Number, args[1].Number, args[2].getListNumber(), args[3].getListNumber()));
+        }
 
         #endregion
 

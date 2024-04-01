@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Numbers;
 
 namespace CalculatorNotepad
 {
@@ -1019,6 +1020,55 @@ namespace CalculatorNotepad
             return stdDev;
         }
 
+        // find Y value given X value and two vectors: vX-values and vY-values
+
+        public static Number extrapolate(Number X, List<Number> vX, List<Number> vY)
+        {
+            Number exOne(int K) // y=f(x) based on Kth line segment
+            {
+                Number X0 = vX[K - 1], X1 = vX[K], Y0 = vY[K - 1], Y1 = vY[K];
+                if (X1<=X0) throw new ArgumentException("extrapolate vecX must have increasing X values ! ");
+                return Y0 + (X - X0) / (X1 - X0) * (Y1 - Y0);
+            }
+            if (vX.Count!=vY.Count) throw new ArgumentException("extrapolate vecX must have same number of elements as vecY ! ");
+            if (vX.Count < 2) throw new ArgumentException("extrapolate vecX & vecY must have at least two points ! ");
+            for (var i = 1; i < vX.Count; i++)
+                if (X <= vX[i]) return exOne(i); // this also include X<vX[0] extrapolation
+            return exOne(vX.Count-1); // extrapolation for X>vX[max]
+        }
+
+        // Calculate area of extrapolated function between X1 and X2
+        public static Number areapolate(Number X1, Number X2, List<Number> vX, List<Number> vY)
+        {
+            if (vX.Count != vY.Count) throw new ArgumentException("areapolate vecX must have same number of elements as vecY ! ");
+            if (vX.Count < 2) throw new ArgumentException("areapolate vecX & vecY must have at least two points ! ");
+            if (X2<X1) throw new ArgumentException("areapolate X2 can not be smaller than X1 ! ");
+            // find right point of segment containing X1 ( if 2..3, then s1=3 ; if before first segment then s1=0 ; if after last segment,then s1= vX.Count )
+            var s1 = 0;
+            while ((s1 < vX.Count) && (vX[s1] < X1)) s1++;
+            // find right point of segment containing X2
+            var s2 = 0;
+            while ((s2 < vX.Count) && (vX[s2] <= X2)) s2++;
+            // extrapolate exact y=f(x) values for X1,X2
+            var y1 = extrapolate(X1, vX, vY);
+            var y2 = extrapolate(X2, vX, vY);
+            // if same segment
+            if (s1 == s2) return (y1 + y2) / 2 * (X2 - X1);
+            // first area, include extrapolated to left
+            var A = (vY[s1] + y1) / 2 * (vX[s1] - X1);
+            // add last area, assume s2>0 ( otherwise they would be "same segment" )
+            A = A + (y2 + vY[s2-1]) / 2 * (X2 - vX[s2-1]);
+            // add area for segments in between, i=left segment point
+            for (var i=s1; i<s2-1; i++)
+                A=A+ (vY[i+1] + vY[i]) / 2 * (vX[i+1] - vX[i]);
+            return A; 
+        }
+
+        // Average Y value between X1 and X2, weighted
+        public static Number avgpolate(Number X1, Number X2, List<Number> vX, List<Number> vY)
+        {
+            return areapolate(X1, X2, vX, vY) / (X2 - X1);
+        }
 
         #endregion
 
