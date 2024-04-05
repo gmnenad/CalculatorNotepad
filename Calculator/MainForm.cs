@@ -563,8 +563,8 @@ namespace CalculatorNotepad
                 // create selection around that word
                 var newSel = new Range(markBox, colLeft, errLine, colRight, errLine);
                 markBox.Selection = newSel;
-                // set focus to box editor
-                markBox.Focus();
+                markBox.Focus(); // set focus to box editor
+                markBox.GoToLine(errLine - 4); // scroll to show line with error (also 3 lines above err )
             }
         }
 

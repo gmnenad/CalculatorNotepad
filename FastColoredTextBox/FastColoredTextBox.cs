@@ -1527,6 +1527,7 @@ namespace FastColoredTextBoxNS
             Invalidate();
         }
 
+
         public new Size AutoScrollMinSize
         {
             set
@@ -8230,6 +8231,15 @@ window.status = ""#print"";
         }
 
         #endregion
+
+        public void GoToLine(int lineNumber)
+        {
+            var Y= CharHeight * lineNumber;
+            if (Y < 0) Y = 0;
+            if (Y > VerticalScroll.Maximum) Y = VerticalScroll.Maximum;
+            VerticalScroll.Value = Y;
+            PerformLayout();
+        }
     }
 
     public class PaintLineEventArgs : PaintEventArgs
