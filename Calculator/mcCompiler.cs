@@ -10,6 +10,7 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
+using Numbers;
 
 namespace CalculatorNotepad
 {
@@ -70,20 +71,22 @@ namespace CalculatorNotepad
             var srcLines = code.Split(new string[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
             int curLine = 0, totLines= srcLines.Length;
             // add first header line
-            string finalSrc = "using System; using System.Collections.Generic; using System.Linq; using T = CalculatorNotepad.mcValue;  \r\n";
-            int HeaderLines = 2;
-            // gather eventual initial usings
             string CR = "\r\n";
+            string finalSrc = "using System; using System.Collections.Generic; using System.Linq; using T = CalculatorNotepad.mcValue; using MPFR=Numbers.MPFR; using Quad=Numbers.Quad; using Number=";
+            if (Number.defaultClassType == NumberClass.Double) finalSrc += " System.Double;"; else finalSrc += " Numbers.Number;";
+            finalSrc += CR;
+            int HeaderLines = 2; // to adjust reported error lines by 2 smaller (due to two artificial lines we inserted here )
+            // gather eventual initial usings
             bool doLoop = true;
             while ((curLine < totLines)&& doLoop)
             {
                 if (srcLines[curLine].TrimStart().SubStr(0, 5) == "using")
                 {
                     finalSrc+= srcLines[curLine] + CR;
-                    HeaderLines++;
+                    //HeaderLines++; // not artificial line, so no need to further reduce error line number
                 }
-                else if (srcLines[curLine] == "")
-                    HeaderLines--;
+                else if ((srcLines[curLine].Trim() == "")|| (srcLines[curLine].Trim().StartsWith("//")))
+                    HeaderLines--; // not including these empty lines or comments before/between usings in source, so adjust upward (+1) reported error lines afterwards
                 else
                     doLoop = false;
                 if (doLoop) curLine++;
@@ -294,14 +297,18 @@ namespace CalculatorNotepad
                         // single element. Even if List<int>, it should be created from single mcValue (assume its vector)
                         if (thisPtype == typeof(mcValue)) input.Add(args[pa]);
                         else if (thisPtype == typeof(double)) input.Add(args[pa].Double);
+                        else if (thisPtype == typeof(Number)) input.Add(args[pa].Number);
+                        else if (thisPtype == typeof(MPFR)) input.Add(args[pa].Number.AsMPFR);
                         else if (thisPtype == typeof(int)) input.Add(args[pa].Int);
                         else if (thisPtype == typeof(long)) input.Add(args[pa].Long);
                         else if (thisPtype == typeof(bool)) input.Add(args[pa].isTrue());
                         else if (thisPtype == typeof(List<mcValue>)) input.Add(args[pa].Vector);
                         else if (thisPtype == typeof(List<double>)) input.Add(args[pa].getListDouble());
+                        else if (thisPtype == typeof(List<Number>)) input.Add(args[pa].getListNumber());
                         else if (thisPtype == typeof(List<int>)) input.Add(args[pa].getListInt());
                         else if (thisPtype == typeof(List<long>)) input.Add(args[pa].getListLong());
                         else if (thisPtype == typeof(double[])) input.Add(args[pa].getListDouble().ToArray());
+                        else if (thisPtype == typeof(Number[])) input.Add(args[pa].getListNumber().ToArray());
                         else if (thisPtype == typeof(int[])) input.Add(args[pa].getListInt().ToArray());
                         else if (thisPtype == typeof(long[])) input.Add(args[pa].getListLong().ToArray());
                         else
@@ -330,14 +337,20 @@ namespace CalculatorNotepad
         {
             if (resultType == typeof(mcValue)) return (mcValue)res;
             if (resultType == typeof(double)) return new mcValue((double)res);
+            if (resultType == typeof(Number)) return new mcValue((Number)res);
+            if (resultType == typeof(MPFR)) return new mcValue((MPFR)res);
             if (resultType == typeof(int)) return new mcValue((int)res);
             if (resultType == typeof(long)) return new mcValue((long)res);
             if (resultType == typeof(bool)) return new mcValue((bool)res ? 1 : 0);
             if (resultType == typeof(List<mcValue>)) return new mcValue((List<mcValue>)res);
             if (resultType == typeof(List<double>)) return new mcValue((List<double>)res);
+            if (resultType == typeof(List<Number>)) return new mcValue((List<Number>)res);
+            if (resultType == typeof(List<MPFR>)) return new mcValue((List<MPFR>)res);
             if (resultType == typeof(List<int>)) return new mcValue((List<int>)res);
             if (resultType == typeof(List<long>)) return new mcValue((List<long>)res);
             if (resultType == typeof(double[])) return new mcValue(((double[])res).ToList());
+            if (resultType == typeof(Number[])) return new mcValue(((Number[])res).ToList());
+            if (resultType == typeof(MPFR[])) return new mcValue(((MPFR[])res).ToList());
             if (resultType == typeof(int[])) return new mcValue(((int[])res).ToList());
             if (resultType == typeof(long[])) return new mcValue(((long[])res).ToList());
             // if return can n ot be converted to mcValue, throw an exception

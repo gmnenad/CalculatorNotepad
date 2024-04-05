@@ -98,6 +98,18 @@ namespace CalculatorNotepad
             vectorLength = 1;
             valueType = mcValueType.Number;
         }
+        public mcValue(MPFR x)
+        {
+            numberValue = new Number(x);
+            vectorLength = 1;
+            valueType = mcValueType.Number;
+        }
+        public mcValue(Quad x)
+        {
+            numberValue = new Number(x);
+            vectorLength = 1;
+            valueType = mcValueType.Number;
+        }
 
         public mcValue(bool x)
         {
@@ -134,6 +146,8 @@ namespace CalculatorNotepad
         public mcValue(List<long> x) => addList<long>(x, (a) => a);
         public mcValue(List<double> x) => addList<double>(x, (a) => a);
         public mcValue(List<Number> x) => addList<Number>(x, (a) => a);
+        public mcValue(List<MPFR> x) => addList<MPFR>(x, (a) => a);
+        public mcValue(List<Quad> x) => addList<Quad>(x, (a) => a);
 
 
         // this makes new shallow copy, although deep links (vectors, func) remains
